@@ -1,11 +1,11 @@
-(defun LoadModules ( / a b c )
-	(setq a (findfile "modules"))
+(defun LoadModules ( / a1 a2 a3 )
+	(setq a1 (findfile "modules"))
 	
-	(if a
-		(foreach b '("string" "block")
-			(if (setq c (findfile (strcat a "\\" b ".lsp")))
-				(load c)
-				(princ (strcat "\nUnable to load: " b ".lsp"))
+	(if a1
+		(foreach a2 '("block" "file" "list" "string" "xml")
+			(if (setq a3 (findfile (strcat a1 "\\" a2 ".lsp")))
+				(load a3)
+				(princ (strcat "\nUnable to load: " a2 ".lsp"))
 			)
 		)
 	)
@@ -14,3 +14,4 @@
 (LoadModules)
 
 (load "blist.lsp")
+(load "bxml.lsp")

@@ -1,15 +1,15 @@
-(defun blist ( s / ss h d lHandles lColumns lAttributes )
-	(if (setq ss (ssget "_X" '((0 . "INSERT"))))
-		(setq lHandles (bm:search ss s))
-	)
+(defun blist ( a / d s h lAttributes lColumns lHandles )
+	(setq i 10) ;- Max length for handle string
 	
 	(defun PrintDivider ()
-		(princ (sm:string-right-fill "\n" "=" (+ 8 (length lColumns) (apply '+ (mapcar 'cdr lColumns)))))
+		(princ (sm:string-right-fill "\n" "=" (+ i 2 (length lColumns) (apply '+ (mapcar 'cdr lColumns)))))
 	)
 
 	(defun PrintHeader ()
-		(princ "\nHandle|")
-	
+		(princ "\n")
+		(princ (sm:string-right-fill "Handle" " " i))
+		(princ "|")
+		
 		(foreach d lColumns
 			(princ (sm:string-right-fill (car d) " " (cdr d)))
 			(princ "|")
@@ -21,8 +21,8 @@
 			(setq lAttributes (bm:insert-attributes (handent h)))
 		
 			(princ "\n")
-			(princ h)
-			(princ "   |")
+			(princ (sm:string-right-fill h " " i))
+			(princ "|")
 		
 			(foreach d lColumns
 				(princ (sm:string-right-fill (cdr (assoc (car d) lAttributes)) " " (cdr (assoc (car d) lColumns))))
@@ -30,14 +30,25 @@
 			)
 		)
 	)
-		
-	(setq lColumns (bm:all-attributes-length lHandles))
 	
-	(PrintDivider)
-	(PrintHeader)
-	(PrintDivider)
-	(PrintData)
-	(PrintDivider)
+	(if (setq s (ssget "_X" '((0 . "INSERT"))))
+		(cond
+			((setq lHandles (bm:search s a))
+				(setq lColumns (bm:all-attributes-length lHandles))
+	
+				(PrintDivider)
+				(PrintHeader)
+				(PrintDivider)
+				(PrintData)
+				(PrintDivider)
+				
+				(princ (strcat "\nTotal blocks found: " (itoa (length lHandles))))
+				(princ (strcat "\nTotal unique blocks found: " (itoa (length (lm:unique lHandles)))))
+			)
+			(T (princ (strcat "\nNo blocks found with filter \"" a "\".")))
+		)
+		(princ "\nDrawing does not contain any blocks.")
+	)
 	
 	(princ)
 )
@@ -45,7 +56,5 @@
 (defun c:blist ()
 	(blist "TAG*")
 )
-
-
 
 
