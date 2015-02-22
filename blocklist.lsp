@@ -1,4 +1,4 @@
-(defun blist ( a / d s h lAttributes lColumns lHandles )
+(defun blocklist ( s a / d h lAttributes lColumns lHandles )
 	(setq i 10) ;- Max length for handle string
 	
 	(defun PrintDivider ()
@@ -30,8 +30,8 @@
 			)
 		)
 	)
-	
-	(if (setq s (ssget "_X" '((0 . "INSERT"))))
+		
+	(if s
 		(cond
 			((setq lHandles (bm:search s a))
 				(setq lColumns (bm:all-attributes-length lHandles))
@@ -41,7 +41,7 @@
 				(PrintDivider)
 				(PrintData)
 				(PrintDivider)
-				
+			
 				(princ (strcat "\nTotal blocks found: " (itoa (length lHandles))))
 				(princ (strcat "\nTotal unique blocks found: " (itoa (length (lm:unique lHandles)))))
 			)
@@ -53,8 +53,10 @@
 	(princ)
 )
 
-(defun c:blist ()
-	(blist "TAG*")
+(defun c:blocklist ()
+	(blocklist (im:select-all-blocks) "SYMBOL*")
 )
+
+(princ)
 
 

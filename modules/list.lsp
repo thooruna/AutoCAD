@@ -4,3 +4,5 @@
 (defun lm:unique ( l )
     (if l (cons (car l) (lm:unique (vl-remove (car l) (cdr l)))))
 )
+
+(princ)

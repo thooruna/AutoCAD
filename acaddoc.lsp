@@ -1,11 +1,11 @@
-(defun LoadModules ( / a1 a2 a3 )
-	(setq a1 (findfile "modules"))
+(defun LoadModules ( / );aPath aBase aFile )
+	(setq aPath (findfile "modules"))
 	
-	(if a1
-		(foreach a2 '("block" "file" "list" "string" "xml")
-			(if (setq a3 (findfile (strcat a1 "\\" a2 ".lsp")))
-				(load a3)
-				(princ (strcat "\nUnable to load: " a2 ".lsp"))
+	(if aPath
+		(foreach aBase '("block" "error" "file" "input" "list" "string" "table" "xml")
+			(if (setq aFile (findfile (strcat aPath "\\" aBase ".lsp")))
+				(load aFile (strcat "\nUnable to load: " aFile))
+				(princ (strcat "\nUnable to find: " aBase ".lsp"))
 			)
 		)
 	)
@@ -13,5 +13,6 @@
 
 (LoadModules)
 
-(load "blist.lsp")
-(load "bxml.lsp")
+(load "blocklist.lsp")
+(load "blockxml.lsp")
+(load "blocktable.lsp")

@@ -30,14 +30,19 @@
 	a1
 )
 
-(defun sm:string-subst ( new old str / inc len )
-    (setq len (strlen new)
-          inc 0
+(defun sm:string-subst ( a1 a2 a3 / i1 i2 )
+    (setq 
+		i1 0
+		i2 (strlen a1)
     )
-    (while (setq inc (vl-string-search old str inc))
-        (setq str (vl-string-subst new old str inc)
-              inc (+ inc len)
+	
+    (while (setq i1 (vl-string-search a2 a3 i1))
+        (setq a3 (vl-string-subst a1 a2 a3 i1)
+			i1 (+ i1 i2)
         )
     )
-    str
+	
+    a3
 )
+
+(princ)

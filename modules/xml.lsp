@@ -36,14 +36,16 @@
 	)
 )
 
-(defun xm:create-file ( a1 a2 / f )
-	(setq f (open a1 "w")) 
+(defun xm:create-file ( aFile aContent / f )
+	(setq f (open aFile "w")) 
 	
 	(cond
 		(f 
 			(write-line "<?xml version=\"1.0\"?>" f)
-			(write-line a2 f)
+			(write-line aContent f)
 			(close f)
 		)
 	)
 )
+
+(princ)
