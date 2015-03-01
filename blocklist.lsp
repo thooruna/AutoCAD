@@ -1,8 +1,6 @@
-(defun blocklist ( s a / d h lAttributes lColumns lHandles )
-	(setq i 10) ;- Max length for handle string
-	
+(defun blocklist ( s a / d h lAttributes lHeader lHandles )
 	(defun PrintDivider ()
-		(princ (sm:string-right-fill "\n" "=" (+ i 2 (length lColumns) (apply '+ (mapcar 'cdr lColumns)))))
+		(princ (sm:string-right-fill "\n" "=" (+ i 2 (length lHeader) (apply '+ (mapcar 'cdr lHeader)))))
 	)
 
 	(defun PrintHeader ()
@@ -10,7 +8,7 @@
 		(princ (sm:string-right-fill "Handle" " " i))
 		(princ "|")
 		
-		(foreach d lColumns
+		(foreach d lHeader
 			(princ (sm:string-right-fill (car d) " " (cdr d)))
 			(princ "|")
 		)
@@ -24,8 +22,8 @@
 			(princ (sm:string-right-fill h " " i))
 			(princ "|")
 		
-			(foreach d lColumns
-				(princ (sm:string-right-fill (cdr (assoc (car d) lAttributes)) " " (cdr (assoc (car d) lColumns))))
+			(foreach d lHeader
+				(princ (sm:string-right-fill (cdr (assoc (car d) lAttributes)) " " (cdr (assoc (car d) lHeader))))
 				(princ "|")
 			)
 		)
@@ -34,8 +32,12 @@
 	(if s
 		(cond
 			((setq lHandles (bm:search s a))
-				(setq lColumns (bm:all-attributes-length lHandles))
-	
+				(setq lHeader (bm:insert-attribute-lengths lHandles))
+				
+				(if (< (setq i (bm:handle-lengths lHandles)) 6) ;- Max length for handle string
+					(setq i 6)
+				)
+
 				(PrintDivider)
 				(PrintHeader)
 				(PrintDivider)
@@ -47,14 +49,13 @@
 			)
 			(T (princ (strcat "\nNo blocks found with filter \"" a "\".")))
 		)
-		(princ "\nDrawing does not contain any blocks.")
 	)
 	
 	(princ)
 )
 
 (defun c:blocklist ()
-	(blocklist (im:select-all-blocks) "SYMBOL*")
+	(blocklist (im:select-all-blocks) "*")
 )
 
 (princ)

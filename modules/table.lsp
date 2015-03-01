@@ -5,7 +5,7 @@
 	tm:table-title-text-height 5
 )
 
-(defun tm:table-data-add ( lData lRow / a d lTemp )
+(defun tm:table-data-add-row ( lData lRow / a d lTemp )
 	(setq lTemp '())
 		
 	(cond
@@ -25,6 +25,10 @@
 	(append lData (list lTemp))
 )
 
+;(defun tm:table-data-add-column-before ( l a )
+;	(setq l (mapcar '(lambda (x) (cons a x)) l))
+;)
+
 (defun tm:table-data-sort ( l i / lTemp )	
 	(if (null i) (setq i 0))
 	
@@ -42,26 +46,26 @@
 	
 	(vl-load-com)
 	
-    (setq acad (vlax-get-acad-object)) ;- Get the AutoCAD application
+	(setq acad (vlax-get-acad-object)) ;- Get the AutoCAD application
 	(setq doc (vla-get-ActiveDocument acad)) ;- Get the current document
 	(setq dicts (vla-get-Dictionaries doc)) ;- Get the Dictionaries collection
 	(setq dictObj (vla-Item dicts "acad_tablestyle")) ;- Get the TableStyle dictionary
 	(setq myTableStyle (vla-AddObject dictObj a1 "AcDbTableStyle")) ;- Create a custom table style
 	
-    (vla-put-Name myTableStyle a1) ;- Set the name for the style
-    (vla-put-Description myTableStyle a1) ;- Set the description for the style
-    (vla-put-BitFlags myTableStyle 1)  ;- Sets the bit flag value for the style
-    (vla-put-FlowDirection myTableStyle acTableTopToBottom) ;- Sets the direction of the table, top to bottom or bottom to top
-    (vla-put-HeaderSuppressed myTableStyle :vlax-false) ;- Sets the supression of the table header
-    (vla-put-HorzCellMargin myTableStyle tm:table-cell-horizontal-margin) ;- Sets the horizontal margin for the table cells
-    (vla-put-TitleSuppressed myTableStyle :vlax-false) ;- Sets the supression of the table title
-    (vla-put-VertCellMargin myTableStyle tm:table-cell-vertical-margin) ;- Sets the vertical margin for the table cells
+	(vla-put-Name myTableStyle a1) ;- Set the name for the style
+	(vla-put-Description myTableStyle a1) ;- Set the description for the style
+	(vla-put-BitFlags myTableStyle 1)  ;- Sets the bit flag value for the style
+	(vla-put-FlowDirection myTableStyle acTableTopToBottom) ;- Sets the direction of the table, top to bottom or bottom to top
+	(vla-put-HeaderSuppressed myTableStyle :vlax-false) ;- Sets the supression of the table header
+	(vla-put-HorzCellMargin myTableStyle tm:table-cell-horizontal-margin) ;- Sets the horizontal margin for the table cells
+	(vla-put-TitleSuppressed myTableStyle :vlax-false) ;- Sets the supression of the table title
+	(vla-put-VertCellMargin myTableStyle tm:table-cell-vertical-margin) ;- Sets the vertical margin for the table cells
 	(vla-SetAlignment myTableStyle (+ acTitleRow acHeaderRow) acMiddleCenter) ;- Set the alignment for the Header, and Title row
-    (vla-SetAlignment myTableStyle acDataRow acMiddleLeft) ;- Set the alignment for the Data rows
-    (vla-SetTextHeight myTableStyle acTitleRow tm:table-title-text-height) ;- Set the text height for the Title rows
-    (vla-SetTextHeight myTableStyle (+ acDataRow acHeaderRow) tm:table-cell-text-height) ;- Set the text height for the Header and Data rows
-    (vla-SetTextStyle myTableStyle (+ acDataRow acHeaderRow acTitleRow) a1) ;- Set the text style
-
+	(vla-SetAlignment myTableStyle acDataRow acMiddleLeft) ;- Set the alignment for the Data rows
+	(vla-SetTextHeight myTableStyle acTitleRow tm:table-title-text-height) ;- Set the text height for the Title rows
+	(vla-SetTextHeight myTableStyle (+ acDataRow acHeaderRow) tm:table-cell-text-height) ;- Set the text height for the Header and Data rows
+	(vla-SetTextStyle myTableStyle (+ acDataRow acHeaderRow acTitleRow) a1) ;- Set the text style
+	
 	(setvar "CTABLESTYLE" a1) ;- Set the current table style
 )
 

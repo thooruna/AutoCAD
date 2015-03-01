@@ -1,4 +1,4 @@
-(defun LoadModules ( / );aPath aBase aFile )
+(defun LoadModules ( / aPath aBase aFile )
 	(setq aPath (findfile "modules"))
 	
 	(if aPath
@@ -11,8 +11,14 @@
 	)
 )
 
+(defun c:tt ( )
+	(load "acaddoc.lsp")
+)
+
 (LoadModules)
 
 (load "blocklist.lsp")
 (load "blockxml.lsp")
 (load "blocktable.lsp")
+
+(princ)

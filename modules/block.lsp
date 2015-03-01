@@ -21,32 +21,27 @@
 	(cdr (assoc 1 (bm:edd x))) ;- Primary text value for an entity
 )
 
-(defun bm:name ( x / b n )
+(defun bm:name ( x / o a )
 	(cond
-		((= (type x) 'ENAME)
-			(cond 
-				((member (strcase "vlax-ename->vla-object") (atoms-family 1))
-					(setq b (vlax-ename->vla-object x))
-					(if (vlax-property-available-p b 'effectivename) ;- Get the effective block name if available
-						(setq n (vlax-get-property b "effectivename"))
-					)
-					(vlax-release-object b)
-				)
-				(T 
-					(setq n (cdr (assoc 2 (bm:edd (x)))))
-				)
+		((and (= (bm:type x) "INSERT") (member (strcase "vlax-ename->vla-object") (atoms-family 1)))
+			(setq o (vlax-ename->vla-object x))
+			(if (vlax-property-available-p o 'effectivename) ;- Get the effective block name if available
+				(setq a (vlax-get-property o "effectivename"))
 			)
+			(vlax-release-object o)
 		)
-		((= (type x) 'LIST)
-			(setq n (cdr (assoc 2 x)))
-		)
+		(T (setq a (cdr (assoc 2 (bm:edd x)))))
 	)
-	
-	n
+
+	a
 )
 
 (defun bm:handle ( x )
 	(cdr (assoc 5 (bm:edd x))) ;- Entity handle; text string of up to 16 hexadecimal digits (fixed)
+)
+
+(defun bm:handle-lengths ( l )
+	(apply 'max (mapcar 'strlen l))
 )
 
 (defun bm:layer ( x )
@@ -65,21 +60,7 @@
 	(mapcar 'car (bm:insert-attributes e))
 )
 
-(defun bm:insert-attributes ( e / l lAttributes )
-	(setq lAttributes '())
-	
-	(while (and (setq l (entget (setq e (entnext e)))) (/= (bm:type l) "SEQEND"))
-		(setq lAttributes (append lAttributes (list (cons (bm:name l) (bm:value l)))))
-	)
-	
-	lAttributes
-)
-
-(defun bm:insert-has-attributes ( x )
-	(= (cdr (assoc 66 (bm:edd x))) 1)
-)
-
-(defun bm:all-attributes-length ( l / h e a i d1 d2 lAttributes )
+(defun bm:insert-attribute-lengths ( l / h e a i d1 d2 lAttributes )
 	(setq lAttributes '())
 	
 	(foreach h l
@@ -102,6 +83,16 @@
 	)
 	
 	lAttributes
+)
+
+(defun bm:insert-attributes ( e )
+	(if (= (bm:type (setq e (entnext e))) "ATTRIB")
+		(cons (cons (bm:name e) (bm:value e)) (bm:insert-attributes e))
+	)
+)
+
+(defun bm:insert-has-attributes ( x )
+	(= (cdr (assoc 66 (bm:edd x))) 1)
 )
 
 (defun bm:search ( s a / e i lHandles )
@@ -134,5 +125,52 @@
 	lHandles
 )
 
+(defun bm:get-attribute-value ( e aTag )
+	(if (= (bm:type (setq e (entnext e))) "ATTRIB")
+		(if (= (strcase (bm:name e)) (strcase aTag))
+			(bm:value e)
+			(bm:get-attribute-value e aTag)
+		)
+	)
+)
+
+(defun bm:change-attribute-value ( e aTag aValue / l )
+	(if (= (bm:type (setq l (entget (setq e (entnext e))))) "ATTRIB")
+		(if (= (strcase (bm:name l)) (strcase aTag))
+			(if (entmod (subst (cons 1 aValue) (assoc 1 l) l))
+				(progn
+					(entupd e)
+					aValue
+				)
+			)
+			(bm:set-attribute-value e aTag aValue)
+		)
+	)
+)
+
+(defun bm:change-attribute-tag ( e aTag aValue / l )
+	(if (= (bm:type (setq l (entget (setq e (entnext e))))) "ATTRIB")
+		(if (= (strcase (bm:name l)) (strcase aTag))
+			(if (entmod (subst (cons 2 aValue) (assoc 2 l) l))
+				(progn
+					(entupd e)
+					aValue
+				)
+			)
+			(bm:change-attribute-tag e aTag aValue)
+		)
+	)
+)
+
+(defun bm:replace-block ( e a / l )
+	(if (= (bm:type (setq l (entget e))) "INSERT")
+		(if (entmod (subst (cons 2 a) (assoc 2 l) l))
+			(entupd e)
+		)
+	)
+)
+
+
 (princ)
+
 

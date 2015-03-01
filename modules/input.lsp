@@ -8,11 +8,19 @@
 )
 
 (defun im:select-all-blocks ( )
-	(ssget "_X" '((0 . "INSERT")))
+	(if (null (setq s (ssget "_X" '((0 . "INSERT")))))
+		(princ "\nDrawing does not contain any blocks.")
+	)
+	
+	s
 )
 
-(defun im:select-blocks ( )
-	(ssget '((0 . "INSERT")))
+(defun im:select-blocks ( / s )
+	(if (null (setq s (ssget '((0 . "INSERT")))))
+		(princ "\nNo blocks were selected.")
+	)
+	
+	s
 )
 
 (princ)

@@ -31,18 +31,18 @@
 )
 
 (defun sm:string-subst ( a1 a2 a3 / i1 i2 )
-    (setq 
+	(setq 
 		i1 0
 		i2 (strlen a1)
-    )
+	)
 	
-    (while (setq i1 (vl-string-search a2 a3 i1))
-        (setq a3 (vl-string-subst a1 a2 a3 i1)
+	(while (setq i1 (vl-string-search a2 a3 i1))
+		(setq a3 (vl-string-subst a1 a2 a3 i1)
 			i1 (+ i1 i2)
-        )
-    )
+		)
+	)
 	
-    a3
+	a3
 )
 
 (princ)
