@@ -143,7 +143,7 @@
 					aValue
 				)
 			)
-			(bm:set-attribute-value e aTag aValue)
+			(bm:change-attribute-value e aTag aValue)
 		)
 	)
 )
@@ -158,6 +158,20 @@
 				)
 			)
 			(bm:change-attribute-tag e aTag aValue)
+		)
+	)
+)
+
+(defun bm:swap-attribute-value ( e aTag1 aTag2 / aValue1 aValue2 )
+	(setq 
+		aValue1 (bm:get-attribute-value e aTag1)
+		aValue2 (bm:get-attribute-value e aTag2)
+	)
+	
+	(if (and aValue1 aValue2)
+		(progn
+			(bm:change-attribute-value e aTag1 aValue2)
+			(bm:change-attribute-value e aTag2 aValue1)
 		)
 	)
 )
