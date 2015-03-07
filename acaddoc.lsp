@@ -2,10 +2,13 @@
 	(setq aPath (findfile "modules"))
 	
 	(if aPath
-		(foreach aBase '("block" "error" "file" "input" "list" "string" "table" "xml")
+		(foreach aBase '("block" "error" "file" "input" "list" "modify" "string" "table" "xml")
+			(princ (strcat "\nLoading: " aBase ".lsp"))
 			(if (setq aFile (findfile (strcat aPath "\\" aBase ".lsp")))
-				(load aFile (strcat "\nUnable to load: " aFile))
-				(princ (strcat "\nUnable to find: " aBase ".lsp"))
+				(if (load aFile (strcat "\rUnable to load: "  aBase ".lsp"))
+					(princ (strcat "\rLisp file loaded successfully. Module: " (strcase aBase)))
+				)
+				(princ (strcat "\rUnable to find: " aBase ".lsp"))
 			)
 		)
 	)
@@ -17,8 +20,9 @@
 
 (LoadModules)
 
+(load "blockinsert.lsp")
 (load "blocklist.lsp")
-(load "blockxml.lsp")
 (load "blocktable.lsp")
+(load "blockxml.lsp")
 
 (princ)
