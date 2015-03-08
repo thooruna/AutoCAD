@@ -14,8 +14,6 @@
 	(getvar "DWGPREFIX")
 )
 
-
-
 ;(defun fm:open-text-file ( a m )
 ;	(open a m) ;- m for mode: "w" (write), "r" (read) or "a" (append)
 ;)

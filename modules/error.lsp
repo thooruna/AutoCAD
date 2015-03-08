@@ -1,5 +1,10 @@
 (defun em:debug ( b )
 	(setq *debug* b)
+	
+	(if *debug*
+		(em:setvar "CMDECHO" 1)
+		(em:setvar "CMDECHO" 0)
+	)
 )
 
 (defun em:error ( a )
@@ -23,8 +28,19 @@
 )
 
 (defun em:setvar ( a x )
-	(setq *setvar* (cons (cons (strcase a) (getvar a)) *setvar*))
-	(setvar a x)
+	(cond
+		((= a "OSNAP")
+			(setq *setvar* (cons (cons "OSMODE" (getvar "OSMODE")) *setvar*))
+			(if (wcmatch (sm:to-string x) "ON,1")
+				(setvar "OSMODE" (BitCode (getvar "OSMODE") 16384 -1))
+				(setvar "OSMODE" (BitCode (getvar "OSMODE") 16384 1))
+			)
+		)
+		(T 
+			(setq *setvar* (cons (cons (strcase a) (getvar a)) *setvar*))
+			(setvar a x)
+		)
+	)
 )
 
 (defun em:ini ( )

@@ -28,7 +28,7 @@
 			)
 		)
 	)
-		
+	
 	(if s
 		(cond
 			((setq lHandles (bm:search s a))

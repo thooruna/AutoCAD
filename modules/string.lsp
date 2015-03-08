@@ -1,3 +1,11 @@
+(defun sm:to-string ( x )
+	(cond 
+		((= (type x) 'INT)	(setq x (itoa x)))
+		((= (type x) 'REAL)	(setq x (rtos x)))
+		(T x)
+	)
+)
+
 (defun sm:string-left-fill ( a1 a2 i )
 	(if (null a1) 
 		(setq a1 "")

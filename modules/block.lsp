@@ -36,6 +36,42 @@
 	a
 )
 
+(defun bm:load ( aBase / aFile aPath )
+	(setq aPath (findfile "symbols"))
+	
+	(cond
+		((tblsearch "BLOCK" aBase)
+			aBase
+		)
+		((setq aFile (findfile (strcat aBase ".dwg")))
+			(command "_.INSERT" (strcat aBase "=" aFile)) 
+			(command) ;- Break out of insert command
+			aBase
+		)
+		((setq aFile (findfile (strcat aPath "\\" aBase ".dwg")))
+			(command "_.INSERT" (strcat aBase "=" aFile)) 
+			(command) ;- Break out of insert command
+			aBase
+		)
+		(T 
+			(princ (strcat "\nUnable to find: " aBase ".dwg"))
+			nil
+		)
+	)
+)
+
+(defun bm:insert ( a p )
+	(command "_.-INSERT" a p 1 1 0.0)
+)
+
+(defun bm:insert-symbol ( a p )
+	(command "_.-INSERT" a p (getvar "DIMSCALE") (getvar "DIMSCALE") 0.0)
+)
+
+(defun bm:insert-symbol-leader ( a p l )
+	(apply 'command (append (list "_.LEADER") (reverse l) (list "_A" "" "_B" a p (getvar "DIMSCALE") (getvar "DIMSCALE") 0.0)))
+)
+
 (defun bm:handle ( x )
 	(cdr (assoc 5 (bm:edd x))) ;- Entity handle; text string of up to 16 hexadecimal digits (fixed)
 )
@@ -58,6 +94,13 @@
 
 (defun bm:insert-attribute-tags ( e )
 	(mapcar 'car (bm:insert-attributes e))
+)
+
+(defun bm:insert-attribute-max ( l a )
+	(cond
+		(l (apply 'max (mapcar '(lambda ( x ) (atoi (cdr (assoc a (bm:insert-attributes (handent x)))))) l)))
+		(T 0)
+	)
 )
 
 (defun bm:insert-attribute-lengths ( l / h e a i d1 d2 lAttributes )
@@ -116,10 +159,12 @@
 			)
 		)
 	)
-
-	(repeat (setq i (sslength s))
-		(setq e (ssname s (setq i (1- i))))
-		(SearchCurrent e)
+	
+	(if s
+		(repeat (setq i (sslength s))
+			(setq e (ssname s (setq i (1- i))))
+			(SearchCurrent e)
+		)
 	)
 	
 	lHandles

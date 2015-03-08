@@ -2,9 +2,8 @@
 	(if l (cons (car l) (lm:unique (vl-remove (car l) (cdr l)))))
 )
 
-;(defun lm:merge-dotted-pair ( l a1 a2 )
-;   (strcat (assoc a1 l) (assoc a2 l))
-;)
-
+(defun lm:diff ( l1 l2 )
+	(vl-remove-if '(lambda ( x ) (member x l2)) l1)
+)
 
 (princ)

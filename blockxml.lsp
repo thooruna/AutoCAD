@@ -4,12 +4,12 @@
 			((setq lHandles (bm:search s aFilter))
 				(setq aContent "")
 				
-				(foreach h lHandles			
+				(foreach h lHandles
 					(setq aContent (strcat aContent (xm:create-element "OBJECT" (xm:create-node (bm:insert-attributes (handent h))))))
 				)
-
+				
 				(setq aContent (xm:create-element "ROOT" aContent))
-
+				
 				(xm:create-file (setq aFile (strcat (fm:drawing-path) (fm:drawing-base) ".xml")) aContent)
 				
 				(princ (strcat "\nTotal blocks found: " (itoa (length lHandles))))
