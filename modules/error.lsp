@@ -29,6 +29,12 @@
 
 (defun em:setvar ( a x )
 	(cond
+		((= a "DIMLDRBLK")
+			(if (= x "")
+				(setvar a ".")
+				(setvar a x)
+			)
+		)
 		((= a "OSNAP")
 			(setq *setvar* (cons (cons "OSMODE" (getvar "OSMODE")) *setvar*))
 			(if (wcmatch (sm:to-string x) "ON,1")

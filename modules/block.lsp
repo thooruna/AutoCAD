@@ -32,7 +32,7 @@
 		)
 		(T (setq a (cdr (assoc 2 (bm:edd x)))))
 	)
-
+	
 	a
 )
 
@@ -96,31 +96,20 @@
 	(mapcar 'car (bm:insert-attributes e))
 )
 
-(defun bm:insert-attribute-max ( l a )
-	(cond
-		(l (apply 'max (mapcar '(lambda ( x ) (atoi (cdr (assoc a (bm:insert-attributes (handent x)))))) l)))
-		(T 0)
+(defun bm:insert-attributes ( e )
+	(if (= (bm:type (setq e (entnext e))) "ATTRIB")
+		(cons (cons (bm:name e) (bm:value e)) (bm:insert-attributes e))
 	)
 )
 
-(defun bm:insert-attribute-lengths ( l / h e a i d1 d2 lAttributes )
+(defun bm:insert-attribute-lengths ( lHandles / h e a lAttributes )
 	(setq lAttributes '())
 	
-	(foreach h l
+	(foreach h lHandles
 		(setq e (handent h))
 		(foreach a (bm:insert-attribute-tags e)
 			(if (not (assoc a lAttributes))
-				(setq lAttributes (append lAttributes (list (cons a (strlen a)))))
-			)
-		)
-	)
-	
-	(foreach h l
-		(setq e (handent h))
-		(foreach d1 (bm:insert-attributes e)
-			(setq d2 (assoc (car d1) lAttributes))
-			(if (> (setq i (strlen (cdr d1))) (cdr d2))
-				(setq lAttributes (subst (cons (car d1) i) d2 lAttributes))
+				(setq lAttributes (cons (cons a (max (strlen a) (bm:insert-attribute-max-length lHandles a))) lAttributes))
 			)
 		)
 	)
@@ -128,9 +117,17 @@
 	lAttributes
 )
 
-(defun bm:insert-attributes ( e )
-	(if (= (bm:type (setq e (entnext e))) "ATTRIB")
-		(cons (cons (bm:name e) (bm:value e)) (bm:insert-attributes e))
+(defun bm:insert-attribute-max ( l a )
+	(cond
+		(l (apply 'max (mapcar '(lambda ( x ) (atoi (cdr (assoc a (bm:insert-attributes (handent x)))))) l)))
+		(T 0)
+	)
+)
+
+(defun bm:insert-attribute-max-length ( l a )
+	(cond
+		(l (apply 'max (mapcar '(lambda ( x ) (sm:string-length (cdr (assoc a (bm:insert-attributes (handent x)))))) l)))
+		(T 0)
 	)
 )
 
@@ -145,7 +142,7 @@
 		(setq e (bm:entity-name-reference (tblsearch "BLOCK" (bm:name e))))
 		(while e
 			(SearchCurrent e)
-			(setq e (entnext e))		
+			(setq e (entnext e))
 		)
 	)
 

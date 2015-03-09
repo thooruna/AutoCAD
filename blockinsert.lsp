@@ -1,4 +1,4 @@
-(defun c:balloon ( / )
+(defun c:balloon ( / aBlock aTag l p rRadius )
 	(defun SetLeaderStyle ( a )
 		(if (tblsearch "DIMSTYLE" a) (command "_.-DIMSTYLE" "_R" a))
 		
@@ -11,7 +11,6 @@
 		)
 	)
 	
-	(em:debug T)
 	(em:ini)
 	
 	(em:setvar "ATTDIA" 0)

@@ -9,29 +9,27 @@
 		)
 	)
 	
-	(em:setvar "CMDECHO" 0)
 	(em:setvar "OSMODE" (BitCode (getvar "OSMODE") 32 1))
-	
-	(OSnapOn)
+	(em:setvar "OSNAP" 1)
 	
 	(cond 
 		((null eType))
 		((wcmatch eType "ARC,*LINE")
-			(while (null (setq pFirst (_getpoint "\nSpecify break point: "))))
+			(while (null (setq pFirst (im:get-point "\nSpecify break point: "))))
 			
-			(OSnapOff)
+			(em:setvar "OSNAP" 0)
 			
 			(command "_.BREAK" eObject "_F" pFirst "@")
 		)
 		((wcmatch eType "CIRCLE,ELLIPSE")
 			(setq 
-				pFirst (_getpoint "\nSpecify first break point: ")
-				pSecond (_getpoint "\nSpecify second break point: ")
+				pFirst (im:get-point "\nSpecify first break point: ")
+				pSecond (im:get-point "\nSpecify second break point: ")
 				pCenter (cdr (assoc 10 eProperties))
 				rRadius (cdr (assoc 40 eProperties))
 			)
 			
-			(OSnapOff)
+			(em:setvar "OSNAP" 0)
 			
 			(command "_.BREAK" eObject "_F" pFirst pSecond)
 			(if (= eType "CIRCLE")

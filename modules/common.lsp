@@ -45,8 +45,5 @@
 	)
 )
 
-(defun _getpoint (sMessage / p)
-	(if (null (setq p (getpoint sMessage))) (exit))
-	p
-)
+
 

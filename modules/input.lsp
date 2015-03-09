@@ -1,12 +1,3 @@
-(defun im:get-insertion-point ( / p )
-	(setq p (getpoint "\nSpecify insertion point: "))
-	
-	(if (null p) 
-		(setq p '(0 0 0))
-		p
-	)
-)
-
 (defun im:select-all-blocks ( )
 	(cond
 		((ssget "_X" '((0 . "INSERT"))))
@@ -23,6 +14,11 @@
 	)
 	
 	s
+)
+
+(defun im:get-point (a / p)
+	(if (null (setq p (getpoint a))) (exit))
+	p
 )
 
 (defun im:get-points ( a / l p )
@@ -43,6 +39,15 @@
 	)
 	
 	l
+)
+
+(defun im:get-insertion-point ( / p )
+	(setq p (getpoint "\nSpecify insertion point: "))
+	
+	(if (null p) 
+		(setq p '(0 0 0))
+		p
+	)
 )
 
 (defun im:get-number ( a1 x / a2)

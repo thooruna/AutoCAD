@@ -1,9 +1,14 @@
 (defun sm:to-string ( x )
 	(cond 
-		((= (type x) 'INT)	(setq x (itoa x)))
-		((= (type x) 'REAL)	(setq x (rtos x)))
+		((= (type x) 'INT) (setq x (itoa x)))
+		((= (type x) 'REAL) (setq x (rtos x)))
+		((= (type x) nil) "")
 		(T x)
 	)
+)
+
+(defun sm:string-length ( x )
+	(strlen (sm:to-string x))
 )
 
 (defun sm:string-left-fill ( a1 a2 i )
