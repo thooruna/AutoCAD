@@ -16,26 +16,32 @@
 	s
 )
 
-(defun im:get-point (a / p)
+(defun im:get-point ( a / p)
 	(if (null (setq p (getpoint a))) (exit))
 	p
 )
 
-(defun im:get-points ( a / l p )
-	(setq 
-		l nil
-		p (getpoint "\nSpecify first point: ")
-	)
+(defun im:get-points ( x / l p )
+	(if (= (type x) 'STR) 
+		(setq x (list x))
+	) 
 	
-	(while (and (listp p) (not (null p)))
+	(setq p (getpoint "\nSpecify first point: "))
+	
+	(while (= (type p) 'LIST)
 		(setq l (cons p l))
 		
 		(if (> (length l) 1)
 			(grvecs (list 7 (cadr l) (car l)))
 		)
 		
-		(initget a)
-		(setq p (getpoint (car l) (strcat "\nSpecify next point or [" a "] <" a ">:")))
+		(initget 128 (lm:lst->str x " "))
+		(setq p (getpoint (car l) (strcat "\nSpecify next point or [" (lm:lst->str x "/") "] <" (car x) ">: ")))
+	)
+	
+	(if (= (type p) 'STR) 
+		(setvar "USERS1" p)
+		(setvar "USERS1" "")
 	)
 	
 	l
@@ -56,11 +62,13 @@
 	(initget 1)
 	(setq a2 (getstring (strcat "\n"  a1 ": <" x ">: ")))
 		
-	(if (= a2 "") (setq a2 x))
+	(if (= a2 "") 
+		(setq a2 x)
+	)
 	
 	(cond 
 		((> (atoi a2) 0) (setq x (itoa (1+ (atoi a2)))))
-		((IsCharacter (chr (1+ (ascii a2)))) (setq x (chr (1+ (ascii a2)))))
+		;((sm:is-character (chr (1+ (ascii a2)))) (setq x (chr (1+ (ascii a2)))))
 	)
 	
 	a2

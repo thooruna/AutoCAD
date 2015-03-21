@@ -1,7 +1,5 @@
 (defun em:debug ( b )
-	(setq *debug* b)
-	
-	(if *debug*
+	(if (setq *DEBUG* b)
 		(em:setvar "CMDECHO" 1)
 		(em:setvar "CMDECHO" 0)
 	)
@@ -10,19 +8,28 @@
 (defun em:error ( a )
 	(defun ShowVariables ( / x )
 		(princ "\nVariables in memory:")
-		(foreach x (lm:diff (atoms-family 0) *atoms*) 
-			(princ "\n")
-			(princ x)
-			(princ " ")
-			(princ (type (eval x)))
+		
+		(foreach x (lm:diff (atoms-family 0) *ATOMS*)
+			(cond 
+				((/= x '*ATOMS*)
+					(princ "\n")
+					(princ x)
+					(princ " ")
+					(princ (type (eval x)))
+					(princ " ")
+					(princ (eval x))
+				)
+			)
 		)
+		
+		(princ "\n")
 	)
-	
-	(if *debug* (ShowVariables))
 	
 	(if (not (member a '("Function Cancelled" "console break" "quit / exit abort")))
 		(princ (strcat "\n; error: " a))
 	)
+	
+	(if *DEBUG* (ShowVariables))
 	
 	(em:done)
 )
@@ -35,35 +42,50 @@
 				(setvar a x)
 			)
 		)
+		((= a "DIMSTYLE")
+			(setq *SETVAR* (cons (cons (strcase a) (getvar a)) *SETVAR*))
+			(if (tblsearch "DIMSTYLE" x)
+				(command "_.-DIMSTYLE" "_R" x)
+				(command "_.-DIMSTYLE" "_S" x)
+			)
+		)
 		((= a "OSNAP")
-			(setq *setvar* (cons (cons "OSMODE" (getvar "OSMODE")) *setvar*))
+			(setq *SETVAR* (cons (cons "OSMODE" (getvar "OSMODE")) *SETVAR*))
 			(if (wcmatch (sm:to-string x) "ON,1")
 				(setvar "OSMODE" (BitCode (getvar "OSMODE") 16384 -1))
 				(setvar "OSMODE" (BitCode (getvar "OSMODE") 16384 1))
 			)
 		)
 		(T 
-			(setq *setvar* (cons (cons (strcase a) (getvar a)) *setvar*))
+			(setq *SETVAR* (cons (cons (strcase a) (getvar a)) *SETVAR*))
 			(setvar a x)
 		)
 	)
 )
 
-(defun em:ini ( )
-	(if (null *setvar*) (command "_.UNDO" "BE"))
+(defun em:ini ( / a )
+	(if *DEBUG* 
+		(setq *ATOMS* (atoms-family 0))
+		(em:setvar "CMDECHO" 0)
+	)
 	
-	(if *debug* (setq *atoms* (atoms-family 0)))
+	(if (null *SETVAR*) (command "_.UNDO" "BE"))
+	
+	(foreach a '("USERS1" "USERS2" "USERS3" "USERS4" "USERS5")
+		(em:setvar a "")
+	)
 	
 	(setq
-		*temp* *error*
-		*error* em:error
+		*TEMP* *ERROR*
+		*ERROR* em:error
 	)
 )
 
 (defun em:done ( / d )
+	(command "_.UNDO" "E")
 	(command "_.REDRAW")
 	
-	(foreach d *setvar*
+	(foreach d *SETVAR*
 		(cond 
 			((= (car d) "DIMSTYLE") (command "_.-DIMSTYLE" "_R" (cdr d)))
 			(T (setvar (car d) (cdr d)))
@@ -71,14 +93,14 @@
 	)
 	
 	(setq 
-		*atoms* nil
-		*debug* nil
-		*setvar* nil
-		*error* *temp*
+		*ATOMS* nil
+		*DEBUG* nil
+		*SETVAR* nil
+		*ERROR* *TEMP*
 	)
 	
 	(command)
-	(command "_.UNDO" "E")
+	
 	(princ)
 )
 

@@ -1,7 +1,7 @@
 (defun sm:to-string ( x )
 	(cond 
-		((= (type x) 'INT) (setq x (itoa x)))
-		((= (type x) 'REAL) (setq x (rtos x)))
+		((= (type x) 'INT) (itoa x))
+		((= (type x) 'REAL) (rtos x))
 		((= (type x) nil) "")
 		(T x)
 	)
@@ -56,6 +56,16 @@
 	)
 	
 	a3
+)
+
+(defun sm:is-character ( a )
+	(and 
+		(= (strlen a) 1)
+		(or 
+			(and (>= (ascii a) 65) (<= (ascii a) 90))
+			(and (>= (ascii a) 97) (<= (ascii a) 122))
+		)
+	)
 )
 
 (princ)

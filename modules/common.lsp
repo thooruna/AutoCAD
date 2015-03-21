@@ -35,15 +35,7 @@
 	)
 )
 
-(defun IsCharacter (sChar)
-	(and 
-		(= (strlen sChar) 1)
-		(or 
-			(and (>= (ascii sChar) 65) (<= (ascii sChar) 90))
-			(and (>= (ascii sChar) 97) (<= (ascii sChar) 122))
-		)
-	)
-)
+
 
 
 

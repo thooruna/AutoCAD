@@ -36,23 +36,13 @@
 	a
 )
 
-(defun bm:load ( aBase / aFile aPath )
+(defun bm:find ( aBase / aPath )
 	(setq aPath (findfile "symbols"))
 	
 	(cond
-		((tblsearch "BLOCK" aBase)
-			aBase
-		)
-		((setq aFile (findfile (strcat aBase ".dwg")))
-			(command "_.INSERT" (strcat aBase "=" aFile)) 
-			(command) ;- Break out of insert command
-			aBase
-		)
-		((setq aFile (findfile (strcat aPath "\\" aBase ".dwg")))
-			(command "_.INSERT" (strcat aBase "=" aFile)) 
-			(command) ;- Break out of insert command
-			aBase
-		)
+		((tblsearch "BLOCK" aBase) aBase)
+		((findfile (strcat aBase ".dwg")))
+		((findfile (strcat aPath "\\" aBase ".dwg")))
 		(T 
 			(princ (strcat "\nUnable to find: " aBase ".dwg"))
 			nil
@@ -60,16 +50,35 @@
 	)
 )
 
+(defun bm:load ( xBase / a l )
+	(setq l (mapcar 'bm:find (lm:to-list xBase)))
+	
+	(foreach a l
+		(cond
+			((tblsearch "BLOCK" a) 
+				(princ (strcat "\nUsing: " a " in drawing."))
+			)
+			(a
+				(princ "\n")
+				(command "_.-INSERT" a)
+				(command) ;- Break out of insert command
+			)
+		)
+	)
+	
+	(apply 'and l)
+)
+
 (defun bm:insert ( a p )
 	(command "_.-INSERT" a p 1 1 0.0)
 )
 
 (defun bm:insert-symbol ( a p )
-	(command "_.-INSERT" a p (getvar "DIMSCALE") (getvar "DIMSCALE") 0.0)
+	(command "_.-INSERT" a p (getvar "DIMSCALE") 0.0)
 )
 
 (defun bm:insert-symbol-leader ( a p l )
-	(apply 'command (append (list "_.LEADER") (reverse l) (list "_A" "" "_B" a p (getvar "DIMSCALE") (getvar "DIMSCALE") 0.0)))
+	(apply 'command (append (list "_.LEADER") (reverse l) (list "_A" "" "_B" a p (getvar "DIMSCALE") 0.0)))
 )
 
 (defun bm:handle ( x )
@@ -98,7 +107,7 @@
 
 (defun bm:insert-attributes ( e )
 	(if (= (bm:type (setq e (entnext e))) "ATTRIB")
-		(cons (cons (bm:name e) (bm:value e)) (bm:insert-attributes e))
+		(cons (cons (strcase (bm:name e)) (bm:value e)) (bm:insert-attributes e))
 	)
 )
 
@@ -114,7 +123,7 @@
 		)
 	)
 	
-	lAttributes
+	(reverse lAttributes)
 )
 
 (defun bm:insert-attribute-max ( l a )
@@ -135,7 +144,7 @@
 	(= (cdr (assoc 66 (bm:edd x))) 1)
 )
 
-(defun bm:search ( s a / e i lHandles )
+(defun bm:search ( s x / e i lHandles )
 	(setq lHandles '())
 	
 	(defun SearchNested ( e )
@@ -149,12 +158,16 @@
 	(defun SearchCurrent ( e )
 		(if (= (bm:type e) "INSERT") 
 			(if (bm:insert-has-attributes e)
-				(if (wcmatch (bm:name e) a)
+				(if (wcmatch (bm:name e) x)
 					(setq lHandles (append lHandles (list (bm:handle e))))
 				)
 				(SearchNested e)
 			)
 		)
+	)
+	
+	(if (lm:is-list x)
+		(setq x (lm:lst->str x ","))
 	)
 	
 	(if s

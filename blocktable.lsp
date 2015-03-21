@@ -13,19 +13,19 @@
 				(foreach h lHandles
 					(setq lData (tm:table-data-add-row lData (bm:insert-attributes (handent h))))
 				)
-
+				(princ lData)
 				;- Sort the table data
 				(setq lData (tm:table-data-sort lData 2)) ;- Sort the table by column '2'
 				(setq lData (tm:table-data-sort lData 1)) ;- Sort the table by column '1'
 				
 				;-	Create the AutoCAD table
 				(tm:table-init "Standard" "Courier New")
-					
+				
 				(setq oTable (tm:table-create nil lData))
 				(tm:table-set-title oTable "BLOCK TABLE")
 				(tm:table-set-width oTable (mapcar 'cdr lHeader))
 				(tm:table-show oTable)
-					
+				
 				(princ (strcat "\nTotal blocks found: " (itoa (length lHandles))))
 				(princ (strcat "\nTotal unique blocks found: " (itoa (length (lm:unique lHandles)))))
 			)
@@ -37,7 +37,7 @@
 )
 
 (defun c:blocktable ( / s )
-	(blocktable (im:select-all-blocks) "SYMBOL*")
+	(blocktable (im:select-all-blocks) "*")
 )
 
 (princ)

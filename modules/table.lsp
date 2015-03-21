@@ -21,7 +21,7 @@
 			)
 		)
 	)
-
+	
 	(append lData (list lTemp))
 )
 
@@ -29,7 +29,7 @@
 ;	(setq l (mapcar '(lambda (x) (cons a x)) l))
 ;)
 
-(defun tm:table-data-sort ( l i / lTemp )	
+(defun tm:table-data-sort ( l i / lTemp )
 	(if (null i) (setq i 0))
 	
 	(setq 
@@ -70,7 +70,6 @@
 )
 
 (defun tm:table-create ( pInsert lTable / pt iRows iColumns oTable nRows nCols row cell lRow )
-
 	(defun ActiveSpace ( / *AcadDoc* )
 		(if (or (eq acmodelspace (vla-get-activespace (cond (*AcadDoc*) ((setq *AcadDoc* (vla-get-activedocument (vlax-get-acad-object))))))) 
 				(eq :vlax-true (vla-get-mspace *AcadDoc*)))
@@ -96,7 +95,7 @@
 	(vla-put-RegenerateTableSuppressed oTable :vlax-true)
 	(vla-put-RepeatTopLabels oTable :vlax-true)
 	(vla-put-Layer oTable "0")
-
+	
 	(setq 
 		;- Rows and columns zero based 
 		nRows (- (vla-get-rows oTable) 1)
@@ -106,9 +105,9 @@
 		row 1  
 		cell 0
 	) 
-   
+	
 	;(princ lTable)
-   
+	
 	;- Loop through row cells
 	(while (<= row nRows)
 		;(setq lRow (cadr (nth (- row 1) lTable)))
