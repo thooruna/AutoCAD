@@ -26,7 +26,7 @@
 	)
 	
 	(if (not (member a '("Function Cancelled" "console break" "quit / exit abort")))
-		(princ (strcat "\n; error: " a))
+		(princ (strcat "\n; error: " a "\n"))
 	)
 	
 	(if *DEBUG* (ShowVariables))
@@ -64,12 +64,13 @@
 )
 
 (defun em:ini ( / a )
-	(if *DEBUG* 
-		(setq *ATOMS* (atoms-family 0))
-		(em:setvar "CMDECHO" 0)
+	(if (null *SETVAR*) 
+		(command "_.UNDO" "BE")
 	)
 	
-	(if (null *SETVAR*) (command "_.UNDO" "BE"))
+	(if *DEBUG* 
+		(setq *ATOMS* (atoms-family 0))
+	)
 	
 	(foreach a '("USERS1" "USERS2" "USERS3" "USERS4" "USERS5")
 		(em:setvar a "")
@@ -82,7 +83,6 @@
 )
 
 (defun em:done ( / d )
-	(command "_.UNDO" "E")
 	(command "_.REDRAW")
 	
 	(foreach d *SETVAR*
@@ -99,6 +99,7 @@
 		*ERROR* *TEMP*
 	)
 	
+	(command "_.UNDO" "E")
 	(command)
 	
 	(princ)
