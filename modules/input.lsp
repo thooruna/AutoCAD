@@ -39,9 +39,12 @@
 		(setq p (getpoint (car l) (strcat "\nSpecify next point or [" (lm:lst->str x "/") "] <" (car x) ">: ")))
 	)
 	
-	(if (= (type p) 'STR) 
-		(setvar "USERS1" p)
-		(setvar "USERS1" "")
+	(if (null p)
+		(setvar "USERS1" (car x))
+		(if (= (type p) 'STR) 
+			(setvar "USERS1" p)
+			(setvar "USERS1" "")
+		)
 	)
 	
 	l

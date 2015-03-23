@@ -76,7 +76,7 @@
 )
 
 (defun bm:insert-symbol-leader ( a p l )
-	(apply 'command (append '("_.LEADER") (reverse l) '("_A" "" "_B" a p (getvar "DIMSCALE") 0.0)))
+	(apply 'command (append '("_.LEADER") (reverse l) (list "_A" "" "_B" a p (getvar "DIMSCALE") 0.0)))
 	(command "_.REDRAW")
 )
 

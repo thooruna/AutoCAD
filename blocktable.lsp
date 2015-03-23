@@ -40,4 +40,12 @@
 	(blocktable (im:select-all-blocks) "*")
 )
 
+(defun c:btable ( / s )
+	(blocktable (im:select-all-blocks) "BALLOON")
+)
+
+(defun c:ptable ( / s )
+	(blocktable (im:select-all-blocks) "SYMBOL*")
+)
+
 (princ)
