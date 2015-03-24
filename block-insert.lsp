@@ -1,4 +1,4 @@
-(defun blockinsert ( xBlock aTag rRadius bLeader / a l p )
+(defun block-insert ( xBlock aTag rRadius bLeader / a l p )
 	(em:ini)
 	(em:setvar "ATTDIA" 0)
 	(em:setvar "ATTREQ" 0)
@@ -55,7 +55,7 @@
 		x (1+ (bm:insert-attribute-max (bm:search (im:select-all-blocks) aBlock) aTag))
 	)
 	
-	(if (setq e (blockinsert aBlock aTag 5 T))
+	(if (setq e (block-insert aBlock aTag 5 T))
 		(if (setq x (im:get-number "ID" x))
 			(bm:change-attribute-value e aTag (sm:string-left-fill x "0" 2))
 		)
@@ -71,7 +71,7 @@
 		x (1+ (bm:insert-attribute-max (bm:search (im:select-all-blocks) lBlock) aTag))
 	)
 	
-	(if (setq e (blockinsert lBlock aTag 5 nil))
+	(if (setq e (block-insert lBlock aTag 5 nil))
 		(if (setq x (im:get-number "Number" x))
 			(bm:change-attribute-value e aTag (sm:string-left-fill x "0" 4))
 		)

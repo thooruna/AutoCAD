@@ -1,4 +1,4 @@
-(defun blocklist ( s a / d h lAttributes lHeader lHandles )
+(defun block-list ( s a / d h lAttributes lHeader lHandles )
 	(defun PrintDivider ()
 		(princ (sm:string-right-fill "\n" "=" (+ i 2 (length lHeader) (apply '+ (mapcar 'cdr lHeader)))))
 	)
@@ -54,8 +54,16 @@
 	(princ)
 )
 
-(defun c:blocklist ()
-	(blocklist (im:select-all-blocks) "*")
+(defun c:block-list ()
+	(block-list (im:select-all-blocks) "*")
+)
+
+(defun c:blist ( / s )
+	(block-list (im:select-all-blocks) "BALLOON")
+)
+
+(defun c:plist ( / s )
+	(block-list (im:select-all-blocks) "SYMBOL*")
 )
 
 (princ)

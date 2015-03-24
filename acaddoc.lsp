@@ -18,10 +18,12 @@
 
 (LoadModules)
 
-(load "blockinsert.lsp")
-(load "blocklist.lsp")
-(load "blocktable.lsp")
-(load "blockxml.lsp")
+(load "block-attributes.lsp")
+(load "block-insert.lsp")
+(load "block-list.lsp")
+(load "block-table.lsp")
+(load "block-xml.lsp")
 (load "modify.lsp")
+(load "settings.lsp")
 
 (princ)

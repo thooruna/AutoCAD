@@ -1,4 +1,4 @@
-(defun blockxml ( aFilter / aContent aFile b d c h s lHandles lColumns )
+(defun block-xml ( aFilter / aContent aFile b d c h s lHandles lColumns )
 	(if (setq s (ssget "_X" '((0 . "INSERT"))))
 		(cond
 			((setq lHandles (bm:search s aFilter))
@@ -24,7 +24,7 @@
 	(princ)
 )
 
-(defun c:blockxml ()
+(defun c:block-xml ()
 	(blockxml "SYMBOL*")
 )
 

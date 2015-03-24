@@ -1,4 +1,4 @@
-(defun blocktable ( s a aTitle / d h lData lHeader lHandles oTable)
+(defun block-table ( s a aTitle / d h lData lHeader lHandles oTable)
 	(setq lData '())
 	
 	(if s
@@ -36,16 +36,16 @@
 	(princ)
 )
 
-(defun c:blocktable ( / s )
-	(blocktable (im:select-all-blocks) "*" "BLOCK TABLE")
+(defun c:block-table ( / s )
+	(block-table (im:select-all-blocks) "*" "BLOCK TABLE")
 )
 
 (defun c:btable ( / s )
-	(blocktable (im:select-all-blocks) "BALLOON" "PARTS LIST")
+	(block-table (im:select-all-blocks) "BALLOON" "PARTS LIST")
 )
 
 (defun c:ptable ( / s )
-	(blocktable (im:select-all-blocks) "SYMBOL*" "P & I D")
+	(block-table (im:select-all-blocks) "SYMBOL*" "P & I D")
 )
 
 (princ)
