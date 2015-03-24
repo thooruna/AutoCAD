@@ -1,4 +1,4 @@
-(defun blocktable ( s a / d h lData lHeader lHandles oTable)
+(defun blocktable ( s a aTitle / d h lData lHeader lHandles oTable)
 	(setq lData '())
 	
 	(if s
@@ -22,7 +22,7 @@
 				(tm:table-init "Standard" "Courier New")
 				
 				(setq oTable (tm:table-create nil lData))
-				(tm:table-set-title oTable "BLOCK TABLE")
+				(tm:table-set-title oTable aTitle)
 				(tm:table-set-width oTable (mapcar 'cdr lHeader))
 				(tm:table-show oTable)
 				
@@ -37,15 +37,15 @@
 )
 
 (defun c:blocktable ( / s )
-	(blocktable (im:select-all-blocks) "*")
+	(blocktable (im:select-all-blocks) "*" "BLOCK TABLE")
 )
 
 (defun c:btable ( / s )
-	(blocktable (im:select-all-blocks) "BALLOON")
+	(blocktable (im:select-all-blocks) "BALLOON" "PARTS LIST")
 )
 
 (defun c:ptable ( / s )
-	(blocktable (im:select-all-blocks) "SYMBOL*")
+	(blocktable (im:select-all-blocks) "SYMBOL*" "P & I D")
 )
 
 (princ)
