@@ -1,5 +1,5 @@
 (defun c:breakpoint ( / eObject eProperties eType pFirst pSecond pCenter)
-	(em:ini)
+	(cm:ini)
 	
 	(setq eObject (entsel))
 	(if eObject 
@@ -9,15 +9,15 @@
 		)
 	)
 	
-	(em:setvar "OSMODE" (BitCode (getvar "OSMODE") 32 1))
-	(em:setvar "OSNAP" 1)
+	(cm:setvar "OSMODE" (BitCode (getvar "OSMODE") 32 1))
+	(cm:setvar "OSNAP" 1)
 	
 	(cond 
 		((null eType))
 		((wcmatch eType "ARC,*LINE")
 			(while (null (setq pFirst (im:get-point "\nSpecify break point: "))))
 			
-			(em:setvar "OSNAP" 0)
+			(cm:setvar "OSNAP" 0)
 			
 			(command "_.BREAK" eObject "_F" pFirst "@")
 		)
@@ -29,7 +29,7 @@
 				rRadius (cdr (assoc 40 eProperties))
 			)
 			
-			(em:setvar "OSNAP" 0)
+			(cm:setvar "OSNAP" 0)
 			
 			(command "_.BREAK" eObject "_F" pFirst pSecond)
 			(if (= eType "CIRCLE")
@@ -42,18 +42,18 @@
 		(T (princ "\nObject can't be broken."))
 	)
 	
-	(em:done)
+	(cm:done)
 )
 
 (defun c:filletz ()
-	(em:ini)
+	(cm:ini)
 	
-	(em:setvar "CMDECHO" 1)
-	(em:setvar "FILLETRAD" 0)
+	(cm:setvar "CMDECHO" 1)
+	(cm:setvar "FILLETRAD" 0)
 	
 	(command "_.FILLET" pause pause)
 	
-	(em:done)
+	(cm:done)
 )
 
 

@@ -1,11 +1,11 @@
-(defun em:debug ( b )
+(defun cm:debug ( b )
 	(if (setq *DEBUG* b)
-		(em:setvar "CMDECHO" 1)
-		(em:setvar "CMDECHO" 0)
+		(cm:setvar "CMDECHO" 1)
+		(cm:setvar "CMDECHO" 0)
 	)
 )
 
-(defun em:error ( a )
+(defun cm:error ( a )
 	(defun ShowVariables ( / x )
 		(princ "\nVariables in memory:")
 		
@@ -31,10 +31,10 @@
 	
 	(if *DEBUG* (ShowVariables))
 	
-	(em:done)
+	(cm:done)
 )
 
-(defun em:setvar ( a x )
+(defun cm:setvar ( a x )
 	(cond
 		((= a "DIMLDRBLK")
 			(if (= x "")
@@ -63,7 +63,7 @@
 	)
 )
 
-(defun em:ini ( / a )
+(defun cm:ini ( / a )
 	(if (null *SETVAR*) 
 		(command "_.UNDO" "BE")
 	)
@@ -73,16 +73,16 @@
 	)
 	
 	(foreach a '("USERS1" "USERS2" "USERS3" "USERS4" "USERS5")
-		(em:setvar a "")
+		(cm:setvar a "")
 	)
 	
 	(setq
 		*TEMP* *ERROR*
-		*ERROR* em:error
+		*ERROR* cm:error
 	)
 )
 
-(defun em:done ( / d )
+(defun cm:done ( / d )
 	(command "_.REDRAW")
 	
 	(foreach d *SETVAR*

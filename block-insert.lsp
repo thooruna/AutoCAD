@@ -1,10 +1,10 @@
 (defun block-insert ( xBlock aTag rRadius bLeader / a l p )
-	(em:ini)
-	(em:setvar "ATTDIA" 0)
-	(em:setvar "ATTREQ" 0)
-	(em:setvar "AUTOSNAP" 63)
-	(em:setvar "POLARMODE" 0)
-	(em:setvar "POLARANG" (dtr 15))
+	(cm:ini)
+	(cm:setvar "ATTDIA" 0)
+	(cm:setvar "ATTREQ" 0)
+	(cm:setvar "AUTOSNAP" 63)
+	(cm:setvar "POLARMODE" 0)
+	(cm:setvar "POLARANG" (dtr 15))
 	
 	(if (bm:load xBlock)
 		(cond
@@ -15,8 +15,8 @@
 					l (append (list (polar (car l) (angle (car l) (cadr l)) (* rRadius (getvar "DIMSCALE")))) (cdr l))
 				)
 				
-				(em:setvar "AUTOSNAP" 0)
-				(em:setvar "OSNAP" 0)
+				(cm:setvar "AUTOSNAP" 0)
+				(cm:setvar "OSNAP" 0)
 				
 				(if (> (length l) 1)
 					(if bLeader
@@ -29,7 +29,7 @@
 		)
 	)
 	
-	(em:done)
+	(cm:done)
 	
 	(if a (entlast))
 )
@@ -40,9 +40,9 @@
 			(command "_.DIMSCALE" pause)
 		)
 		
-		(em:setvar "DIMSTYLE" aBlock)
-		(em:setvar "DIMASZ" 1)
-		(em:setvar "DIMLDRBLK" "_DOT")
+		(cm:setvar "DIMSTYLE" aBlock)
+		(cm:setvar "DIMASZ" 1)
+		(cm:setvar "DIMLDRBLK" "_DOT")
 		
 		(command "_.-DIMSTYLE" "_S" aBlock "_Y")
 	)

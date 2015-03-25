@@ -1,5 +1,5 @@
 (defun c:snapang ( / a b e )
-	(em:ini)
+	(cm:ini)
 	
 	(if (= (getvar "SNAPANG") 0.0)
 		(progn
@@ -24,7 +24,7 @@
 		(setvar "SNAPANG" 0)
 	)
 	
-	(em:done)
+	(cm:done)
 )
 
 

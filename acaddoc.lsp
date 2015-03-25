@@ -1,6 +1,6 @@
 (defun LoadModules ( / aBase aFile aPath )
 	(if (setq aPath (findfile "modules"))
-		(foreach aBase '("block" "error" "file" "input" "list" "math" "string" "table" "xml")
+		(foreach aBase '("block" "common" "entity" "file" "input" "list" "math" "string" "table" "xml")
 			(princ (strcat "\nLoading: " aBase ".lsp"))
 			(if (setq aFile (findfile (strcat aPath "\\" aBase ".lsp")))
 				(if (load aFile (strcat "\rUnable to load: "  aBase ".lsp"))
