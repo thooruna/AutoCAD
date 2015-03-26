@@ -77,6 +77,7 @@
 	)
 	
 	(setq
+		*DATE* (getvar "DATE")
 		*TEMP* *ERROR*
 		*ERROR* cm:error
 	)
@@ -84,8 +85,6 @@
 
 (defun cm:terminate ( / d )
 	(terpri)
-
-	(command "_.REDRAW")
 	
 	(foreach d *SETVAR*
 		(cond 
@@ -94,13 +93,19 @@
 		)
 	)
 	
+	(if *DEBUG* 
+		(princ (strcat "\nTotal time elapsed: " (rtos (* (- (getvar "DATE") *DATE*) 60 60 24) 2 2) " s\n"))
+	)
+	
 	(setq 
 		*ATOMS* nil
+		*DATE* nil
 		*DEBUG* nil
 		*SETVAR* nil
 		*ERROR* *TEMP*
 	)
 	
+	(command-s "_.REDRAW")
 	(command-s "_.UNDO" "E")
 	
 	(princ)
