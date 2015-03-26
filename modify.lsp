@@ -1,5 +1,5 @@
 (defun c:breakpoint ( / eObject eProperties eType pFirst pSecond pCenter)
-	(cm:ini)
+	(cm:initialize)
 	
 	(setq eObject (entsel))
 	(if eObject 
@@ -42,18 +42,18 @@
 		(T (princ "\nObject can't be broken."))
 	)
 	
-	(cm:done)
+	(cm:terminate)
 )
 
 (defun c:filletz ()
-	(cm:ini)
+	(cm:initialize)
 	
 	(cm:setvar "CMDECHO" 1)
 	(cm:setvar "FILLETRAD" 0)
 	
 	(command "_.FILLET" pause pause)
 	
-	(cm:done)
+	(cm:terminate)
 )
 
 

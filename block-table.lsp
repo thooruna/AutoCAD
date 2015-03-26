@@ -6,19 +6,19 @@
 			((setq lHandles (bm:search s a))
 				(setq 
 					lHeader (bm:insert-attribute-lengths lHandles) 
-					lData (tm:table-data-add-row lData (mapcar 'car lHeader)) ;- First add the table header
+					lData (tm:table-data-add-row lData (mapcar 'car lHeader)) ; First add the table header
 				)
-					
-				; Add the table data rows
+				
+				;;; Add the table data rows
 				(foreach h lHandles
 					(setq lData (tm:table-data-add-row lData (bm:insert-attributes (handent h))))
 				)
-				(princ lData)
-				;- Sort the table data
-				(setq lData (tm:table-data-sort lData 2)) ;- Sort the table by column '2'
-				(setq lData (tm:table-data-sort lData 1)) ;- Sort the table by column '1'
 				
-				;-	Create the AutoCAD table
+				;;; Sort the table data
+				(setq lData (tm:table-data-sort lData 2)) ; Sort the table by column '2'
+				(setq lData (tm:table-data-sort lData 1)) ; Sort the table by column '1'
+				
+				;;; Create the AutoCAD table
 				(tm:table-init "Standard" "Courier New")
 				
 				(setq oTable (tm:table-create nil lData))

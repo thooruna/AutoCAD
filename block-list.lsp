@@ -1,4 +1,4 @@
-(defun block-list ( s a / d h lAttributes lHeader lHandles )
+(defun block-list ( s a / d h i lAttributes lHeader lHandles )
 	(defun PrintDivider ()
 		(princ (sm:string-right-fill "\n" "=" (+ i 2 (length lHeader) (apply '+ (mapcar 'cdr lHeader)))))
 	)
@@ -34,10 +34,8 @@
 			((setq lHandles (bm:search s a))
 				(setq lHeader (bm:insert-attribute-lengths lHandles))
 				
-				(if (< (setq i (bm:handle-lengths lHandles)) 6) ;- Max length for handle string
-					(setq i 6)
-				)
-
+				(setq i (max (bm:handle-lengths lHandles) (strlen "Handle"))) ; Max length for handle string
+				
 				(PrintDivider)
 				(PrintHeader)
 				(PrintDivider)

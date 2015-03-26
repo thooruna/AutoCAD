@@ -22,7 +22,7 @@
 			)
 		)
 		
-		(princ "\n")
+		(terpri)
 	)
 	
 	(if (not (member a '("Function Cancelled" "console break" "quit / exit abort")))
@@ -31,7 +31,7 @@
 	
 	(if *DEBUG* (ShowVariables))
 	
-	(cm:done)
+	(cm:terminate)
 )
 
 (defun cm:setvar ( a x )
@@ -63,9 +63,9 @@
 	)
 )
 
-(defun cm:ini ( / a )
+(defun cm:initialize ( / a )
 	(if (null *SETVAR*) 
-		(command "_.UNDO" "BE")
+		(command-s "_.UNDO" "BE")
 	)
 	
 	(if *DEBUG* 
@@ -82,7 +82,9 @@
 	)
 )
 
-(defun cm:done ( / d )
+(defun cm:terminate ( / d )
+	(terpri)
+
 	(command "_.REDRAW")
 	
 	(foreach d *SETVAR*
@@ -99,8 +101,7 @@
 		*ERROR* *TEMP*
 	)
 	
-	(command "_.UNDO" "E")
-	(command)
+	(command-s "_.UNDO" "E")
 	
 	(princ)
 )

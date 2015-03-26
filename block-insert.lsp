@@ -1,5 +1,5 @@
 (defun block-insert ( xBlock aTag rRadius bLeader / a l p )
-	(cm:ini)
+	(cm:initialize)
 	(cm:setvar "ATTDIA" 0)
 	(cm:setvar "ATTREQ" 0)
 	(cm:setvar "AUTOSNAP" 63)
@@ -29,7 +29,7 @@
 		)
 	)
 	
-	(cm:done)
+	(cm:terminate)
 	
 	(if a (entlast))
 )
