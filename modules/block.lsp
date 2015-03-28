@@ -48,20 +48,12 @@
 	(command "_.REDRAW")
 )
 
-(defun bm:handle ( x )
-	(cdr (assoc 5 (em:edd x))) ;- Entity handle; text string of up to 16 hexadecimal digits (fixed)
-)
-
 (defun bm:handle-lengths ( l )
 	(apply 'max (mapcar 'strlen l))
 )
 
-(defun bm:layer ( x )
-	(cdr (assoc 8 (em:edd x))) ;- Layer name (fixed)
-)
-
 (defun bm:insertion-point ( x )
-	(cdr (assoc 10 (em:edd x))) ;- Primary point; this is the start point of a line or text entity, center of a circle, and so on
+	(em:primary-point x)
 )
 
 (defun bm:insert-attribute-values ( e )
@@ -75,6 +67,15 @@
 (defun bm:insert-attributes ( e )
 	(if (= (em:type (setq e (entnext e))) "ATTRIB")
 		(cons (cons (strcase (em:name e)) (em:value e)) (bm:insert-attributes e))
+	)
+)
+
+(defun bm:insert-attributes-filter ( e l1 / l2 )
+	(if (= (em:type (setq e (entnext e))) "ATTRIB")
+		(if (member (em:name e) l1)
+			(cons (cons (strcase (em:name e)) (em:value e)) (bm:insert-attributes-filter e l1))
+			(bm:insert-attributes-filter e l1)
+		)
 	)
 )
 
@@ -108,7 +109,7 @@
 )
 
 (defun bm:insert-has-attributes ( x )
-	(= (cdr (assoc 66 (em:edd x))) 1)
+	(= (em:entities-follow x) 1)
 )
 
 (defun bm:search ( s x / e i lHandles )
@@ -121,12 +122,12 @@
 			(setq e (entnext e))
 		)
 	)
-
+	
 	(defun SearchCurrent ( e )
 		(if (= (em:type e) "INSERT") 
 			(if (bm:insert-has-attributes e)
 				(if (wcmatch (em:name e) x)
-					(setq lHandles (append lHandles (list (bm:handle e))))
+					(setq lHandles (append lHandles (list (em:handle e))))
 				)
 				(SearchNested e)
 			)
@@ -195,6 +196,18 @@
 			(bm:change-attribute-value e aTag1 aValue2)
 			(bm:change-attribute-value e aTag2 aValue1)
 		)
+	)
+)
+
+(defun bm:shift-left-atrribute-values ( e l / i lTags lValues )
+	(setq 
+		lTags (mapcar 'car (reverse l))
+		lValues (cons  ""  (reverse (cdr (mapcar  'cdr  l))))
+	)
+	
+	(repeat (setq i (length l))
+		(setq i (1- i))
+		(bm:change-attribute-value e (nth i lTags) (nth i lValues))
 	)
 )
 

@@ -16,6 +16,19 @@
 	s
 )
 
+(defun im:select-block ( / s )
+	(princ "\nSelect a block.")
+	(if (null (setq s (ssget '((0 . "INSERT")))))
+		(princ "\nNo block was selected.")
+	)
+	
+	(if (not (null s))
+		(if (= (sslength s) 1)
+			(ssname s 0)
+		)
+	)
+)
+
 (defun im:get-point ( a / p)
 	(if (null (setq p (getpoint a))) (exit))
 	p
