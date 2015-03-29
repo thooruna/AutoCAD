@@ -1,3 +1,7 @@
+;;; Download the latest version from http://github.com/thooruna/AutoCAD/
+;;; Author: Wilfred Stapper
+;;; Copyright © 2015
+
 (defun xm:string-escape ( a / d )
 	(foreach d '(("'" . "&apos;") ("\"" . "&quot;") ("&" . "&amp;") ("<" . "&lt;") (">" . "&gt;"))
 		(setq a (sm:string-subst (cdr d) (car d) a))

@@ -1,3 +1,7 @@
+;;; Download the latest version from http://github.com/thooruna/AutoCAD/
+;;; Author: Wilfred Stapper
+;;; Copyright © 2015
+
 (defun block-list ( s a / d h i lAttributes lHeader lHandles )
 	(defun PrintDivider ()
 		(princ (sm:string-right-fill "\n" "=" (+ i 2 (length lHeader) (apply '+ (mapcar 'cdr lHeader)))))

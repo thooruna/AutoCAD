@@ -1,3 +1,7 @@
+;;; Download the latest version from http://github.com/thooruna/AutoCAD/
+;;; Author: Wilfred Stapper
+;;; Copyright © 2015
+
 (defun dtr (rAngle)
 	(* pi (/ rAngle 180.0))
 )

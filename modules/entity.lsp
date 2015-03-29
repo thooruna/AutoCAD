@@ -1,3 +1,7 @@
+;;; Download the latest version from http://github.com/thooruna/AutoCAD/
+;;; Author: Wilfred Stapper
+;;; Copyright © 2015
+
 ;;; Source for DXF codes: http://www.autodesk.com/techpubs/autocad/acad2000/dxf/group_codes_in_numerical_order_dxf_01.htm
 
 ;;; Return entity definition data
