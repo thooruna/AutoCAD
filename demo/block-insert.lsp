@@ -8,7 +8,7 @@
 	(cm:setvar "ATTREQ" 0)
 	(cm:setvar "AUTOSNAP" 63)
 	(cm:setvar "POLARMODE" 0)
-	(cm:setvar "POLARANG" (dtr 15))
+	(cm:setvar "POLARANG" (mm:degrees->radians 15))
 	
 	(if (bm:load xBlock)
 		(cond
