@@ -17,7 +17,7 @@
 )
 
 (defun bm:load ( xBase / a l )
-	(setq l (mapcar 'bm:find (lm:to-list xBase)))
+	(setq l (mapcar 'bm:find (lm:x->list xBase)))
 	
 	(foreach a l
 		(cond

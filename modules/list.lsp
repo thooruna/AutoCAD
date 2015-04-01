@@ -2,7 +2,7 @@
 ;;; Author: Wilfred Stapper
 ;;; Copyright © 2015
 
-(defun lm:to-list ( x )
+(defun lm:x->list ( x )
 	(if (= (type x) 'STR)
 		(list x)
 		x

@@ -2,11 +2,11 @@
 ;;; Author: Wilfred Stapper
 ;;; Copyright © 2015
 
-(defun dtr (rAngle)
+(defun mm:degrees->radians (rAngle)
 	(* pi (/ rAngle 180.0))
 )
 
-(defun rtd (rAngle)
+(defun mm:radians->degrees (rAngle)
 	(/ (* rAngle 180.0) pi)
 )
 

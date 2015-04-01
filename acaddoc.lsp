@@ -22,12 +22,13 @@
 
 (LoadModules)
 
-(load "block-attributes.lsp")
-(load "block-insert.lsp")
-(load "block-list.lsp")
-(load "block-table.lsp")
-(load "block-xml.lsp")
 (load "modify.lsp")
 (load "settings.lsp")
+
+(load "demo\\block-attributes.lsp")
+(load "demo\\block-insert.lsp")
+(load "demo\\block-list.lsp")
+(load "demo\\block-table.lsp")
+(load "demo\\block-xml.lsp")
 
 (princ)
