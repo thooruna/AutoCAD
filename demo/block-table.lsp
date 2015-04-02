@@ -9,13 +9,13 @@
 		(cond
 			((setq lHandles (bm:search s a))
 				(setq 
-					lHeader (bm:insert-attribute-lengths lHandles) 
+					lHeader (bm:get-attribute-lengths lHandles) 
 					lData (tm:table-data-add-row lData (mapcar 'car lHeader)) ; First add the table header
 				)
 				
 				;;; Add the table data rows
 				(foreach h lHandles
-					(setq lData (tm:table-data-add-row lData (bm:insert-attributes (handent h))))
+					(setq lData (tm:table-data-add-row lData (bm:get-attributes (handent h))))
 				)
 				
 				;;; Sort the table data

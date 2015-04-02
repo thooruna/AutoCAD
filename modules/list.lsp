@@ -2,10 +2,17 @@
 ;;; Author: Wilfred Stapper
 ;;; Copyright © 2015
 
-(defun lm:x->list ( x )
-	(if (= (type x) 'STR)
-		(list x)
-		x
+(defun lm:x->list ( x / i l )
+	(cond
+		((= (type x) 'PICKSET)
+			(repeat (setq i (sslength x))
+				(setq l (cons (ssname x (setq i (1- i))) l))
+			)
+		)
+		((= (type x) 'STR)
+			(list x)
+		)
+		(T x)
 	)
 )
 

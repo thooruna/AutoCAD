@@ -2,20 +2,54 @@
 ;;; Author: Wilfred Stapper
 ;;; Copyright © 2015
 
-(defun c:shift-revisions ( / a e i l )
+(defun update-titleblocks ( eSource / eDestination lAttributes lEntities )
+	(if (setq lAttributes (bm:get-attributes-filter-exclude eSource "UNITS,SHEET"))
+		(if (setq lEntities (im:select-blocks-filter (em:name eSource)))
+			(foreach eDestination lEntities
+				(bm:change-attributes eDestination lAttributes)
+			)
+		)
+	)
+)
+
+(defun c:shift-revisions ( / e a i l )
 	(cm:initialize)
 	
 	(setq i '("1" "2" "3" "4" "5" "6"))
 	
 	(if (setq e (im:select-block))
 		(if (wcmatch (strcase (em:name e)) "*TITLE*")
-			(if (bm:insert-has-attributes e)
-				(foreach a '("REVNO" "REVDESC" "REVBY" "REVDATE")
-					(if (setq l (bm:insert-attributes-filter e (mapcar '(lambda (x) (strcat a x)) i)))
-						(bm:shift-left-atrribute-values e l)
+			(if (bm:has-attributes e)
+				(progn
+					(foreach a '("REVNO" "REVDESC" "REVBY" "REVDATE")
+						(if (setq l (bm:get-attributes-filter e (mapcar '(lambda (x) (strcat a x)) i)))
+							(bm:shift-left-atrribute-values e l)
+						)
 					)
+					(update-titleblocks e)
 				)
+				(princ "\nThat block has no editable attributes.")
 			)
+			(princ "\nThat block is not a titleblock.")
+		)
+	)
+	
+	(cm:terminate)
+)
+
+(defun c:edit-titleblock ( / e )
+	(cm:initialize)
+	
+	(if (setq e (im:select-block))
+		(if (wcmatch (strcase (em:name e)) "*TITLE*")
+			(if (bm:has-attributes e)
+				(progn
+					(command-s "_.EATTEDIT" (ssadd e))
+					(update-titleblocks e)
+				)
+				(princ "\nThat block has no editable attributes.")
+			)
+			(princ "\nThat block is not a titleblock.")
 		)
 	)
 	

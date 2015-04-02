@@ -12,6 +12,14 @@
 	)
 )
 
+(defun im:select-blocks-filter ( a / s )
+	(if (null (setq s (ssget  "_X" (list (cons 0 "INSERT") (cons 2 a)))))
+		(princ "\nNo blocks were selected.")
+	)
+	
+	(lm:x->list s)
+)
+
 (defun im:select-blocks ( / s )
 	(if (null (setq s (ssget '((0 . "INSERT")))))
 		(princ "\nNo blocks were selected.")

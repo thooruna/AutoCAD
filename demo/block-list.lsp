@@ -20,7 +20,7 @@
 	
 	(defun PrintData ()
 		(foreach h lHandles
-			(setq lAttributes (bm:insert-attributes (handent h)))
+			(setq lAttributes (bm:get-attributes (handent h)))
 		
 			(princ "\n")
 			(princ (sm:string-right-fill h " " i))
@@ -36,7 +36,7 @@
 	(if s
 		(cond
 			((setq lHandles (bm:search s a))
-				(setq lHeader (bm:insert-attribute-lengths lHandles))
+				(setq lHeader (bm:get-attribute-lengths lHandles))
 				
 				(setq i (max (bm:handle-lengths lHandles) (strlen "Handle"))) ; Max length for handle string
 				

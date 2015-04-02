@@ -60,37 +60,57 @@
 	(em:primary-point x)
 )
 
-(defun bm:insert-attribute-values ( e )
-	(mapcar 'cdr (bm:insert-attributes e))
-)
-
-(defun bm:insert-attribute-tags ( e )
-	(mapcar 'car (bm:insert-attributes e))
-)
-
-(defun bm:insert-attributes ( e )
+(defun bm:get-attribute-value ( e aTag )
 	(if (= (em:type (setq e (entnext e))) "ATTRIB")
-		(cons (cons (strcase (em:name e)) (em:value e)) (bm:insert-attributes e))
-	)
-)
-
-(defun bm:insert-attributes-filter ( e l1 / l2 )
-	(if (= (em:type (setq e (entnext e))) "ATTRIB")
-		(if (member (em:name e) l1)
-			(cons (cons (strcase (em:name e)) (em:value e)) (bm:insert-attributes-filter e l1))
-			(bm:insert-attributes-filter e l1)
+		(if (= (strcase (em:name e)) (strcase aTag))
+			(em:value e)
+			(bm:get-attribute-value e aTag)
 		)
 	)
 )
 
-(defun bm:insert-attribute-lengths ( lHandles / h e a lAttributes )
-	(setq lAttributes '())
+(defun bm:get-attribute-values ( e )
+	(mapcar 'cdr (bm:get-attributes e))
+)
+
+(defun bm:get-attribute-tags ( e )
+	(mapcar 'car (bm:get-attributes e))
+)
+
+(defun bm:get-attributes ( e )
+	(if (= (em:type (setq e (entnext e))) "ATTRIB")
+		(cons (cons (strcase (em:name e)) (em:value e)) (bm:get-attributes e))
+	)
+)
+
+(defun bm:get-attributes-filter ( e x )
+	(if (lm:is-list x) (setq x (lm:lst->str x ",")))
 	
+	(if (= (em:type (setq e (entnext e))) "ATTRIB")
+		(if (wcmatch (em:name e) x)
+			(cons (cons (strcase (em:name e)) (em:value e)) (bm:get-attributes-filter e x))
+			(bm:get-attributes-filter e x)
+		)
+	)
+)
+
+(defun bm:get-attributes-filter-exclude ( e x )
+	(if (lm:is-list x) (setq x (lm:lst->str x ",")))
+	
+	(if (= (em:type (setq e (entnext e))) "ATTRIB")
+		(if (null (wcmatch (em:name e) x))
+			(cons (cons (strcase (em:name e)) (em:value e)) (bm:get-attributes-filter-exclude e x))
+			(bm:get-attributes-filter-exclude e x)
+		)
+	)
+)
+
+(defun bm:get-attribute-lengths ( lHandles / h e a lAttributes )
 	(foreach h lHandles
 		(setq e (handent h))
-		(foreach a (bm:insert-attribute-tags e)
+		(foreach a (bm:get-attribute-tags e)
 			(if (not (assoc a lAttributes))
-				(setq lAttributes (cons (cons a (max (strlen a) (bm:insert-attribute-max-length lHandles a))) lAttributes))
+				(setq lAttributes (cons (cons a (max (strlen a) (bm:get-attribute-max-length lHandles a))) lAttributes))
 			)
 		)
 	)
@@ -98,21 +118,21 @@
 	(reverse lAttributes)
 )
 
-(defun bm:insert-attribute-max ( l a )
+(defun bm:get-attribute-max ( l a )
 	(cond
-		(l (apply 'max (mapcar '(lambda ( x ) (atoi (cdr (assoc a (bm:insert-attributes (handent x)))))) l)))
+		(l (apply 'max (mapcar '(lambda ( x ) (atoi (cdr (assoc a (bm:get-attributes (handent x)))))) l)))
 		(T 0)
 	)
 )
 
-(defun bm:insert-attribute-max-length ( l a )
+(defun bm:get-attribute-max-length ( l a )
 	(cond
-		(l (apply 'max (mapcar '(lambda ( x ) (sm:string-length (cdr (assoc a (bm:insert-attributes (handent x)))))) l)))
+		(l (apply 'max (mapcar '(lambda ( x ) (sm:string-length (cdr (assoc a (bm:get-attributes (handent x)))))) l)))
 		(T 0)
 	)
 )
 
-(defun bm:insert-has-attributes ( x )
+(defun bm:has-attributes ( x )
 	(= (em:entities-follow x) 1)
 )
 
@@ -129,7 +149,7 @@
 	
 	(defun SearchCurrent ( e )
 		(if (= (em:type e) "INSERT") 
-			(if (bm:insert-has-attributes e)
+			(if (bm:has-attributes e)
 				(if (wcmatch (em:name e) x)
 					(setq lHandles (append lHandles (list (em:handle e))))
 				)
@@ -142,23 +162,11 @@
 		(setq x (lm:lst->str x ","))
 	)
 	
-	(if s
-		(repeat (setq i (sslength s))
-			(setq e (ssname s (setq i (1- i))))
-			(SearchCurrent e)
-		)
+	(foreach e (lm:x->list s)
+		(SearchCurrent e)
 	)
 	
 	lHandles
-)
-
-(defun bm:get-attribute-value ( e aTag )
-	(if (= (em:type (setq e (entnext e))) "ATTRIB")
-		(if (= (strcase (em:name e)) (strcase aTag))
-			(em:value e)
-			(bm:get-attribute-value e aTag)
-		)
-	)
 )
 
 (defun bm:change-attribute-value ( e aTag aValue / l )
@@ -186,6 +194,12 @@
 			)
 			(bm:change-attribute-tag e aTag aValue)
 		)
+	)
+)
+
+(defun bm:change-attributes ( e l / d )
+	(foreach d l
+		(bm:change-attribute-value e (car d) (cdr d))
 	)
 )
 

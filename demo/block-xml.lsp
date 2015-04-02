@@ -9,7 +9,7 @@
 				(setq aContent "")
 				
 				(foreach h lHandles
-					(setq aContent (strcat aContent (xm:create-element "OBJECT" (xm:create-node (bm:insert-attributes (handent h))))))
+					(setq aContent (strcat aContent (xm:create-element "OBJECT" (xm:create-node (bm:get-attributes (handent h))))))
 				)
 				
 				(setq aContent (xm:create-element "ROOT" aContent))
