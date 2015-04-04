@@ -2,14 +2,14 @@
 ;;; Author: Wilfred Stapper
 ;;; Copyright © 2015
 
-(defun block-list ( s a / d h i lAttributes lHeader lHandles )
+(defun block-list ( s a / d e i lAttributes lEntities lHeader )
 	(defun PrintDivider ()
-		(princ (sm:string-right-fill "\n" "=" (+ i 2 (length lHeader) (apply '+ (mapcar 'cdr lHeader)))))
+		(princ (sm:string-right-fill "\n" "=" (+ i 3 (length lHeader) (apply '+ (mapcar 'cdr lHeader)))))
 	)
 
 	(defun PrintHeader ()
-		(princ "\n")
-		(princ (sm:string-right-fill "Handle" " " i))
+		(princ "\n|")
+		(princ (sm:string-right-fill "HANDLE" " " i))
 		(princ "|")
 		
 		(foreach d lHeader
@@ -19,13 +19,13 @@
 	)
 	
 	(defun PrintData ()
-		(foreach h lHandles
-			(setq lAttributes (bm:get-attributes (handent h)))
+		(foreach e lEntities
+			(setq lAttributes (bm:get-attributes e))
 		
-			(princ "\n")
-			(princ (sm:string-right-fill h " " i))
+			(princ "\n|")
+			(princ (sm:string-right-fill (em:handle e) " " i))
 			(princ "|")
-		
+			
 			(foreach d lHeader
 				(princ (sm:string-right-fill (cdr (assoc (car d) lAttributes)) " " (cdr (assoc (car d) lHeader))))
 				(princ "|")
@@ -35,10 +35,14 @@
 	
 	(if s
 		(cond
-			((setq lHandles (bm:search s a))
-				(setq lHeader (bm:get-attribute-lengths lHandles))
+			((setq lEntities (bm:search-entities s a))
+				(setq lHeader (bm:get-attribute-lengths lEntities))
 				
-				(setq i (max (bm:handle-lengths lHandles) (strlen "Handle"))) ; Max length for handle string
+				(setq i (max (bm:handle-lengths lEntities) (strlen "Handle"))) ; Max length for handle string
+				
+				(PrintDivider)
+				
+				(princ (strcat "\nBlock name(s): " a))
 				
 				(PrintDivider)
 				(PrintHeader)
@@ -46,8 +50,8 @@
 				(PrintData)
 				(PrintDivider)
 			
-				(princ (strcat "\nTotal blocks found: " (itoa (length lHandles))))
-				(princ (strcat "\nTotal unique blocks found: " (itoa (length (lm:unique lHandles)))))
+				(princ (strcat "\nTotal blocks found: " (itoa (length lEntities))))
+				(princ (strcat "\nTotal unique blocks found: " (itoa (length (lm:unique lEntities)))))
 			)
 			(T (princ (strcat "\nNo blocks found with filter \"" a "\".")))
 		)
@@ -56,8 +60,10 @@
 	(princ)
 )
 
-(defun c:block-list ()
-	(block-list (im:select-all-blocks) "*")
+(defun c:block-list ( / a )
+	(foreach a (bm:list)
+		(block-list (im:select-all-blocks) a)
+	)
 )
 
 (defun c:blist ( / s )

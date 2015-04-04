@@ -2,6 +2,19 @@
 ;;; Author: Wilfred Stapper
 ;;; Copyright © 2015
 
+(defun bm:list ( / a l )
+	(setq a (tblnext "BLOCK" T))
+	
+	(while a
+		(setq 
+			l (cons (em:name a) l)
+			a (tblnext "BLOCK")
+		)
+	)
+	
+	l
+)
+
 (defun bm:find ( aBase / aPath )
 	(setq aPath (findfile "symbols"))
 	
@@ -53,7 +66,7 @@
 )
 
 (defun bm:handle-lengths ( l )
-	(apply 'max (mapcar 'strlen l))
+	(apply 'max (mapcar 'strlen (mapcar 'em:handle l)))
 )
 
 (defun bm:insertion-point ( x )
@@ -83,34 +96,33 @@
 	)
 )
 
-(defun bm:get-attributes-filter ( e x )
+(defun bm:get-attributes|include ( e x )
 	(if (lm:is-list x) (setq x (lm:lst->str x ",")))
 	
 	(if (= (em:type (setq e (entnext e))) "ATTRIB")
 		(if (wcmatch (em:name e) x)
-			(cons (cons (strcase (em:name e)) (em:value e)) (bm:get-attributes-filter e x))
-			(bm:get-attributes-filter e x)
+			(cons (cons (strcase (em:name e)) (em:value e)) (bm:get-attributes|include e x))
+			(bm:get-attributes|include e x)
 		)
 	)
 )
 
-(defun bm:get-attributes-filter-exclude ( e x )
+(defun bm:get-attributes|exclude ( e x )
 	(if (lm:is-list x) (setq x (lm:lst->str x ",")))
 	
 	(if (= (em:type (setq e (entnext e))) "ATTRIB")
 		(if (null (wcmatch (em:name e) x))
-			(cons (cons (strcase (em:name e)) (em:value e)) (bm:get-attributes-filter-exclude e x))
-			(bm:get-attributes-filter-exclude e x)
+			(cons (cons (strcase (em:name e)) (em:value e)) (bm:get-attributes|exclude e x))
+			(bm:get-attributes|exclude e x)
 		)
 	)
 )
 
-(defun bm:get-attribute-lengths ( lHandles / h e a lAttributes )
-	(foreach h lHandles
-		(setq e (handent h))
+(defun bm:get-attribute-lengths ( lEntities / e a lAttributes )
+	(foreach e lEntities
 		(foreach a (bm:get-attribute-tags e)
 			(if (not (assoc a lAttributes))
-				(setq lAttributes (cons (cons a (max (strlen a) (bm:get-attribute-max-length lHandles a))) lAttributes))
+				(setq lAttributes (cons (cons a (max (strlen a) (bm:get-attribute-max-length lEntities a))) lAttributes))
 			)
 		)
 	)
@@ -120,15 +132,25 @@
 
 (defun bm:get-attribute-max ( l a )
 	(cond
-		(l (apply 'max (mapcar '(lambda ( x ) (atoi (cdr (assoc a (bm:get-attributes (handent x)))))) l)))
+		(l (apply 'max (mapcar '(lambda ( x ) (atoi (cdr (assoc a (bm:get-attributes x))))) l)))
 		(T 0)
 	)
 )
 
 (defun bm:get-attribute-max-length ( l a )
 	(cond
-		(l (apply 'max (mapcar '(lambda ( x ) (sm:string-length (cdr (assoc a (bm:get-attributes (handent x)))))) l)))
+		(l (apply 'max (mapcar '(lambda ( x ) (sm:string-length (cdr (assoc a (bm:get-attributes x))))) l)))
 		(T 0)
+	)
+)
+
+(defun bm:get-id ( e )
+	(list 
+		(cons "HANDLE" (em:handle e)) 
+		(cons "NAME" (em:name e)) 
+		(cons "X" (em:primary-point|X e)) 
+		(cons "Y" (em:primary-point|Y e)) 
+		(cons "Z" (em:primary-point|Z e))
 	)
 )
 
@@ -136,11 +158,8 @@
 	(= (em:entities-follow x) 1)
 )
 
-(defun bm:search ( s x / e i lHandles )
-	(setq lHandles '())
-	
+(defun bm:search-entities ( s x / e l )
 	(defun SearchNested ( e )
-		(setq e (em:entity-name-reference (tblsearch "BLOCK" (em:name e))))
 		(while e
 			(SearchCurrent e)
 			(setq e (entnext e))
@@ -150,10 +169,8 @@
 	(defun SearchCurrent ( e )
 		(if (= (em:type e) "INSERT") 
 			(if (bm:has-attributes e)
-				(if (wcmatch (em:name e) x)
-					(setq lHandles (append lHandles (list (em:handle e))))
-				)
-				(SearchNested e)
+				(if (wcmatch (em:name e) x) (setq l (cons e l)))
+				(SearchNested (em:entity-name-reference (tblsearch "BLOCK" (em:name e))))
 			)
 		)
 	)
@@ -166,7 +183,11 @@
 		(SearchCurrent e)
 	)
 	
-	lHandles
+	l
+)
+
+(defun bm:search-handles ( s x )
+	(mapcar 'em:handle (bm:search-entities s x))
 )
 
 (defun bm:change-attribute-value ( e aTag aValue / l )

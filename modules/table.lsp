@@ -25,10 +25,6 @@
 	(append lData (list lTemp))
 )
 
-;(defun tm:table-data-add-column-before ( l a )
-;	(setq l (mapcar '(lambda (x) (cons a x)) l))
-;)
-
 (defun tm:table-data-sort ( l i / lTemp )
 	(if (null i) (setq i 0))
 	

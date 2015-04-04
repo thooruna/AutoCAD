@@ -2,14 +2,16 @@
 ;;; Author: Wilfred Stapper
 ;;; Copyright © 2015
 
-(defun im:select-all-blocks ( )
+(defun im:select-all-blocks ( / s )
 	(cond
-		((ssget "_X" '((0 . "INSERT"))))
+		((setq s (ssget "_X" '((0 . "INSERT")))))
 		(T 
 			(princ "\nDrawing does not contain any blocks.")
 			nil
 		)
 	)
+	
+	(lm:x->list s)
 )
 
 (defun im:select-blocks-filter ( a / s )
@@ -25,12 +27,23 @@
 		(princ "\nNo blocks were selected.")
 	)
 	
-	s
+	(lm:x->list s)
 )
 
 (defun im:select-block ( / s )
-	(princ "\nSelect a block.")
-	(if (null (setq s (ssget '((0 . "INSERT")))))
+	(while 
+		(and 
+			(/= (em:type (setq e (car (entsel "\nSelect a block: ")))) "INSERT") 
+			(not (null e))
+		)
+	)
+	
+	e
+)
+
+(defun old_im:select-block ( / s )
+	(princ "\nSelect a block:")
+	(if (null (setq s (ssget ":S" '((0 . "INSERT")))))
 		(princ "\nNo block was selected.")
 	)
 	

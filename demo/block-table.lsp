@@ -2,20 +2,20 @@
 ;;; Author: Wilfred Stapper
 ;;; Copyright © 2015
 
-(defun block-table ( s a aTitle / d h lData lHeader lHandles oTable)
+(defun block-table ( s a aTitle / d e lData lEntities lHeader oTable)
 	(setq lData '())
 	
 	(if s
 		(cond
-			((setq lHandles (bm:search s a))
+			((setq lEntities (bm:search-entities s a))
 				(setq 
-					lHeader (bm:get-attribute-lengths lHandles) 
+					lHeader (bm:get-attribute-lengths lEntities) 
 					lData (tm:table-data-add-row lData (mapcar 'car lHeader)) ; First add the table header
 				)
 				
 				;;; Add the table data rows
-				(foreach h lHandles
-					(setq lData (tm:table-data-add-row lData (bm:get-attributes (handent h))))
+				(foreach e lEntities
+					(setq lData (tm:table-data-add-row lData (bm:get-attributes e)))
 				)
 				
 				;;; Sort the table data
@@ -30,8 +30,8 @@
 				(tm:table-set-width oTable (mapcar 'cdr lHeader))
 				(tm:table-show oTable)
 				
-				(princ (strcat "\nTotal blocks found: " (itoa (length lHandles))))
-				(princ (strcat "\nTotal unique blocks found: " (itoa (length (lm:unique lHandles)))))
+				(princ (strcat "\nTotal blocks found: " (itoa (length lEntities))))
+				(princ (strcat "\nTotal unique blocks found: " (itoa (length (lm:unique lEntities)))))
 			)
 			(T (princ (strcat "\nNo blocks found with filter \"" a "\".")))
 		)

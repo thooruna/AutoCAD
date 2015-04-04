@@ -54,7 +54,6 @@
 	a
 )
 
-
 ;;; Entity handle; text string of up to 16 hexadecimal digits (fixed)
 
 (defun em:handle ( x )
@@ -73,6 +72,18 @@
 
 (defun em:primary-point ( x )
 	(cdr (assoc 10 (em:edd x)))
+)
+
+(defun em:primary-point|X ( x )
+	(car (em:primary-point x))
+)
+
+(defun em:primary-point|Y ( x )
+	(cadr (em:primary-point x))
+)
+
+(defun em:primary-point|Z ( x )
+	(caddr (em:primary-point x))
 )
 
 ;;; Other points. 

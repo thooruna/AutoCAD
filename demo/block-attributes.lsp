@@ -3,7 +3,7 @@
 ;;; Copyright © 2015
 
 (defun update-titleblocks ( eSource / eDestination lAttributes lEntities )
-	(if (setq lAttributes (bm:get-attributes-filter-exclude eSource "UNITS,SHEET"))
+	(if (setq lAttributes (bm:get-attributes|exclude eSource "UNITS,SHEET"))
 		(if (setq lEntities (im:select-blocks-filter (em:name eSource)))
 			(foreach eDestination lEntities
 				(bm:change-attributes eDestination lAttributes)
@@ -22,7 +22,7 @@
 			(if (bm:has-attributes e)
 				(progn
 					(foreach a '("REVNO" "REVDESC" "REVBY" "REVDATE")
-						(if (setq l (bm:get-attributes-filter e (mapcar '(lambda (x) (strcat a x)) i)))
+						(if (setq l (bm:get-attributes|include e (mapcar '(lambda (x) (strcat a x)) i)))
 							(bm:shift-left-atrribute-values e l)
 						)
 					)
