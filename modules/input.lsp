@@ -41,24 +41,6 @@
 	e
 )
 
-(defun old_im:select-block ( / s )
-	(princ "\nSelect a block:")
-	(if (null (setq s (ssget ":S" '((0 . "INSERT")))))
-		(princ "\nNo block was selected.")
-	)
-	
-	(if (not (null s))
-		(if (= (sslength s) 1)
-			(ssname s 0)
-		)
-	)
-)
-
-(defun im:get-point ( a / p)
-	(if (null (setq p (getpoint a))) (exit))
-	p
-)
-
 (defun im:get-points ( x / l p )
 	(if (= (type x) 'STR) 
 		(setq x (list x))
@@ -86,6 +68,11 @@
 	)
 	
 	l
+)
+
+(defun im:get-point ( a / p)
+	(if (null (setq p (getpoint a))) (exit))
+	p
 )
 
 (defun im:get-insertion-point ( / p )

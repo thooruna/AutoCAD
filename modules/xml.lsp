@@ -70,7 +70,7 @@
 	)
 )
 
-;;; Note: returns all nodes (works only one nodes without attributes)
+;;; Note: returns all nodes (works only on nodes without attributes)
 
 (defun xm:get-nodes ( aName aContent / aTag aValue l )
 	(if (setq aContent (xm:get-node-string aName aContent))

@@ -12,7 +12,6 @@
 					(if (setq e (handent h))
 						(foreach d (xm:get-nodes "OBJECT" aObject)
 							(bm:change-attribute-value e (car d) (cdr d))
-							(princ (car d))
 						)
 					)
 				)
