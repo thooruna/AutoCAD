@@ -15,51 +15,79 @@
 	(strlen (sm:to-string x))
 )
 
-(defun sm:string-left-fill ( a1 a2 i )
-	(if (null a1) 
-		(setq a1 "")
+(defun sm:string-left-fill ( aString aFill i )
+	(if (null aString) 
+		(setq aString "")
 	)
 	
-	(if (or (null a2) (= (strlen a2) 0)) 
-		(setq a2 " ")
+	(if (or (null aFill) (= (strlen aFill) 0)) 
+		(setq aFill " ") ; Default
 	)
 	
-	(while (<= (strlen a1) (- i 1))
-		(setq a1 (strcat a2 a1))
+	(while (<= (strlen aString) (- i 1))
+		(setq aString (strcat aFill aString))
 	)
 	
-	a1
+	aString
 )
 
-(defun sm:string-right-fill ( a1 a2 i )
-	(if (null a1) 
-		(setq a1 "")
+(defun sm:string-right-fill ( aString aFill i )
+	(if (null aString) 
+		(setq aString "")
 	)
 	
-	(if (or (null a2) (= (strlen a2) 0)) 
-		(setq a2 " ")
+	(if (or (null aFill) (= (strlen aFill) 0)) 
+		(setq aFill " ") ; Default
 	)
 	
-	(while (<= (strlen a1) (- i 1))
-		(setq a1 (strcat a1 a2))
+	(while (<= (strlen aString) (- i 1))
+		(setq aString (strcat aString aFill))
 	)
 	
-	a1
+	aString
 )
 
-(defun sm:string-subst ( a1 a2 a3 / i1 i2 )
-	(setq 
-		i1 0
-		i2 (strlen a1)
-	)
+;;; Substitutes one string for another, within a string (replacing all occurences)
+;;; aNew - The string to be substituted for pattern
+;;; aPattern - A string containing the pattern to be replaced
+;;; aString - The string to be searched for pattern
+
+(defun sm:string-substitute ( aNew aPattern aString / i )
+	(setq i 0)
 	
-	(while (setq i1 (vl-string-search a2 a3 i1))
-		(setq a3 (vl-string-subst a1 a2 a3 i1)
-			i1 (+ i1 i2)
+	(while (setq i (vl-string-search aPattern aString i))
+		(setq aString (vl-string-subst aNew aPattern aString i)
+			i (+ i (strlen aNew))
 		)
 	)
 	
-	a3
+	aString
+)
+
+;;; Find a substring with start and end pattern, excluding the pattern
+;;; aString - The string to be searched
+;;; aStart - A string containing the start pattern
+;;; aEnd - A string containing the end pattern
+
+(defun sm:string-substring|exclude ( aString aStart aEnd / iStart iEnd ) 
+	(if (setq iStart (vl-string-search aStart aString))
+		(if (setq iEnd (vl-string-search aEnd aString (+ iStart (strlen aStart))))
+			(substr aString (+ 1 iStart (strlen aStart)) (- iEnd iStart (strlen aStart)))
+		)
+	)
+)
+
+;;; Find a substring with start and end pattern, including the pattern
+;;; aString - The string to be searched
+;;; aStart - A string containing the start pattern
+;;; aEnd - A string containing the end pattern
+
+(defun sm:string-substring|include ( aString aStart aEnd / iStart iEnd ) 
+	(if (setq iStart (vl-string-search aStart aString))
+		(if (setq iEnd (vl-string-search aEnd aString (+ iStart (strlen aStart))))
+			(substr aString (1+ iStart) (- (+ iEnd (strlen aEnd)) iStart))
+		)
+	)
 )
 
 (defun sm:is-character ( a )

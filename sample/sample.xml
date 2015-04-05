@@ -1,24 +1,24 @@
-<?xml version="1.0"?>
+<?XML VERSION="1.0"?>
 
-<root xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-<object handle="584" name="SYMBOL-1" x="100" y="200" z="0">
-	<letter>LT</letter>
-	<number>101</number>
-	<description>Level Transmitter</description>
-</object>
-<object handle="559" name="SYMBOL-1" x="50" y="200" z="0">
-	<letter>PT</letter>
-	<number>101</number>
-	<description>Pressure Transmitter</description>
-</object>
-<object handle="4DB" name="SYMBOL-1" x="50" y="250" z="0">
-	<letter>TT</letter>
-	<number>101</number>
-	<description>Temperature Transmitter</description>
-</object>
-<object handle="409" name="SYMBOL-2" x="100" y="250" z="0">
-	<letter>LT</letter>
-	<number>102</number>
-	<description>Level Transmitter</description>
-</object>
-</root>
+<ROOT XMLNS:XSI="http://www.w3.org/2001/XMLSchema-instance">
+<OBJECT HANDLE="409" NAME="SYMBOL-2" X="100" Y="250" Z="0">
+	<LETTER>LT</LETTER>
+	<NUMBER>102</NUMBER>
+	<DESCRIPTION>Level Transmitter</DESCRIPTION>
+</OBJECT>
+<OBJECT HANDLE="4DB" NAME="SYMBOL-1" X="50" Y="250" Z="0">
+	<LETTER>TT</LETTER>
+	<NUMBER>101</NUMBER>
+	<DESCRIPTION>Temperature Transmitter</DESCRIPTION>
+</OBJECT>
+<OBJECT HANDLE="559" NAME="SYMBOL-1" X="50" Y="200" Z="0">
+	<LETTER>PT</LETTER>
+	<NUMBER>101</NUMBER>
+	<DESCRIPTION>Pressure Transmitter</DESCRIPTION>
+</OBJECT>
+<OBJECT HANDLE="584" NAME="SYMBOL-1" X="100" Y="200" Z="0">
+	<LETTER>LT</LETTER>
+	<NUMBER>101</NUMBER>
+	<DESCRIPTION>Level Transmitter</DESCRIPTION>
+</OBJECT>
+</ROOT>

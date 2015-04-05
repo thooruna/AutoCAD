@@ -57,6 +57,44 @@
 	)
 )
 
+;;; String to List -  Wilfred Stapper
+;;; Separates a string using the given start and end pattern
+;;; aString - String to process
+;;; aStart - Start pattern
+;;; aEnd - End pattern
+;;; Returns a list of strings, excluding the pattern
+ 
+(defun lm:str->lst|exclude ( aString aStart aEnd / iStart iEnd ) 
+	(if (setq iStart (vl-string-search aStart aString))
+		(if (setq iEnd (vl-string-search aEnd aString (+ iStart (strlen aStart))))
+			(cons 
+				(substr aString (+ 1 iStart (strlen aStart)) (- iEnd iStart (strlen aStart)))
+				(lm:str->lst|exclude (substr aString (1+ iEnd)) aStart aEnd)
+			)
+			(list aString)
+		)
+	)
+)
+
+;;; String to List -  Wilfred Stapper
+;;; Separates a string using the given start and end pattern
+;;; aString - String to process
+;;; aStart - Start pattern
+;;; aEnd - End pattern
+;;; Returns a list of strings, including the pattern
+ 
+(defun lm:str->lst|include ( aString aStart aEnd / iStart iEnd ) 
+	(if (setq iStart (vl-string-search aStart aString))
+		(if (setq iEnd (vl-string-search aEnd aString (+ iStart (strlen aStart))))
+			(cons 
+				(substr aString (1+ iStart) (- (+ iEnd (strlen aEnd)) iStart)) 
+				(lm:str->lst|include (substr aString (1+ iEnd)) aStart aEnd)
+			)
+			(list aString)
+		)
+	)
+)
+
 ;; List to String  -  Lee Mac
 ;; Concatenates each string in a supplied list, separated by a given delimiter
 ;; lst - [lst] List of strings to concatenate

@@ -2,20 +2,35 @@
 ;;; Author: Wilfred Stapper
 ;;; Copyright © 2015
 
-(defun fm:drawing ()
+(defun fm:drawing ( )
 	(getvar "DWGNAME")
 )
 
-(defun fm:drawing-base ()
+(defun fm:drawing-base ( )
 	(vl-filename-base (getvar "DWGNAME"))
 )
 
-(defun fm:drawing-full ()
+(defun fm:drawing-full ( )
 	(strcat (getvar "DWGPREFIX") (getvar "DWGNAME"))
 )
 
-(defun fm:drawing-path ()
+(defun fm:drawing-path ( )
 	(getvar "DWGPREFIX")
+)
+
+(defun fm:read-file ( aFile / aContents aLine f )
+	(setq aContents "")
+		
+		
+	(if (findfile aFile)
+		(if (setq f (open aFile "r"))
+			(while (setq aLine (read-line f))
+				(setq aContents (strcat aContents "\n" aLine))
+			)
+		)
+	)
+	
+	aContents
 )
 
 ;(defun fm:open-text-file ( a m )
