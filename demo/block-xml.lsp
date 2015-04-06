@@ -22,40 +22,35 @@
 	(cm:terminate)
 )
 
-(defun block-xml-write ( aFilter /  aContent aFile b d c h s lHandles lColumns )
-	(cm:debug T)
+(defun block-xml-write ( lBlocks aFilter /  aContent aFile e )
 	(cm:initialize)
 	
-	(setq aFile (strcat (fm:drawing-path) (fm:drawing-base) ".xml"))
+	(setq aContent "")
 	
-	(if (setq s (ssget "_X" '((0 . "INSERT"))))
+	(if lBlocks
 		(cond
-			((setq lHandles (bm:search-handles s aFilter))
-				(setq aContent "")
-				
-				(foreach h lHandles
-					(princ (setq aAttributes (bm:get-id (handent h))))
-					(setq aContent (strcat aContent (xm:create-node "OBJECT" (xm:create-nodes (bm:get-attributes (handent h))) aAttributes)))
+			((setq lBlocks (bm:search lBlocks aFilter))
+				(foreach e lBlocks
+					(setq aContent (strcat aContent (xm:create-node "OBJECT" (xm:create-nodes (bm:get-attributes e)) (bm:get-id e))))
 				)
 				
 				(setq aContent (xm:create-node "ROOT" aContent '("XMLNS:XSI" . "http://www.w3.org/2001/XMLSchema-instance")))
 				
-				(xm:write-file aFile aContent)
+				(xm:write-file (setq aFile (strcat (fm:drawing-path) (fm:drawing-base) ".xml")) aContent)
 				
-				(princ (strcat "\nTotal blocks found: " (itoa (length lHandles))))
-				(princ (strcat "\nTotal unique blocks found: " (itoa (length (lm:unique lHandles)))))
+				(princ (strcat "\nTotal blocks found: " (itoa (length lBlocks))))
+				(princ (strcat "\nTotal unique blocks found: " (itoa (length (lm:unique lBlocks)))))
 				(princ (strcat "\nXML file saved as : " aFile))
 			)
 			(T (princ (strcat "\nNo blocks found with filter \"" aFilter "\".")))
 		)
-		(princ "\nDrawing does not contain any blocks.")
 	)
 	
 	(cm:terminate)
 )
 
 (defun c:block-xml-write ( )
-	(block-xml-create "SYMBOL*")
+	(block-xml-write (im:select-all-blocks) "SYMBOL*")
 )
 
 (princ)

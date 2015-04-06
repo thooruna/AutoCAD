@@ -2,7 +2,7 @@
 ;;; Author: Wilfred Stapper
 ;;; Copyright © 2015
 
-(defun block-list ( s a / d e i lAttributes lEntities lHeader )
+(defun block-list ( lBlocks a / d e i lAttributes lHeader )
 	(defun PrintDivider ()
 		(princ (sm:string-right-fill "\n" "=" (+ i 3 (length lHeader) (apply '+ (mapcar 'cdr lHeader)))))
 	)
@@ -19,7 +19,7 @@
 	)
 	
 	(defun PrintData ()
-		(foreach e lEntities
+		(foreach e lBlocks
 			(setq lAttributes (bm:get-attributes e))
 		
 			(princ "\n|")
@@ -33,12 +33,12 @@
 		)
 	)
 	
-	(if s
+	(if lBlocks
 		(cond
-			((setq lEntities (bm:search-entities s a))
-				(setq lHeader (bm:get-attribute-lengths lEntities))
+			((setq lBlocks (bm:search lBlocks a))
+				(setq lHeader (bm:get-attribute-lengths lBlocks))
 				
-				(setq i (max (bm:handle-lengths lEntities) (strlen "Handle"))) ; Max length for handle string
+				(setq i (max (bm:handle-lengths lBlocks) (strlen "Handle"))) ; Max length for handle string
 				
 				(PrintDivider)
 				
@@ -50,8 +50,8 @@
 				(PrintData)
 				(PrintDivider)
 			
-				(princ (strcat "\nTotal blocks found: " (itoa (length lEntities))))
-				(princ (strcat "\nTotal unique blocks found: " (itoa (length (lm:unique lEntities)))))
+				(princ (strcat "\nTotal blocks found: " (itoa (length lBlocks))))
+				(princ (strcat "\nTotal unique blocks found: " (itoa (length (lm:unique lBlocks)))))
 			)
 			(T (princ (strcat "\nNo blocks found with filter \"" a "\".")))
 		)
@@ -66,11 +66,11 @@
 	)
 )
 
-(defun c:blist ( / s )
+(defun c:blist ( )
 	(block-list (im:select-all-blocks) "BALLOON")
 )
 
-(defun c:plist ( / s )
+(defun c:plist ( )
 	(block-list (im:select-all-blocks) "SYMBOL*")
 )
 

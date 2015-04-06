@@ -94,6 +94,12 @@
 	(cdr (assoc 11 (em:edd x)))
 )
 
+;;; Floating-point values (text height, scale factors, and so on)
+
+(defun em:radius ( x )
+	(cdr (assoc 40 (em:edd x)))
+)
+
 ;;; "Entities follow" flag (fixed)
 
 (defun em:entities-follow ( x )

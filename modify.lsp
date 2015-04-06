@@ -2,48 +2,46 @@
 ;;; Author: Wilfred Stapper
 ;;; Copyright © 2015
 
-(defun c:breakpoint ( / eObject eProperties eType pFirst pSecond pCenter)
+(defun c:breakpoint ( / e aType p1 p2 p3 r s )
 	(cm:initialize)
 	
-	(setq eObject (entsel))
-	(if eObject 
-		(setq
-			eProperties (entget (car eObject))
-			eType (cdr (assoc 0 eProperties))
-		)
-	)
-	
-	(cm:setvar "OSMODE" (BitCode (getvar "OSMODE") 32 1))
-	(cm:setvar "OSNAP" 1)
-	
-	(cond 
-		((null eType))
-		((wcmatch eType "ARC,*LINE")
-			(while (null (setq pFirst (im:get-point "\nSpecify break point: "))))
+	(cond
+		((setq e (car (setq s (entsel))))
+			(cm:setvar "OSMODE" (BitCode (getvar "OSMODE") 32 1))
+			(cm:setvar "OSNAP" 1)
 			
-			(cm:setvar "OSNAP" 0)
+			(setq aType (em:type e)) ; Store type 
 			
-			(command "_.BREAK" eObject "_F" pFirst "@")
-		)
-		((wcmatch eType "CIRCLE,ELLIPSE")
-			(setq 
-				pFirst (im:get-point "\nSpecify first break point: ")
-				pSecond (im:get-point "\nSpecify second break point: ")
-				pCenter (cdr (assoc 10 eProperties))
-				rRadius (cdr (assoc 40 eProperties))
-			)
-			
-			(cm:setvar "OSNAP" 0)
-			
-			(command "_.BREAK" eObject "_F" pFirst pSecond)
-			(if (= eType "CIRCLE")
-				(command "_.ARC" "_C" pCenter 
-					(polar pCenter (angle pCenter pFirst) rRadius) 
-					(polar pCenter (angle pCenter pSecond) rRadius)
+			(cond 
+				((wcmatch aType "ARC,*LINE")
+					(while (null (setq p1 (im:get-point "\nSpecify break point: "))))
+					
+					(cm:setvar "OSNAP" 0)
+					
+					(command "_.BREAK" s "_F" p1 "@") ; Entity e will not exist after this command
 				)
+				((wcmatch aType "CIRCLE,ELLIPSE")
+					(setq 
+						p1 (im:get-point "\nSpecify first break point: ")
+						p2 (im:get-point "\nSpecify second break point: ")
+						p3 (em:primary-point e) ; Center point of circle
+						r (em:Radius e) ; Radius of circle
+					)
+					
+					(cm:setvar "OSNAP" 0)
+					
+					(command "_.BREAK" s "_F" p1 p2) ; Entity e will not exist after this command
+					
+					(if (= aType "CIRCLE")
+						(command "_.ARC" "_C" p3 
+							(polar p3 (angle p3 p1) r) 
+							(polar p3 (angle p3 p2) r)
+						)
+					)
+				)
+				(T (princ "\nObject can't be broken."))
 			)
 		)
-		(T (princ "\nObject can't be broken."))
 	)
 	
 	(cm:terminate)

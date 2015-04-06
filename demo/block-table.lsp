@@ -2,19 +2,19 @@
 ;;; Author: Wilfred Stapper
 ;;; Copyright © 2015
 
-(defun block-table ( s a aTitle / d e lData lEntities lHeader oTable)
+(defun block-table ( lBlocks a aTitle / d e lData lHeader oTable)
 	(setq lData '())
 	
-	(if s
+	(if lBlocks
 		(cond
-			((setq lEntities (bm:search-entities s a))
+			((setq lBlocks (bm:search lBlocks a))
 				(setq 
-					lHeader (bm:get-attribute-lengths lEntities) 
+					lHeader (bm:get-attribute-lengths lBlocks) 
 					lData (tm:table-data-add-row lData (mapcar 'car lHeader)) ; First add the table header
 				)
 				
 				;;; Add the table data rows
-				(foreach e lEntities
+				(foreach e lBlocks
 					(setq lData (tm:table-data-add-row lData (bm:get-attributes e)))
 				)
 				
@@ -30,25 +30,26 @@
 				(tm:table-set-width oTable (mapcar 'cdr lHeader))
 				(tm:table-show oTable)
 				
-				(princ (strcat "\nTotal blocks found: " (itoa (length lEntities))))
-				(princ (strcat "\nTotal unique blocks found: " (itoa (length (lm:unique lEntities)))))
+				(princ (strcat "\nTotal blocks found: " (itoa (length lBlocks))))
+				(princ (strcat "\nTotal unique blocks found: " (itoa (length (lm:unique lBlocks)))))
 			)
 			(T (princ (strcat "\nNo blocks found with filter \"" a "\".")))
 		)
+		
 	)
 	
 	(princ)
 )
 
-(defun c:block-table ( / s )
+(defun c:block-table ( )
 	(block-table (im:select-all-blocks) "*" "BLOCK TABLE")
 )
 
-(defun c:btable ( / s )
+(defun c:btable ( )
 	(block-table (im:select-all-blocks) "BALLOON" "PARTS LIST")
 )
 
-(defun c:ptable ( / s )
+(defun c:ptable ( )
 	(block-table (im:select-all-blocks) "SYMBOL*" "P & I D")
 )
 

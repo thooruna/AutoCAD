@@ -158,7 +158,7 @@
 	(= (em:entities-follow x) 1)
 )
 
-(defun bm:search-entities ( s x / e l )
+(defun bm:search ( x xFilter / e l )
 	(defun SearchNested ( e )
 		(while e
 			(SearchCurrent e)
@@ -169,25 +169,21 @@
 	(defun SearchCurrent ( e )
 		(if (= (em:type e) "INSERT") 
 			(if (bm:has-attributes e)
-				(if (wcmatch (em:name e) x) (setq l (cons e l)))
+				(if (wcmatch (em:name e) xFilter) (setq l (cons e l)))
 				(SearchNested (em:entity-name-reference (tblsearch "BLOCK" (em:name e))))
 			)
 		)
 	)
 	
-	(if (lm:is-list x)
-		(setq x (lm:lst->str x ","))
+	(if (lm:is-list xFilter)
+		(setq xFilter (lm:lst->str xFilter ","))
 	)
 	
-	(foreach e (lm:x->list s)
+	(foreach e (lm:x->list x)
 		(SearchCurrent e)
 	)
 	
 	l
-)
-
-(defun bm:search-handles ( s x )
-	(mapcar 'em:handle (bm:search-entities s x))
 )
 
 (defun bm:change-attribute-value ( e aTag aValue / l )
