@@ -25,7 +25,7 @@
 						p1 (im:get-point "\nSpecify first break point: ")
 						p2 (im:get-point "\nSpecify second break point: ")
 						p3 (em:primary-point e) ; Center point of circle
-						r (em:Radius e) ; Radius of circle
+						r (em:radius e) ; Radius of circle
 					)
 					
 					(cm:setvar "OSNAP" 0)
