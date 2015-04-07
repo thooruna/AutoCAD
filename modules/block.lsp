@@ -16,12 +16,11 @@
 )
 
 (defun bm:find ( aBase / aPath )
-	(setq aPath (findfile "symbols"))
-	
 	(cond
 		((tblsearch "BLOCK" aBase) aBase)
 		((findfile (strcat aBase ".dwg")))
-		((findfile (strcat aPath "\\" aBase ".dwg")))
+		((if (setq aPath (findfile "custom\\symbols")) (findfile (strcat aPath "\\" aBase ".dwg"))))
+		((if (setq aPath (findfile "demo\\symbols")) (findfile (strcat aPath "\\" aBase ".dwg"))))
 		(T 
 			(princ (strcat "\nUnable to find: " aBase ".dwg"))
 			nil

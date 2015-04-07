@@ -12,17 +12,17 @@
 	)
 )
 
-(defun c:shift-revisions ( / e a i l )
+(defun c:shift-revisions ( / e aTag aNumber l )
 	(cm:initialize)
 	
-	(setq i '("1" "2" "3" "4" "5" "6"))
+	(setq aNumber '("1" "2" "3" "4" "5" "6"))
 	
 	(if (setq e (im:select-block))
 		(if (wcmatch (strcase (em:name e)) "*TITLE*")
 			(if (bm:has-attributes e)
 				(progn
-					(foreach a '("REVNO" "REVDESC" "REVBY" "REVDATE")
-						(if (setq l (bm:get-attributes|include e (mapcar '(lambda (x) (strcat a x)) i)))
+					(foreach aTag '("REVNO" "REVDESC" "REVBY" "REVDATE")
+						(if (setq l (bm:get-attributes|include e (mapcar '(lambda (x) (strcat aTag x)) aNumber)))
 							(bm:shift-left-atrribute-values e l)
 						)
 					)

@@ -63,7 +63,7 @@
 	
 	(cond
 		(f 
-			(write-line "<?XML VERSION=\"1.0\"?>" f)
+			(write-line "<?xml version=\"1.0\"?>" f)
 			(write-line aContent f)
 			(close f)
 		)

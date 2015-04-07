@@ -34,7 +34,7 @@
 					(setq aContent (strcat aContent (xm:create-node "OBJECT" (xm:create-nodes (bm:get-attributes e)) (bm:get-id e))))
 				)
 				
-				(setq aContent (xm:create-node "ROOT" aContent '("XMLNS:XSI" . "http://www.w3.org/2001/XMLSchema-instance")))
+				(setq aContent (xm:create-node "ROOT" aContent '("xmlns:xsi" . "http://www.w3.org/2001/XMLSchema-instance")))
 				
 				(xm:write-file (setq aFile (strcat (fm:drawing-path) (fm:drawing-base) ".xml")) aContent)
 				
