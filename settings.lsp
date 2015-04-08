@@ -2,18 +2,37 @@
 ;;; Author: Wilfred Stapper
 ;;; Copyright © 2015
 
-(defun c:snapang ( / )
+(defun c:snapang ( / r s x )
+	(defun SetSnapang ( r )
+		(princ (strcat "\nCurrent setting: SNAPANG = " (rtos (mm:radians->degrees (setvar "SNAPANG" r)))))
+	)
+	
 	(cm:initialize)
 	
-	(if (= (getvar "SNAPANG") 0.0)
-		(if (setq e (car (entsel "Please choose an object or [Enter]: ")))
-			(if (= (em:type e) "LINE")
-				(setvar "SNAPANG" (em:line-angle e))
-				(princ "\nNot a line...")
+	(setq r (getvar "SNAPANG"))
+	
+	(cond
+		((= (getvar "SNAPANG") 0.0)
+			(initget "O o")
+			(setq x (getreal (strcat "\nEnter new value for SNAPANG or [Object] <" (rtos (mm:degrees->radians r)) ">: ")))
+			
+			(cond
+				((= (sm:string-uppercase x) "O")
+					(cond
+						((wcmatch (em:type (car (setq s (nentsel)))) "*LINE,VERTEX,LEADER")
+							(cm:setvar "APERTURE" (getvar "PICKBOX"))
+							
+							(if (setq r (angle (osnap (cadr s) "_NEA") (osnap (cadr s) "_MID")))
+								(SetSnapang r)
+							)
+						)
+						((not (null s)) (princ "\nInvalid object."))
+					)
+				)
+				((not (null x))(SetSnapang x))
 			)
-			(command "_SNAPANG" pause)
 		)
-		(setvar "SNAPANG" 0)
+		(T (SetSnapang 0))
 	)
 	
 	(cm:terminate)

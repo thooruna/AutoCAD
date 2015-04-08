@@ -60,8 +60,10 @@
 	)
 	
 	(if (setq e (block-insert aBlock aTag 5 T))
-		(if (setq x (im:get-number "ID" x))
-			(bm:change-attribute-value e aTag (sm:string-left-fill x "0" 2))
+		(if (= (getvar "ATTREQ") 1)
+			(if (setq x (im:get-number "ID" x))
+				(bm:change-attribute-value e aTag (sm:string-left-fill x "0" 2))
+			)
 		)
 	)
 	
@@ -76,8 +78,10 @@
 	)
 	
 	(if (setq e (block-insert lBlock aTag 5 nil))
-		(if (setq x (im:get-number "Number" x))
-			(bm:change-attribute-value e aTag (sm:string-left-fill x "0" 4))
+		(if (= (getvar "ATTREQ") 1)
+			(if (setq x (im:get-number "Number" x))
+				(bm:change-attribute-value e aTag (sm:string-left-fill x "0" 4))
+			)
 		)
 	)
 	

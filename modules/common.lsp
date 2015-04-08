@@ -2,6 +2,13 @@
 ;;; Author: Wilfred Stapper
 ;;; Copyright © 2015
 
+(defun cm:version ()
+	(cond
+		((= (getvar "ACADVER") "") nil)
+		((getvar "ACADVER"))
+	)
+)
+
 (defun cm:debug ( b )
 	(if (setq *DEBUG* b)
 		(cm:setvar "CMDECHO" 1)
@@ -33,7 +40,9 @@
 		(princ (strcat "\n; error: " a "\n"))
 	)
 	
-	(if *DEBUG* (ShowVariables))
+	(if *DEBUG* 
+		(ShowVariables)
+	)
 	
 	(cm:terminate)
 )
@@ -67,10 +76,10 @@
 	)
 )
 
-(defun cm:initialize ( / a )
-	(if (null *SETVAR*) 
-		(command-s "_.UNDO" "BE")
-	)
+(defun cm:initialize ( / a i )
+	(setq i (cm:echo-off))
+	(if (and (null *SETVAR*) (cm:version)) (command-s "_.UNDO" "BE"))
+	(cm:echo-set i)
 	
 	(if *DEBUG* 
 		(setq *ATOMS* (atoms-family 0))
@@ -87,7 +96,7 @@
 	)
 )
 
-(defun cm:terminate ( / d )
+(defun cm:terminate ( / d i )
 	(terpri)
 	
 	(foreach d *SETVAR*
@@ -109,9 +118,27 @@
 		*ERROR* *TEMP*
 	)
 	
+	(setq i (cm:echo-off))
 	(command-s "_.REDRAW")
-	(command-s "_.UNDO" "E")
+	(if (cm:version) (command-s "_.UNDO" "E"))
+	(cm:echo-set i)
 	
 	(princ)
 )
+
+;;; Turn command echo off and return the initial value
+
+(defun cm:echo-off ( / i )
+	(setq i (getvar "CMDECHO"))
+	(setvar "CMDECHO" 0)
+	i
+)
+
+;;; Set command echo to value
+
+(defun cm:echo-set ( i )
+	(setvar "CMDECHO" i)
+)
+
+
 

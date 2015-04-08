@@ -11,6 +11,20 @@
 	)
 )
 
+(defun sm:string-lowercase ( x )
+	(cond
+		((= (type x) 'STRING) (strcase x T))
+		(T x)
+	)
+)
+
+(defun sm:string-uppercase ( x )
+	(cond
+		((= (type x) 'STRING) (strcase x))
+		(T x)
+	)
+)
+
 (defun sm:string-length ( x )
 	(strlen (sm:to-string x))
 )

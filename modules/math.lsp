@@ -2,12 +2,12 @@
 ;;; Author: Wilfred Stapper
 ;;; Copyright © 2015
 
-(defun mm:degrees->radians (rAngle)
-	(* pi (/ rAngle 180.0))
+(defun mm:degrees->radians ( r )
+	(* pi (/ r 180.0))
 )
 
-(defun mm:radians->degrees (rAngle)
-	(/ (* rAngle 180.0) pi)
+(defun mm:radians->degrees ( r )
+	(/ (* r 180.0) pi)
 )
 
 (defun BitCode (value bit on)
