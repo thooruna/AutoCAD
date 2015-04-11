@@ -2,7 +2,7 @@
 ;;; Author: Wilfred Stapper
 ;;; Copyright © 2015
 
-(defun block-insert ( xBlock aTag rRadius bLeader / a l p )
+(defun block-insert ( xBlocks aTag rRadius bLeader / a l p )
 	(cm:initialize)
 	(cm:setvar "ATTDIA" 0)
 	(cm:setvar "ATTREQ" 0)
@@ -10,9 +10,9 @@
 	(cm:setvar "POLARMODE" 0)
 	(cm:setvar "POLARANG" (mm:degrees->radians 15))
 	
-	(if (bm:load xBlock)
+	(if (bm:load xBlocks)
 		(cond
-			((setq l (im:get-points xBlock))
+			((setq l (im:get-points xBlocks))
 				(setq
 					a (getvar "USERS1")
 					p (car l)
@@ -31,6 +31,7 @@
 				)
 			)
 		)
+		(princ "\nUnable to find symbols.")
 	)
 	
 	(cm:terminate)
@@ -38,7 +39,7 @@
 	(if a (entlast))
 )
 
-(defun c:bsymbol ( / aBlock aTag l p x )
+(defun c:bsymbol ( / aBlock aTag e x )
 	(defun SetLeaderStyle ( aBlock )
 		(if (null (tblsearch "DIMSTYLE" aBlock))
 			(command "_.DIMSCALE" pause)
@@ -70,14 +71,14 @@
 	(princ)
 )
 
-(defun c:psymbol ( / a aTag e l lBlock p x )
+(defun c:psymbol ( / aTag e lBlocks x )
 	(setq 
-		lBlock '("SYMBOL-1" "SYMBOL-2")
+		lBlocks '("SYMBOL-1" "SYMBOL-2")
 		aTag "NUMBER"
-		x (1+ (bm:get-attribute-max (bm:search (im:select-all-blocks) lBlock) aTag))
+		x (1+ (bm:get-attribute-max (bm:search (im:select-all-blocks) lBlocks) aTag))
 	)
 	
-	(if (setq e (block-insert lBlock aTag 5 nil))
+	(if (setq e (block-insert lBlocks aTag 5 nil))
 		(if (= (getvar "ATTREQ") 1)
 			(if (setq x (im:get-number "Number" x))
 				(bm:change-attribute-value e aTag (sm:string-left-fill x "0" 4))

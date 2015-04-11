@@ -5,10 +5,7 @@
 (defun im:select-all-blocks ( / s )
 	(cond
 		((setq s (ssget "_X" '((0 . "INSERT")))))
-		(T 
-			(princ "\nDrawing does not contain any blocks.")
-			nil
-		)
+		((princ "\nDrawing does not contain any blocks.") nil)
 	)
 	
 	(lm:x->list s)
@@ -33,7 +30,7 @@
 (defun im:select-block ( / s )
 	(while 
 		(and 
-			(/= (em:type (setq e (car (entsel "\nSelect a block: ")))) "INSERT") 
+			(/= (em:type (setq e (car (entsel "\nSelect block reference: ")))) "INSERT") 
 			(not (null e))
 		)
 	)
@@ -42,9 +39,7 @@
 )
 
 (defun im:get-points ( x / l p )
-	(if (= (type x) 'STR) 
-		(setq x (list x))
-	) 
+	(setq x (lm:x->list x))
 	
 	(setq p (getpoint "\nSpecify first point: "))
 	
@@ -100,6 +95,13 @@
 	)
 	
 	a2
+)
+
+(defun im:get-keyword ( a x )
+	(setq x (lm:x->list x))
+	
+	(initget 128 (lm:lst->str x " "))
+	(cond ((getkword (strcat a " [" (lm:lst->str x "/") "] <" (car x) ">: ")))((car x)))
 )
 
 (princ)
