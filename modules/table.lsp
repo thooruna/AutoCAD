@@ -1,23 +1,49 @@
-(setq
-	tm:table-cell-horizontal-margin 2.5
-	tm:table-cell-vertical-margin 0.5
-	tm:table-cell-text-height 2.5
-	tm:table-title-text-height 5
+;;; Download the latest version from http://github.com/thooruna/AutoCAD/
+;;; Author: Wilfred Stapper
+;;; Copyright © 2015
+
+;;; Table data functions
+
+(defun tm:data-column-add ( a i lData )
+	(setq lData (cons (lm:insert-nth a i (car lData)) (mapcar '(lambda (x) (lm:insert-nth "" i x)) (cdr lData)))) 
 )
 
-(defun tm:table-data-add-row ( lData lRow / a d lTemp )
-	(setq lTemp '())
-		
-	(cond
-		((= (length lData) 0)
-			(setq lTemp lRow) ; First row is the header row,
+(defun tm:data-column-delete ( a lData / i )
+	(if (setq i (lm:nth a (car lData)))
+		(mapcar '(lambda (x) (lm:remove-nth i x)) lData)
+		lData
+	)
+)
+
+(defun tm:data-column-sort ( a lData / i lTemp )
+	(if (setq i (lm:nth a (car lData)))
+		(setq 
+			; Change the data format for sorting
+			lTemp (mapcar '(lambda (x) (list (nth i x) x)) (cdr lData)) ; Remove the header, add sort column first and nest the row data
+			lTemp (vl-sort lTemp '(lambda (a b) (< (car a) (car b)))) ; Sort the data
+			lTemp (mapcar 'cadr lTemp) ; Change the data format back
+			lData (append (list (car lData)) lTemp) ; Add the header back
 		)
-		(T
-			(foreach a (car lData) ; followed by data rows
-				(if (setq d (assoc a lRow))	
-					(setq lTemp (append lTemp (list (cdr d))))
-					(setq lTemp (append lTemp (list "")))
-				)
+		lData
+	)
+)
+
+(defun tm:data-column-widths ( lData / i lTemp lWidths )
+	(if (setq lTemp (mapcar '(lambda (x) (mapcar 'strlen x)) lData))
+		(repeat (setq i (length (car lTemp)))
+			(setq i (1- i))
+			(setq lWidths (cons (apply 'max (mapcar '(lambda (x) (nth i x)) lTemp)) lWidths))
+		)
+	)
+)
+
+(defun tm:data-row-add ( lValues lData / a d lTemp )
+	(if (= (length lData) 0)
+		(setq lTemp lValues) ; First row is the header row,
+		(foreach a (car lData) ; followed by data rows
+			(if (setq d (assoc a lValues))
+				(setq lTemp (append lTemp (list (cdr d))))
+				(setq lTemp (append lTemp (list "")))
 			)
 		)
 	)
@@ -25,16 +51,32 @@
 	(append lData (list lTemp))
 )
 
-(defun tm:table-data-sort ( l i / lTemp )
-	(if (null i) (setq i 0))
-	
-	(setq 
-		lTemp (mapcar '(lambda (x) (list (nth i x) x)) (cdr l)) ; Remove the header/Change the data format: add sort column first and nest the row data
-		lTemp (vl-sort lTemp '(lambda (a b) (< (car a) (car b)))) ; Sort the data
-		lTemp (mapcar 'cadr lTemp) ; Change the data format back
+(defun tm:data-cell-change ( a x j lData )
+	(if (= (type x) 'STR)
+		(setq x (lm:nth x (car lData)))
 	)
 	
-	(append (list (car l)) lTemp) ; Add the header back
+	(lm:substitute-nth (lm:substitute-nth a x (nth j lData)) j lData)
+)
+
+(defun tm:data-cell-value ( x j lData )
+	(if (= (type x) 'STR)
+		(setq x (lm:nth x (car lData)))
+	)
+	
+	(if x
+		(nth x (nth j lData))
+		""
+	)
+)
+
+;;; Table functions
+
+(setq
+	tm:table-cell-horizontal-margin 2.5
+	tm:table-cell-vertical-margin 0.5
+	tm:table-cell-text-height 2.5
+	tm:table-title-text-height 5
 )
 
 (defun tm:table-init ( a1 a2 / acad doc dicts dictObj myTableStyle)
@@ -75,9 +117,8 @@
 	)
 
 	(setq 
-		pt (vlax-make-safearray vlax-vbDouble '(0 . 2))	; Insertion point for the table 	
+		pt (vlax-make-safearray vlax-vbDouble '(0 . 2)) ; Insertion point for the table
 		iRows (+ (length lTable) 1)
-		;iColumns (length (cadr (nth 0 lTable)))
 		iColumns (length (nth 0 lTable))
 	) 
 	
@@ -128,11 +169,14 @@
 	(vla-SetText oTable 0 0 a)
 )
 
-(defun tm:table-set-width ( oTable l / d i )
-	(setq i 0)
-	(foreach d l
-		(vla-SetColumnWidth oTable i (+ (* d 2.66) (* tm:table-cell-horizontal-margin 2)))
-		(setq i (1+ i))
+(defun tm:table-set-width ( oTable iWidthFactor l / iColumn )
+	(if (null iWidthFactor) 
+		(setq iWidthFactor 2.66)
+	)
+	(princ a)
+	(repeat (setq iColumn (length l))
+		(setq iColumn (1- iColumn))
+		(vla-SetColumnWidth oTable iColumn (+ (* (nth iColumn l) iWidthFactor) (* tm:table-cell-horizontal-margin 2)))
 	)
 )
 

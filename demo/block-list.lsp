@@ -2,7 +2,7 @@
 ;;; Author: Wilfred Stapper
 ;;; Copyright © 2015
 
-(defun block-list ( lBlocks a / d e i lAttributes lHeader )
+(defun block-list ( lBlocks aFilter / d e i lAttributes lHeader )
 	(defun PrintDivider ()
 		(princ (sm:string-right-fill "\n" "=" (+ i 3 (length lHeader) (apply '+ (mapcar 'cdr lHeader)))))
 	)
@@ -35,14 +35,14 @@
 	
 	(if lBlocks
 		(cond
-			((setq lBlocks (bm:search lBlocks a))
+			((setq lBlocks (bm:search aFilter lBlocks))
 				(setq lHeader (bm:get-attribute-lengths lBlocks))
 				
 				(setq i (max (bm:handle-lengths lBlocks) (strlen "Handle"))) ; Max length for handle string
 				
 				(PrintDivider)
 				
-				(princ (strcat "\nBlock name(s): " a))
+				(princ (strcat "\nBlock name(s): " aFilter))
 				
 				(PrintDivider)
 				(PrintHeader)
@@ -53,16 +53,16 @@
 				(princ (strcat "\nTotal blocks found: " (itoa (length lBlocks))))
 				(princ (strcat "\nTotal unique blocks found: " (itoa (length (lm:unique lBlocks)))))
 			)
-			(T (princ (strcat "\nNo blocks found with filter \"" a "\".")))
+			(T (princ (strcat "\nNo blocks found with filter \"" aFilter "\".")))
 		)
 	)
 	
 	(princ)
 )
 
-(defun c:block-list ( / a )
-	(foreach a (bm:list)
-		(block-list (im:select-all-blocks) a)
+(defun c:block-list ( / aFilter )
+	(foreach aFilter (bm:list)
+		(block-list (im:select-all-blocks) aFilter)
 	)
 )
 

@@ -89,6 +89,18 @@
 	(mapcar 'car (bm:get-attributes e))
 )
 
+(defun bm:get-attribute-tags|all ( lEntities / e a lAttributes )
+	(foreach e lEntities
+		(foreach a (bm:get-attribute-tags e)
+			(if (not (member a lAttributes))
+				(setq lAttributes (cons a lAttributes))
+			)
+		)
+	)
+	
+	(reverse lAttributes)
+)
+
 (defun bm:get-attributes ( e )
 	(if (= (em:type (setq e (entnext e))) "ATTRIB")
 		(cons (cons (strcase (em:name e)) (em:value e)) (bm:get-attributes e))
@@ -96,7 +108,7 @@
 )
 
 (defun bm:get-attributes|include ( e x )
-	(if (lm:is-list x) (setq x (lm:lst->str x ",")))
+	(if (lm:is-list x) (setq x (lm:list->string x ",")))
 	
 	(if (= (em:type (setq e (entnext e))) "ATTRIB")
 		(if (wcmatch (em:name e) x)
@@ -107,7 +119,7 @@
 )
 
 (defun bm:get-attributes|exclude ( e x )
-	(if (lm:is-list x) (setq x (lm:lst->str x ",")))
+	(if (lm:is-list x) (setq x (lm:list->string x ",")))
 	
 	(if (= (em:type (setq e (entnext e))) "ATTRIB")
 		(if (null (wcmatch (em:name e) x))
@@ -157,7 +169,7 @@
 	(= (em:entities-follow x) 1)
 )
 
-(defun bm:search ( x xFilter / e l )
+(defun bm:search ( xFilter x / e l )
 	(defun SearchNested ( e )
 		(while e
 			(SearchCurrent e)
@@ -175,7 +187,7 @@
 	)
 	
 	(if (lm:is-list xFilter)
-		(setq xFilter (lm:lst->str xFilter ","))
+		(setq xFilter (lm:list->string xFilter ","))
 	)
 	
 	(foreach e (lm:x->list x)

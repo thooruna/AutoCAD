@@ -2,55 +2,93 @@
 ;;; Author: Wilfred Stapper
 ;;; Copyright © 2015
 
-(defun block-table ( lBlocks a aTitle / d e lData lHeader oTable)
-	(setq lData '())
-	
-	(if lBlocks
-		(cond
-			((setq lBlocks (bm:search lBlocks a))
-				(setq 
-					lHeader (bm:get-attribute-lengths lBlocks) 
-					lData (tm:table-data-add-row lData (mapcar 'car lHeader)) ; First add the table header
-				)
-				
-				;;; Add the table data rows
-				(foreach e lBlocks
-					(setq lData (tm:table-data-add-row lData (bm:get-attributes e)))
-				)
-				
-				;;; Sort the table data
-				(setq lData (tm:table-data-sort lData 2)) ; Sort the table by column '2'
-				(setq lData (tm:table-data-sort lData 1)) ; Sort the table by column '1'
-				
-				;;; Create the AutoCAD table
-				(tm:table-init "Standard" "Courier New")
-				
-				(setq oTable (tm:table-create nil lData))
-				(tm:table-set-title oTable aTitle)
-				(tm:table-set-width oTable (mapcar 'cdr lHeader))
-				(tm:table-show oTable)
-				
-				(princ (strcat "\nTotal blocks found: " (itoa (length lBlocks))))
-				(princ (strcat "\nTotal unique blocks found: " (itoa (length (lm:unique lBlocks)))))
-			)
-			(T (princ (strcat "\nNo blocks found with filter \"" a "\".")))
-		)
-		
+(defun table-insert ( aTitle lWidths lData / oTable )
+	(if (null lWidths)
+		(setq lWidths (tm:data-column-widths lData))
 	)
 	
-	(princ)
+	(tm:table-init "Standard" "Courier New")
+	
+	(setq oTable (tm:table-create nil lData)) ; Create the AutoCAD table
+	(tm:table-set-title oTable aTitle)
+	(tm:table-set-width oTable nil lWidths)
+	(tm:table-show oTable)
 )
 
-(defun c:block-table ( )
-	(block-table (im:select-all-blocks) "*" "BLOCK TABLE")
+(defun table-data ( aFilter lEntities / e lData )
+	(cond
+		((setq lEntities (bm:search aFilter lEntities))
+			; Add header
+			(setq lData (tm:data-row-add (bm:get-attribute-tags|all lEntities) nil))
+			
+			; Add data rows
+			(foreach e lEntities (setq lData (tm:data-row-add (bm:get-attributes e) lData)))
+			
+			(princ (strcat "\nTotal blocks found: " (itoa (length lEntities))))
+			(princ (strcat "\nTotal unique blocks found: " (itoa (length (lm:unique lEntities)))))
+		)
+	)
+	
+	lData
 )
 
-(defun c:btable ( )
-	(block-table (im:select-all-blocks) "BALLOON" "PARTS LIST")
+(defun c:block-table ( / lData )
+	(cm:initialize)
+	
+	(if (setq lData (table-data "*" (im:select-blocks)))
+		(table-insert "BLOCK TABLE" nil lData)
+	)
+	
+	(cm:terminate)
 )
 
-(defun c:ptable ( )
-	(block-table (im:select-all-blocks) "SYMBOL*" "P & I D")
+(defun c:btable ( / lData )
+	(cm:initialize)
+	
+	(if (setq lData (table-data "BALLOON" (im:select-all-blocks)))
+		(table-insert "PARTS LIST" nil lData)
+	)
+	
+	(cm:terminate)
+)
+
+(defun c:ptable ( / i j lData )
+	(defun ID ( j lData )
+		(strcat 
+			(tm:data-cell-value "LETTER" j lData) 
+			" " 
+			(tm:data-cell-value "NUMBER" j lData)
+		)
+	)
+	
+	(cm:initialize)
+	
+	(cond
+		((setq lData (table-data "SYMBOL*" (im:select-all-blocks)))
+			; Sort by column 'Number' and 'Letter'
+			(setq lData (tm:data-column-sort "NUMBER" (tm:data-column-sort "LETTER" lData)))
+			
+			; Add a column named 'ID'
+			(setq lData (tm:data-column-add "ID" 0 lData))
+			
+			; Update column 'ID'
+			(setq i (lm:nth "ID" (car lData)))
+			
+			(repeat (1- (setq j (length lData)))
+				(setq 
+					j (1- j)
+					lData (tm:data-cell-change (ID j lData) i j lData)
+				)
+			)
+			
+			; Remove column 'Number' and 'Letter'
+			(setq lData (tm:data-column-delete "LETTER" (tm:data-column-delete "NUMBER" lData)))
+
+			(table-insert "P & I D" nil lData)
+		)
+	)
+	
+	(cm:terminate)
 )
 
 (princ)

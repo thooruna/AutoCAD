@@ -50,8 +50,8 @@
 			(grvecs (list 7 (cadr l) (car l)))
 		)
 		
-		(initget 128 (lm:lst->str x " "))
-		(setq p (getpoint (car l) (strcat "\nSpecify next point or [" (lm:lst->str x "/") "] <" (car x) ">: ")))
+		(initget 128 (lm:list->string x " "))
+		(setq p (getpoint (car l) (strcat "\nSpecify next point or [" (lm:list->string x "/") "] <" (car x) ">: ")))
 	)
 	
 	(if (null p)
@@ -100,8 +100,8 @@
 (defun im:get-keyword ( a x )
 	(setq x (lm:x->list x))
 	
-	(initget 128 (lm:lst->str x " "))
-	(cond ((getkword (strcat a " [" (lm:lst->str x "/") "] <" (car x) ">: ")))((car x)))
+	(initget 128 (lm:list->string x " "))
+	(cond ((getkword (strcat a " [" (lm:list->string x "/") "] <" (car x) ">: ")))((car x)))
 )
 
 (princ)

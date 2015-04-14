@@ -57,7 +57,7 @@
 	(setq 
 		aBlock "BALLOON"
 		aTag "ID"
-		x (1+ (bm:get-attribute-max (bm:search (im:select-all-blocks) aBlock) aTag))
+		x (1+ (bm:get-attribute-max (bm:search aBlock (im:select-all-blocks)) aTag))
 	)
 	
 	(if (setq e (block-insert aBlock aTag 5 T))
@@ -75,7 +75,7 @@
 	(setq 
 		lBlocks '("SYMBOL-1" "SYMBOL-2")
 		aTag "NUMBER"
-		x (1+ (bm:get-attribute-max (bm:search (im:select-all-blocks) lBlocks) aTag))
+		x (1+ (bm:get-attribute-max (bm:search lBlocks (im:select-all-blocks)) aTag))
 	)
 	
 	(if (setq e (block-insert lBlocks aTag 5 nil))

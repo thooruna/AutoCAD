@@ -20,7 +20,7 @@
 	(defun ShowVariables ( / x )
 		(princ "\nVariables in memory:")
 		
-		(foreach x (lm:diff (atoms-family 0) *ATOMS*)
+		(foreach x (lm:difference (atoms-family 0) *ATOMS*)
 			(cond 
 				((/= x '*ATOMS*)
 					(princ "\n")

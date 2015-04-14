@@ -74,7 +74,7 @@
 
 (defun xm:get-nodes ( aName aContent / aTag aValue l )
 	(if (setq aContent (xm:get-node-string aName aContent))
-		(foreach aTag (lm:unique (lm:str->lst|exclude (sm:string-substitute "<" "</" aContent) "<" ">"))
+		(foreach aTag (lm:unique (lm:string->list|exclude (sm:string-substitute "<" "</" aContent) "<" ">"))
 			(if (setq aValue (sm:string-substring|exclude aContent (strcat "<" aTag ">") (strcat "</" aTag ">")))
 				(setq l (cons (cons aTag aValue) l))
 			)
@@ -91,12 +91,12 @@
 )
 
 (defun xm:get-node-list ( aName aContent )
-	(lm:str->lst|include aContent (strcat "<" aName) (strcat "</" aName ">"))
+	(lm:string->list|include aContent (strcat "<" aName) (strcat "</" aName ">"))
 )
 
 (defun xm:get-attributes ( aName aContent / aTag aValue l )
 	(if (setq aContent (xm:get-attribute-string aName aContent))
-		(foreach aTag (lm:str->lst|exclude aContent " " "=")
+		(foreach aTag (lm:string->list|exclude aContent " " "=")
 			(if (setq aValue (sm:string-substring|exclude aContent (strcat aTag "=\"") "\""))
 				(setq l (cons (cons aTag aValue) l))
 			)
