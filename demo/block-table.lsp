@@ -3,8 +3,10 @@
 ;;; Copyright © 2015
 
 (defun table-insert ( aTitle lWidths lData / oTable )
+	(cm:setvar "CMDECHO" 0)
+	
 	(if (null lWidths)
-		(setq lWidths (tm:data-column-widths lData))
+		(setq lWidths (tm:get-data-column-widths lData))
 	)
 	
 	(tm:table-init "Standard" "Courier New")
@@ -28,6 +30,8 @@
 			(princ (strcat "\nTotal unique blocks found: " (itoa (length (lm:unique lEntities)))))
 		)
 	)
+	
+	
 	
 	lData
 )
@@ -66,7 +70,7 @@
 	(cond
 		((setq lData (table-data "SYMBOL*" (im:select-all-blocks)))
 			; Sort by column 'Number' and 'Letter'
-			(setq lData (tm:data-column-sort "NUMBER" (tm:data-column-sort "LETTER" lData)))
+			(setq lData (tm:data-column-sort "NUMBER,LETTER" lData))
 			
 			; Add a column named 'ID'
 			(setq lData (tm:data-column-add "ID" 0 lData))
@@ -82,8 +86,8 @@
 			)
 			
 			; Remove column 'Number' and 'Letter'
-			(setq lData (tm:data-column-delete "LETTER" (tm:data-column-delete "NUMBER" lData)))
-
+			(setq lData (tm:data-column-delete "NUMBER,LETTER" lData))
+			
 			(table-insert "P & I D" nil lData)
 		)
 	)

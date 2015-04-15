@@ -10,7 +10,16 @@
 			)
 		)
 		((= (type x) 'STR)
-			(list x)
+			(lm:string->list x ",")
+		)
+		(x)
+	)
+)
+
+(defun lm:x->string ( x / i l )
+	(cond
+		((= (type x) 'LIST)
+			(lm:list->string x ",")
 		)
 		(x)
 	)
@@ -103,7 +112,7 @@
 ;;; Unique  -  Lee Mac
 ;;; Returns a list with duplicate elements removed.
 
-(defun lm:unique ( l ) ; LM:unique remand to lm:unique
+(defun lm:unique ( l ) ; LM:unique renamed to lm:unique
 	(if l (cons (car l) (lm:unique (vl-remove (car l) (cdr l)))))
 )
 
@@ -113,7 +122,7 @@
 ;;; del - [str] Delimiter by which to separate the string
 ;;; Returns: [lst] List of strings
  
-(defun lm:string->list ( str del / pos ) ; LM:str->lst remand to lm:string->list
+(defun lm:string->list ( str del / pos ) ; LM:str->lst renamed to lm:string->list
 	(if (setq pos (vl-string-search del str))
 		(cons (substr str 1 pos) (lm:string->list (substr str (+ pos 1 (strlen del))) del))
 		(list str)

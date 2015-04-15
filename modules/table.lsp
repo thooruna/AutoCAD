@@ -4,35 +4,45 @@
 
 ;;; Table data functions
 
-(defun tm:data-column-add ( a i lData )
-	(setq lData (cons (lm:insert-nth a i (car lData)) (mapcar '(lambda (x) (lm:insert-nth "" i x)) (cdr lData)))) 
-)
-
-(defun tm:data-column-delete ( a lData / i )
-	(if (setq i (lm:nth a (car lData)))
-		(mapcar '(lambda (x) (lm:remove-nth i x)) lData)
-		lData
+(defun tm:data-column-add ( xColumns iColumn lData )
+	(foreach a (reverse (lm:x->list xColumns))
+		(setq lData (cons (lm:insert-nth a iColumn (car lData)) (mapcar '(lambda (x) (lm:insert-nth "" iColumn x)) (cdr lData))))
 	)
+	
+	lData
 )
 
-(defun tm:data-column-sort ( a lData / i lTemp )
-	(if (setq i (lm:nth a (car lData)))
-		(setq 
-			; Change the data format for sorting
-			lTemp (mapcar '(lambda (x) (list (nth i x) x)) (cdr lData)) ; Remove the header, add sort column first and nest the row data
-			lTemp (vl-sort lTemp '(lambda (a b) (< (car a) (car b)))) ; Sort the data
-			lTemp (mapcar 'cadr lTemp) ; Change the data format back
-			lData (append (list (car lData)) lTemp) ; Add the header back
+(defun tm:data-column-delete ( xColumns lData / iColumn )
+	(foreach a (lm:x->list xColumns)
+		(if (setq iColumn (lm:nth a (car lData)))
+			(setq lData (mapcar '(lambda (x) (lm:remove-nth iColumn x)) lData))
 		)
-		lData
 	)
+	
+	lData
 )
 
-(defun tm:data-column-widths ( lData / i lTemp lWidths )
+(defun tm:data-column-sort ( xColumns lData / iColumn lTemp )
+	(foreach a (lm:x->list xColumns)
+		(if (setq iColumn (lm:nth a (car lData)))
+			(setq 
+				; Change the data format for sorting
+				lTemp (mapcar '(lambda (x) (list (nth iColumn x) x)) (cdr lData)) ; Remove the header, add sort column first and nest the row data
+				lTemp (vl-sort lTemp '(lambda (a b) (< (car a) (car b)))) ; Sort the data
+				lTemp (mapcar 'cadr lTemp) ; Change the data format back
+				lData (append (list (car lData)) lTemp) ; Add the header back
+			)
+		)
+	)
+	
+	lData
+)
+
+(defun tm:get-data-column-widths ( lData / iColumn lTemp lWidths )
 	(if (setq lTemp (mapcar '(lambda (x) (mapcar 'strlen x)) lData))
-		(repeat (setq i (length (car lTemp)))
-			(setq i (1- i))
-			(setq lWidths (cons (apply 'max (mapcar '(lambda (x) (nth i x)) lTemp)) lWidths))
+		(repeat (setq iColumn (length (car lTemp)))
+			(setq iColumn (1- iColumn))
+			(setq lWidths (cons (apply 'max (mapcar '(lambda (x) (nth iColumn x)) lTemp)) lWidths))
 		)
 	)
 )
@@ -122,9 +132,7 @@
 		iColumns (length (nth 0 lTable))
 	) 
 	
-	(if (null pInsert) 
-		(setq pInsert (im:get-insertion-point))
-	)
+	(if (null pInsert) (setq pInsert (im:get-insertion-point)))
 	
 	(vlax-safearray-fill pt pInsert) 
 	

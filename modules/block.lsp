@@ -186,9 +186,7 @@
 		)
 	)
 	
-	(if (lm:is-list xFilter)
-		(setq xFilter (lm:list->string xFilter ","))
-	)
+	(setq xFilter (lm:x->string xFilter))
 	
 	(foreach e (lm:x->list x)
 		(SearchCurrent e)
