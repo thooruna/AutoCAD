@@ -2,7 +2,7 @@
 ;;; Author: Wilfred Stapper
 ;;; Copyright © 2015
 
-(defun c:ll ( ) (load "acaddoc.lsp")
+(defun c:ll ( ) (load "acaddoc.lsp"))
 
 (defun LoadFile ( aFile )
 	(princ (strcat "\nLoading: " aFile))

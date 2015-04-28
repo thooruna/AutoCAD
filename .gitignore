@@ -1,3 +1,4 @@
 *.dwl2
-symbols/Drawing2.dwl
+*.dwl
 *.bak
+acaddoc.lsp
