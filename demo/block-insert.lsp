@@ -29,6 +29,10 @@
 					)
 					(bm:insert-symbol a p)
 				)
+				
+				(if (and (> (length l) 1) (= rRadius 0))
+					(command "_.TRIM" "" (ssget ":E" p))
+				)
 			)
 		)
 		(princ "\nUnable to find symbols.")
@@ -81,10 +85,33 @@
 	(if (setq e (block-insert lBlocks aTag 5 nil))
 		(if (= (getvar "ATTREQ") 1)
 			(if (setq x (im:get-number "Number" x))
+				(bm:change-attribute-value e aTag (sm:string-left-fill x "0" 3))
+			)
+		)
+	)
+	
+	(princ)
+)
+
+(defun c:tsymbol ( / aTag e lBlocks x )
+	(cm:debug T)
+	(cm:initialize)
+	
+	(setq 
+		lBlocks '("TAG-DEVICE")
+		aTag "?????"
+		x (1+ (bm:get-attribute-max (bm:search lBlocks (im:select-all-blocks)) aTag))
+	)
+	
+	(if (setq e (block-insert lBlocks aTag 0 nil))
+		(if (= (getvar "ATTREQ") 1)
+			(if (setq x (im:get-number "Number" x))
 				(bm:change-attribute-value e aTag (sm:string-left-fill x "0" 4))
 			)
 		)
 	)
+	
+	(cm:terminate)
 	
 	(princ)
 )
