@@ -3,6 +3,7 @@
 ;;; Copyright © 2015
 
 (defun block-insert ( xBlocks aTag rRadius bLeader / a l p )
+	(cm:debug T)
 	(cm:initialize)
 	(cm:setvar "ATTDIA" 0)
 	(cm:setvar "ATTREQ" 0)
@@ -28,10 +29,6 @@
 						(bm:insert-symbol-extension-line a p l)
 					)
 					(bm:insert-symbol a p)
-				)
-				
-				(if (and (> (length l) 1) (= rRadius 0))
-					(command "_.TRIM" "" (ssget ":E" p))
 				)
 			)
 		)

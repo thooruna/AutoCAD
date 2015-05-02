@@ -47,21 +47,30 @@
 
 (defun bm:insert ( a p )
 	(command "_.-INSERT" a p 1 1 0.0)
+	(entlast)
 )
 
 (defun bm:insert-symbol ( a p )
 	(command "_.-INSERT" a p (getvar "DIMSCALE") 0.0)
+	(entlast)
 )
 
 (defun bm:insert-symbol-leader ( a p l )
 	(apply 'command (append '("_.LEADER") (reverse l) (list "_A" "" "_B" a p (getvar "DIMSCALE") 0.0)))
 	(command "_.REDRAW")
+	(entlast)
 )
 
-(defun bm:insert-symbol-extension-line ( a p l )
-	(apply 'command (append '("_.PLINE") (reverse l) '("")))
+(defun bm:insert-symbol-extension-line ( a p l / e )
+	(setq e (bm:insert-extension-line l))
 	(bm:insert-symbol a p)
+	(if (equal p (car l))) (command "_.TRIM" "" (list e (polar p (angle (car l) (cadr l)) 0.001)) ""))
 	(command "_.REDRAW")
+)
+
+(defun bm:insert-extension-line ( l )
+	(apply 'command (append '("_.PLINE") (reverse l) '("")))
+	(entlast)
 )
 
 (defun bm:handle-lengths ( l )
