@@ -1,6 +1,4 @@
-*.dwl
 *.dwl2
+*.dwl
 *.bak
-sample.xml
 acaddoc.lsp
-custom/symbols/*.*

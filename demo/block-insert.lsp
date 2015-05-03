@@ -2,13 +2,12 @@
 ;;; Author: Wilfred Stapper
 ;;; Copyright © 2015
 
-(defun block-insert ( xBlocks rRadius bLeader / a l p )
+(defun block-insert ( xBlocks aTag rRadius bLeader / a l p )
 	(cm:debug T)
 	(cm:initialize)
 	(cm:setvar "ATTDIA" 0)
 	(cm:setvar "ATTREQ" 0)
 	(cm:setvar "AUTOSNAP" 63)
-	(cm:setvar "CLAYER" "0")
 	(cm:setvar "POLARMODE" 0)
 	(cm:setvar "POLARANG" (mm:degrees->radians 15))
 	
@@ -62,7 +61,7 @@
 		x (1+ (bm:get-attribute-max (bm:search aBlock (im:select-all-blocks)) aTag))
 	)
 	
-	(if (setq e (block-insert aBlock 5 T))
+	(if (setq e (block-insert aBlock aTag 5 T))
 		(if (= (getvar "ATTREQ") 1)
 			(if (setq x (im:get-number "ID" x))
 				(bm:change-attribute-value e aTag (sm:string-left-fill x "0" 2))
@@ -80,7 +79,7 @@
 		x (1+ (bm:get-attribute-max (bm:search lBlocks (im:select-all-blocks)) aTag))
 	)
 	
-	(if (setq e (block-insert lBlocks 5 nil))
+	(if (setq e (block-insert lBlocks aTag 5 nil))
 		(if (= (getvar "ATTREQ") 1)
 			(if (setq x (im:get-number "Number" x))
 				(bm:change-attribute-value e aTag (sm:string-left-fill x "0" 3))
@@ -91,20 +90,20 @@
 	(princ)
 )
 
-(defun c:tsymbol ( / aBlocks aTags e iMax )
+(defun c:tsymbol ( / aTag e lBlocks x )
 	(cm:debug T)
 	(cm:initialize)
 	
 	(setq 
-		aBlocks "TAG-DEVICE,TAG-MOTOR" 
-		aTags "`?`?`?`?`?,M`#"
-		iMax (1+ (bm:get-attribute-max (bm:search aBlocks (im:select-all-blocks)) aTags))
+		lBlocks '("TAG-DEVICE")
+		aTag "?????"
+		x (1+ (bm:get-attribute-max (bm:search lBlocks (im:select-all-blocks)) aTag))
 	)
 	
-	(if (setq e (block-insert aBlocks 0 nil))
+	(if (setq e (block-insert lBlocks aTag 0 nil))
 		(if (= (getvar "ATTREQ") 1)
-			(if (setq iMax (im:get-number "Number" iMax))
-				(bm:change-attribute-value e aTags (sm:string-left-fill iMax "0" 4))
+			(if (setq x (im:get-number "Number" x))
+				(bm:change-attribute-value e aTag (sm:string-left-fill x "0" 4))
 			)
 		)
 	)

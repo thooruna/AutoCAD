@@ -47,10 +47,12 @@
 
 (defun bm:insert ( a p )
 	(command "_.-INSERT" a p 1 1 0.0)
+	(entlast)
 )
 
 (defun bm:insert-symbol ( a p )
 	(command "_.-INSERT" a p (getvar "DIMSCALE") 0.0)
+	(entlast)
 )
 
 (defun bm:insert-symbol-leader ( a p l )
@@ -62,9 +64,8 @@
 (defun bm:insert-symbol-extension-line ( a p l / e )
 	(setq e (bm:insert-extension-line l))
 	(bm:insert-symbol a p)
-	(if (equal p (car l)) (command "_.TRIM" "" (list e (polar p (angle (car l) (cadr l)) 0.001)) ""))
+	(if (equal p (car l))) (command "_.TRIM" "" (list e (polar p (angle (car l) (cadr l)) 0.001)) ""))
 	(command "_.REDRAW")
-	e
 )
 
 (defun bm:insert-extension-line ( l )
@@ -80,13 +81,11 @@
 	(em:primary-point x)
 )
 
-(defun bm:get-attribute-value ( e xTags )
-	(if (lm:is-list xTags) (setq xTags (lm:list->string xTags ",")))
-	
+(defun bm:get-attribute-value ( e aTag )
 	(if (= (em:type (setq e (entnext e))) "ATTRIB")
-		(if (wcmatch (strcase (em:name e)) (strcase xTags))
+		(if (= (strcase (em:name e)) (strcase aTag))
 			(em:value e)
-			(bm:get-attribute-value e xTags)
+			(bm:get-attribute-value e aTag)
 		)
 	)
 )
@@ -151,16 +150,16 @@
 	(reverse lAttributes)
 )
 
-(defun bm:get-attribute-max ( l xAttributes / iMax )
+(defun bm:get-attribute-max ( l a )
 	(cond
-		(l (apply 'max (mapcar '(lambda ( x ) (atoi (bm:get-attribute-value x xAttributes))) l)))
+		(l (apply 'max (mapcar '(lambda ( x ) (atoi (cdr (assoc a (bm:get-attributes x))))) l)))
 		(T 0)
 	)
 )
 
-(defun bm:get-attribute-max-length ( l xAttributes )
+(defun bm:get-attribute-max-length ( l a )
 	(cond
-		(l (apply 'max (mapcar '(lambda ( x ) (sm:string-length (bm:get-attribute-value x xAttributes))) l)))
+		(l (apply 'max (mapcar '(lambda ( x ) (sm:string-length (cdr (assoc a (bm:get-attributes x))))) l)))
 		(T 0)
 	)
 )
@@ -205,34 +204,30 @@
 	l
 )
 
-(defun bm:change-attribute-value ( e xTags aValue / l )
-	(if (lm:is-list xTags) (setq xTags (lm:list->string xTags",")))
-	
+(defun bm:change-attribute-value ( e aTag aValue / l )
 	(if (= (em:type (setq l (entget (setq e (entnext e))))) "ATTRIB")
-		(if (wcmatch (strcase (em:name l)) (strcase xTags))
+		(if (= (strcase (em:name l)) (strcase aTag))
 			(if (entmod (subst (cons 1 aValue) (assoc 1 l) l))
 				(progn
 					(entupd e)
 					aValue
 				)
 			)
-			(bm:change-attribute-value e xTags aValue)
+			(bm:change-attribute-value e aTag aValue)
 		)
 	)
 )
 
-(defun bm:change-attribute-tag ( e xTags aValue / l )
-	(if (lm:is-list xTags) (setq xTags (lm:list->string xTags",")))
-	
+(defun bm:change-attribute-tag ( e aTag aValue / l )
 	(if (= (em:type (setq l (entget (setq e (entnext e))))) "ATTRIB")
-		(if (= (strcase (em:name l)) (strcase xTags))
+		(if (= (strcase (em:name l)) (strcase aTag))
 			(if (entmod (subst (cons 2 aValue) (assoc 2 l) l))
 				(progn
 					(entupd e)
 					aValue
 				)
 			)
-			(bm:change-attribute-tag e xTags aValue)
+			(bm:change-attribute-tag e aTag aValue)
 		)
 	)
 )
