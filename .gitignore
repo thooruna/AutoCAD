@@ -2,3 +2,6 @@
 *.dwl
 *.bak
 acaddoc.lsp
+sample.xml
+custom/*
+custom/symbols/*
