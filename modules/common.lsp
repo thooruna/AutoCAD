@@ -2,6 +2,10 @@
 ;;; Author: Wilfred Stapper
 ;;; Copyright © 2015
 
+(defun cm:wcmatch ( a1 a2 )
+	(wcmatch (strcase a1) (strcase a2))
+)
+
 (defun cm:version ()
 	(cond
 		((= (getvar "ACADVER") "") nil)

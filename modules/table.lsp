@@ -47,11 +47,13 @@
 	)
 )
 
-(defun tm:data-row-add ( lValues lData / a d lTemp )
+(defun tm:data-row-add ( xValues lData / a d lTemp )
+	(setq xValues (lm:x->list xValues))
+	
 	(if (= (length lData) 0)
-		(setq lTemp lValues) ; First row is the header row,
+		(setq lTemp xValues) ; First row is the header row,
 		(foreach a (car lData) ; followed by data rows
-			(if (setq d (assoc a lValues))
+			(if (setq d (assoc a xValues))
 				(setq lTemp (append lTemp (list (cdr d))))
 				(setq lTemp (append lTemp (list "")))
 			)

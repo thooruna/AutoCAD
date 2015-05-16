@@ -53,27 +53,27 @@
 	(command "_.-INSERT" a p (getvar "DIMSCALE") 0.0)
 )
 
-(defun bm:insert-symbol-leader ( a p l )
-	(apply 'command (append '("_.LEADER") (reverse l) (list "_A" "" "_B" a p (getvar "DIMSCALE") 0.0)))
+(defun bm:insert-symbol-leader ( a p lPoints )
+	(apply 'command (append '("_.LEADER") (reverse lPoints) (list "_A" "" "_B" a p (getvar "DIMSCALE") 0.0)))
 	(command "_.REDRAW")
 	(entlast)
 )
 
-(defun bm:insert-symbol-extension-line ( a p l / e )
-	(setq e (bm:insert-extension-line l))
+(defun bm:insert-symbol-extension-line ( a p lPoints / e )
+	(setq e (bm:insert-extension-line lPoints))
 	(bm:insert-symbol a p)
-	(if (equal p (car l)) (command "_.TRIM" "" (list e (polar p (angle (car l) (cadr l)) 0.001)) ""))
+	(if (equal p (car lPoints)) (command "_.TRIM" "" (list e (polar p (angle (car lPoints) (cadr lPoints)) 0.001)) ""))
 	(command "_.REDRAW")
 	e
 )
 
-(defun bm:insert-extension-line ( l )
-	(apply 'command (append '("_.PLINE") (reverse l) '("")))
+(defun bm:insert-extension-line ( lPoints )
+	(apply 'command (append '("_.PLINE") (reverse lPoints) '("")))
 	(entlast)
 )
 
-(defun bm:handle-lengths ( l )
-	(apply 'max (mapcar 'strlen (mapcar 'em:handle l)))
+(defun bm:handle-lengths ( lEntities )
+	(apply 'max (mapcar 'strlen (mapcar 'em:handle lEntities)))
 )
 
 (defun bm:insertion-point ( x )
@@ -84,7 +84,7 @@
 	(if (lm:is-list xTags) (setq xTags (lm:list->string xTags ",")))
 	
 	(if (= (em:type (setq e (entnext e))) "ATTRIB")
-		(if (wcmatch (strcase (em:name e)) (strcase xTags))
+		(if (cm:wcmatch (em:name e) xTags)
 			(em:value e)
 			(bm:get-attribute-value e xTags)
 		)
@@ -99,11 +99,11 @@
 	(mapcar 'car (bm:get-attributes e))
 )
 
-(defun bm:get-attribute-tags|all ( lEntities / e a lAttributes )
+(defun bm:get-attribute-tags|all ( lEntities / e aTag lAttributes )
 	(foreach e lEntities
-		(foreach a (bm:get-attribute-tags e)
-			(if (not (member a lAttributes))
-				(setq lAttributes (cons a lAttributes))
+		(foreach aTag (bm:get-attribute-tags e)
+			(if (not (member aTag lAttributes))
+				(setq lAttributes (cons aTag lAttributes))
 			)
 		)
 	)
@@ -117,33 +117,33 @@
 	)
 )
 
-(defun bm:get-attributes|include ( e x )
-	(if (lm:is-list x) (setq x (lm:list->string x ",")))
+(defun bm:get-attributes|include ( e xTags )
+	(if (lm:is-list xTags) (setq xTags (lm:list->string xTags ",")))
 	
 	(if (= (em:type (setq e (entnext e))) "ATTRIB")
-		(if (wcmatch (em:name e) x)
-			(cons (cons (strcase (em:name e)) (em:value e)) (bm:get-attributes|include e x))
-			(bm:get-attributes|include e x)
+		(if (cm:wcmatch (em:name e) xTags)
+			(cons (cons (strcase (em:name e)) (em:value e)) (bm:get-attributes|include e xTags))
+			(bm:get-attributes|include e xTags)
 		)
 	)
 )
 
-(defun bm:get-attributes|exclude ( e x )
-	(if (lm:is-list x) (setq x (lm:list->string x ",")))
+(defun bm:get-attributes|exclude ( e xTags )
+	(if (lm:is-list xTags) (setq xTags (lm:list->string xTags ",")))
 	
 	(if (= (em:type (setq e (entnext e))) "ATTRIB")
-		(if (null (wcmatch (em:name e) x))
-			(cons (cons (strcase (em:name e)) (em:value e)) (bm:get-attributes|exclude e x))
-			(bm:get-attributes|exclude e x)
+		(if (null (cm:wcmatch (em:name e) xTags))
+			(cons (cons (strcase (em:name e)) (em:value e)) (bm:get-attributes|exclude e xTags))
+			(bm:get-attributes|exclude e xTags)
 		)
 	)
 )
 
-(defun bm:get-attribute-lengths ( lEntities / e a lAttributes )
+(defun bm:get-attribute-lengths ( lEntities / e aTag lAttributes )
 	(foreach e lEntities
-		(foreach a (bm:get-attribute-tags e)
-			(if (not (assoc a lAttributes))
-				(setq lAttributes (cons (cons a (max (strlen a) (bm:get-attribute-max-length lEntities a))) lAttributes))
+		(foreach aTag (bm:get-attribute-tags e)
+			(if (not (assoc aTag lAttributes))
+				(setq lAttributes (cons (cons aTag (max (strlen aTag) (bm:get-attribute-max-length lEntities aTag))) lAttributes))
 			)
 		)
 	)
@@ -151,16 +151,16 @@
 	(reverse lAttributes)
 )
 
-(defun bm:get-attribute-max ( l xAttributes / iMax )
+(defun bm:get-attribute-max ( lEntities xAttributes / iMax )
 	(cond
-		(l (apply 'max (mapcar '(lambda ( x ) (atoi (bm:get-attribute-value x xAttributes))) l)))
+		(lEntities (apply 'max (mapcar '(lambda ( x ) (atoi (bm:get-attribute-value x xAttributes))) lEntities)))
 		(T 0)
 	)
 )
 
-(defun bm:get-attribute-max-length ( l xAttributes )
+(defun bm:get-attribute-max-length ( lEntities xAttributes )
 	(cond
-		(l (apply 'max (mapcar '(lambda ( x ) (sm:string-length (bm:get-attribute-value x xAttributes))) l)))
+		(lEntities (apply 'max (mapcar '(lambda ( x ) (sm:string-length (bm:get-attribute-value x xAttributes))) lEntities)))
 		(T 0)
 	)
 )
@@ -190,7 +190,7 @@
 	(defun SearchCurrent ( e )
 		(if (= (em:type e) "INSERT") 
 			(if (bm:has-attributes e)
-				(if (wcmatch (em:name e) xFilter) (setq l (cons e l)))
+				(if (cm:wcmatch (em:name e) xFilter) (setq l (cons e l)))
 				(SearchNested (em:entity-name-reference (tblsearch "BLOCK" (em:name e))))
 			)
 		)
@@ -209,7 +209,7 @@
 	(if (lm:is-list xTags) (setq xTags (lm:list->string xTags",")))
 	
 	(if (= (em:type (setq l (entget (setq e (entnext e))))) "ATTRIB")
-		(if (wcmatch (strcase (em:name l)) (strcase xTags))
+		(if (cm:wcmatch (em:name l) xTags)
 			(if (entmod (subst (cons 1 aValue) (assoc 1 l) l))
 				(progn
 					(entupd e)
@@ -237,9 +237,9 @@
 	)
 )
 
-(defun bm:change-attributes ( e l / d )
-	(foreach d l
-		(bm:change-attribute-value e (car d) (cdr d))
+(defun bm:change-attributes ( e lAttributes / dAttribute )
+	(foreach dAttribute lAttributes
+		(bm:change-attribute-value e (car dAttribute) (cdr dAttribute))
 	)
 )
 
@@ -269,9 +269,9 @@
 	)
 )
 
-(defun bm:replace-block ( e a / l )
+(defun bm:replace-block ( e aTag / l )
 	(if (= (em:type (setq l (entget e))) "INSERT")
-		(if (entmod (subst (cons 2 a) (assoc 2 l) l))
+		(if (entmod (subst (cons 2 aTag) (assoc 2 l) l))
 			(entupd e)
 		)
 	)

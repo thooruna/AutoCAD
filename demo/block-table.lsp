@@ -17,21 +17,21 @@
 	(tm:table-show oTable)
 )
 
-(defun table-data ( aFilter lEntities / e lData )
+(defun table-data ( aFilter xColumns lEntities / e lData )
 	(cond
 		((setq lEntities (bm:search aFilter lEntities))
+			(if (null xColumns) (setq xColumns (bm:get-attribute-tags|all lEntities)))
+			
 			; Add header
-			(setq lData (tm:data-row-add (bm:get-attribute-tags|all lEntities) nil))
+			(setq lData (tm:data-row-add xColumns nil))
 			
 			; Add data rows
-			(foreach e lEntities (setq lData (tm:data-row-add (bm:get-attributes e) lData)))
+			(foreach e lEntities (setq lData (tm:data-row-add (bm:get-attributes|include e xColumns) lData)))
 			
 			(princ (strcat "\nTotal blocks found: " (itoa (length lEntities))))
 			(princ (strcat "\nTotal unique blocks found: " (itoa (length (lm:unique lEntities)))))
 		)
 	)
-	
-	
 	
 	lData
 )
@@ -39,7 +39,7 @@
 (defun c:block-table ( / lData )
 	(cm:initialize)
 	
-	(if (setq lData (table-data "*" (im:select-blocks)))
+	(if (setq lData (table-data "*" nil (im:select-blocks)))
 		(table-insert "BLOCK TABLE" nil lData)
 	)
 	
@@ -49,7 +49,7 @@
 (defun c:btable ( / lData )
 	(cm:initialize)
 	
-	(if (setq lData (table-data "BALLOON" (im:select-all-blocks)))
+	(if (setq lData (table-data "BALLOON" nil (im:select-all-blocks)))
 		(table-insert "PARTS LIST" nil lData)
 	)
 	
@@ -68,7 +68,7 @@
 	(cm:initialize)
 	
 	(cond
-		((setq lData (table-data "SYMBOL*" (im:select-all-blocks)))
+		((setq lData (table-data "SYMBOL*" "NUMBER,LETTER,DESCRIPTION" (im:select-all-blocks)))
 			; Sort by column 'Number' and 'Letter'
 			(setq lData (tm:data-column-sort "NUMBER,LETTER" lData))
 			
