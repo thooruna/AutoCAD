@@ -196,7 +196,7 @@
 		)
 	)
 	
-	(setq xFilter (lm:x->string xFilter))
+	(setq xFilter (strcase (lm:x->string xFilter)))
 	
 	(foreach e (lm:x->list x)
 		(SearchCurrent e)

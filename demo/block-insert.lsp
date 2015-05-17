@@ -91,25 +91,3 @@
 	(princ)
 )
 
-(defun c:tsymbol ( / aBlocks aTags e iMax )
-	(cm:debug T)
-	(cm:initialize)
-	
-	(setq 
-		aBlocks "TAG-DEVICE,TAG-MOTOR" 
-		aTags "`?`?`?`?`?,M`#"
-		iMax (1+ (bm:get-attribute-max (bm:search aBlocks (im:select-all-blocks)) aTags))
-	)
-	
-	(if (setq e (block-insert aBlocks 0 nil))
-		(if (= (getvar "ATTREQ") 1)
-			(if (setq iMax (im:get-number "Number" iMax))
-				(bm:change-attribute-value e aTags (sm:string-left-fill iMax "0" 4))
-			)
-		)
-	)
-	
-	(cm:terminate)
-	
-	(princ)
-)
