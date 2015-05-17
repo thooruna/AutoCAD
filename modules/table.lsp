@@ -53,7 +53,7 @@
 	(if (= (length lData) 0)
 		(setq lTemp xValues) ; First row is the header row,
 		(foreach a (car lData) ; followed by data rows
-			(if (setq d (assoc a xValues))
+			(if (setq d (assoc (strcase a) xValues))
 				(setq lTemp (append lTemp (list (cdr d))))
 				(setq lTemp (append lTemp (list "")))
 			)

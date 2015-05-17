@@ -84,7 +84,7 @@
 	(if (lm:is-list xTags) (setq xTags (lm:list->string xTags ",")))
 	
 	(if (= (em:type (setq e (entnext e))) "ATTRIB")
-		(if (cm:wcmatch (em:name e) xTags)
+		(if (sm:string-match (em:name e) xTags)
 			(em:value e)
 			(bm:get-attribute-value e xTags)
 		)
@@ -121,7 +121,7 @@
 	(if (lm:is-list xTags) (setq xTags (lm:list->string xTags ",")))
 	
 	(if (= (em:type (setq e (entnext e))) "ATTRIB")
-		(if (cm:wcmatch (em:name e) xTags)
+		(if (sm:string-match (em:name e) xTags)
 			(cons (cons (strcase (em:name e)) (em:value e)) (bm:get-attributes|include e xTags))
 			(bm:get-attributes|include e xTags)
 		)
@@ -132,7 +132,7 @@
 	(if (lm:is-list xTags) (setq xTags (lm:list->string xTags ",")))
 	
 	(if (= (em:type (setq e (entnext e))) "ATTRIB")
-		(if (null (cm:wcmatch (em:name e) xTags))
+		(if (null (sm:string-match (em:name e) xTags))
 			(cons (cons (strcase (em:name e)) (em:value e)) (bm:get-attributes|exclude e xTags))
 			(bm:get-attributes|exclude e xTags)
 		)
@@ -190,7 +190,7 @@
 	(defun SearchCurrent ( e )
 		(if (= (em:type e) "INSERT") 
 			(if (bm:has-attributes e)
-				(if (cm:wcmatch (em:name e) xFilter) (setq l (cons e l)))
+				(if (wcmatch (strcase (em:name e)) (strcase xFilter)) (setq l (cons e l)))
 				(SearchNested (em:entity-name-reference (tblsearch "BLOCK" (em:name e))))
 			)
 		)
@@ -209,7 +209,7 @@
 	(if (lm:is-list xTags) (setq xTags (lm:list->string xTags",")))
 	
 	(if (= (em:type (setq l (entget (setq e (entnext e))))) "ATTRIB")
-		(if (cm:wcmatch (em:name l) xTags)
+		(if (sm:string-match (em:name l) xTags)
 			(if (entmod (subst (cons 1 aValue) (assoc 1 l) l))
 				(progn
 					(entupd e)

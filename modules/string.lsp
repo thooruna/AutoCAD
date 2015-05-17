@@ -11,6 +11,30 @@
 	)
 )
 
+;; Escape wildcard characters in a string except for the comma
+
+(defun sm:string-escape ( a )
+	(vl-list->string
+		(apply 'append
+			(mapcar
+				'(lambda ( x )
+					(if (member x '(35 42 45 46 63 64 91 93 126))
+						(list 96 x)
+						(list x)
+					)
+				)
+				(vl-string->list a)
+			)
+		)
+	)
+)
+
+;;; Simplified wcmatch command (case insensitive, escaped and no wildcards except for the comma)
+
+(defun sm:string-match ( a1 a2 )
+	(wcmatch (strcase a1) (strcase (sm:string-escape a2)))
+)
+
 (defun sm:string-lowercase ( x )
 	(cond
 		((= (type x) 'STRING) (strcase x T))
