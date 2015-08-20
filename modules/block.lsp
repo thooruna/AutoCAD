@@ -277,6 +277,13 @@
 	)
 )
 
+(defun bm:move-block ( e p / l )
+	(if (= (em:type (setq l (entget e))) "INSERT")
+		(if (entmod (subst (cons 10 (mapcar '+ (em:primary-point l) p)) (assoc 10 l) l))
+			(entupd e)
+		)
+	)
+)
 
 (princ)
 
