@@ -2,6 +2,14 @@
 ;;; Author: Wilfred Stapper
 ;;; Copyright © 2015
 
+(defun im:select-all-blocks|nested ( / s )
+	(bm:search-blocks "*" (im:select-all-blocks))
+)
+
+(defun im:select-all-blocks|nested&filter ( a / s )
+	(bm:search-blocks a (im:select-all-blocks))
+)
+
 (defun im:select-all-blocks ( / s )
 	(cond
 		((setq s (ssget "_X" '((0 . "INSERT")))))
@@ -11,7 +19,7 @@
 	(lm:x->list s)
 )
 
-(defun im:select-blocks-filter ( a / s )
+(defun im:select-blocks|filter ( a / s )
 	(if (null (setq s (ssget  "_X" (list (cons 0 "INSERT") (cons 2 a)))))
 		(princ "\nNo blocks were selected.")
 	)

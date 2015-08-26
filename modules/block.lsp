@@ -179,7 +179,32 @@
 	(= (em:entities-follow x) 1)
 )
 
-(defun bm:search ( xFilter x / e l )
+(defun bm:search-blocks ( xFilter x / e l )
+	(defun SearchNested ( e )
+		(while e
+			(SearchCurrent e)
+			(setq e (entnext e))
+		)
+	)
+	
+	(defun SearchCurrent ( e )
+		(if (= (em:type e) "INSERT") 
+			(if (wcmatch (strcase (em:name e)) (strcase xFilter)) (setq l (cons e l))
+				(SearchNested (em:entity-name-reference (tblsearch "BLOCK" (em:name e))))
+			)
+		)
+	)
+	
+	(setq xFilter (strcase (lm:x->string xFilter)))
+	
+	(foreach e (lm:x->list x)
+		(SearchCurrent e)
+	)
+	
+	l
+)
+
+(defun bm:search-blocks-with-attributes ( xFilter x / e l )
 	(defun SearchNested ( e )
 		(while e
 			(SearchCurrent e)

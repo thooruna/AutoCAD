@@ -35,7 +35,7 @@
 	
 	(if lBlocks
 		(cond
-			((setq lBlocks (bm:search aFilter lBlocks))
+			((setq lBlocks (bm:search-blocks-with-attributes aFilter lBlocks))
 				(setq lHeader (bm:get-attribute-lengths lBlocks))
 				
 				(setq i (max (bm:handle-lengths lBlocks) (strlen "Handle"))) ; Max length for handle string

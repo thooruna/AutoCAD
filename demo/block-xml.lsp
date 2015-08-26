@@ -29,7 +29,7 @@
 	
 	(if lBlocks
 		(cond
-			((setq lBlocks (bm:search aFilter lBlocks))
+			((setq lBlocks (bm:search-blocks-with-attributes aFilter lBlocks))
 				(foreach e lBlocks
 					(setq aContent (strcat aContent (xm:create-node "OBJECT" (xm:create-nodes (bm:get-attributes e)) (bm:get-id e))))
 				)

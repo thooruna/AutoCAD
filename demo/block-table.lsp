@@ -19,7 +19,7 @@
 
 (defun table-data ( aFilter xColumns lEntities / e lData )
 	(cond
-		((setq lEntities (bm:search aFilter lEntities))
+		((setq lEntities (bm:search-blocks-with-attributes aFilter lEntities))
 			(if (null xColumns) (setq xColumns (bm:get-attribute-tags|all lEntities)))
 			
 			; Add header

@@ -4,7 +4,7 @@
 
 (defun update-titleblocks ( eSource / eDestination lAttributes lEntities )
 	(if (setq lAttributes (bm:get-attributes|exclude eSource "UNITS,SHEET"))
-		(if (setq lEntities (im:select-blocks-filter (em:name eSource)))
+		(if (setq lEntities (im:select-blocks|filter (em:name eSource)))
 			(foreach eDestination lEntities
 				(bm:change-attributes eDestination lAttributes)
 			)
