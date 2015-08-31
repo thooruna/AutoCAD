@@ -64,6 +64,7 @@
 	(cond
 		(f 
 			(write-line "<?xml version=\"1.0\"?>" f)
+			(write-line "<?xml-stylesheet type=\"text/xsl\" href=\"../reports/block-list.xsl\"?>" f)
 			(write-line aContent f)
 			(close f)
 		)

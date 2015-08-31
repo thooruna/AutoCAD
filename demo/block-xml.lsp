@@ -50,7 +50,7 @@
 )
 
 (defun c:block-xml-write ( )
-	(block-xml-write (im:select-all-blocks) "SYMBOL*")
+	(block-xml-write (im:select-all-blocks) "*")
 )
 
 (princ)

@@ -2,7 +2,7 @@
 ;;; Author: Wilfred Stapper
 ;;; Copyright © 2015
 
-(defun block-list ( lBlocks aFilter / d e i lAttributes lHeader )
+(defun screen-list ( lBlocks aFilter / d e i lAttributes lHeader )
 	(defun PrintDivider ()
 		(princ (sm:string-right-fill "\n" "=" (+ i 3 (length lHeader) (apply '+ (mapcar 'cdr lHeader)))))
 	)
@@ -60,9 +60,22 @@
 	(princ)
 )
 
+(defun xml-list ( s a )
+	(block-xml-write s a)
+)
+
+(defun block-list ( s a )
+	(setq x (im:get-keyword "\nOutput to " '("Screen" "Xml")))
+	
+	(cond 
+		((= x "Screen") (screen-list s a))
+		((= x "Xml") (xml-list s a))
+	)
+)
+
 (defun c:block-list ( / aFilter )
 	(foreach aFilter (bm:list)
-		(block-list (im:select-all-blocks) aFilter)
+		(screen-list (im:select-all-blocks) aFilter)
 	)
 )
 
