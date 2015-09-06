@@ -23,6 +23,14 @@
 	;(strcase a T)
 )
 
+(defun xm:add-version ()
+	"<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+)
+
+(defun xm:add-stylesheet ( a )
+	(strcat "\n<?xml-stylesheet type=\"text/xsl\" href=\"" a "\"?>")
+)
+
 (defun xm:create-nodes ( x / a d )
 	(setq a "")
 	
@@ -58,13 +66,12 @@
 	a
 )
 
-(defun xm:write-file ( aFile aContent / f )
+(defun xm:write-file ( aFile aHeader aContent / f )
 	(setq f (open aFile "w")) 
 	
 	(cond
 		(f 
-			(write-line "<?xml version=\"1.0\"?>" f)
-			(write-line "<?xml-stylesheet type=\"text/xsl\" href=\"../reports/block-list.xsl\"?>" f)
+			(write-line aHeader f)
 			(write-line aContent f)
 			(close f)
 		)

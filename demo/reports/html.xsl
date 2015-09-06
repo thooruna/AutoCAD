@@ -1,16 +1,16 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 	<xsl:output method="html"/>
-	<xsl:key name="blockname" match="OBJECT" use="@NAME" />
+	<xsl:key name="blockname" match="INSERT" use="@NAME" />
 	<xsl:template match="/">
 		<html>
 			<head>
-				<link rel="stylesheet" href="../reports/block-list.css" type="text/css"/>
+				<link rel="stylesheet" href="{/@reports}/html.css" type="text/css"/>
 				<title>BLOCK LIST</title>
 			</head>
 			<body>
 				<h1>BLOCK LIST</h1>
-				<xsl:for-each select="/ROOT/OBJECT[generate-id(.)=generate-id(key('blockname', @NAME))]/@NAME">
+				<xsl:for-each select="//INSERT[generate-id(.)=generate-id(key('blockname', @NAME))]/@NAME">
 					<xsl:sort />
 					<h2><xsl:value-of select="." disable-output-escaping="yes" /></h2>
 					<table><xsl:for-each select="key('blockname', .)[1]">
