@@ -81,7 +81,7 @@
 )
 
 (defun bm:get-attribute-value ( e xTags )
-	(if (lm:is-list xTags) (setq xTags (lm:list->string xTags ",")))
+	(if (lm:is-list xTags) (setq xTags (lm:x->string xTags)))
 	
 	(if (= (em:type (setq e (entnext e))) "ATTRIB")
 		(if (sm:string-match (em:name e) xTags)
@@ -118,7 +118,7 @@
 )
 
 (defun bm:get-attributes|include ( e xTags )
-	(if (lm:is-list xTags) (setq xTags (lm:list->string xTags ",")))
+	(if (lm:is-list xTags) (setq xTags (lm:x->string xTags)))
 	
 	(if (= (em:type (setq e (entnext e))) "ATTRIB")
 		(if (sm:string-match (em:name e) xTags)
@@ -129,7 +129,7 @@
 )
 
 (defun bm:get-attributes|exclude ( e xTags )
-	(if (lm:is-list xTags) (setq xTags (lm:list->string xTags ",")))
+	(if (lm:is-list xTags) (setq xTags (lm:x->string xTags)))
 	
 	(if (= (em:type (setq e (entnext e))) "ATTRIB")
 		(if (null (sm:string-match (em:name e) xTags))
@@ -231,7 +231,7 @@
 )
 
 (defun bm:change-attribute-value ( e xTags aValue / l )
-	(if (lm:is-list xTags) (setq xTags (lm:list->string xTags",")))
+	(if (lm:is-list xTags) (setq xTags (lm:x->string xTags)))
 	
 	(if (= (em:type (setq l (entget (setq e (entnext e))))) "ATTRIB")
 		(if (sm:string-match (em:name l) xTags)
@@ -247,7 +247,7 @@
 )
 
 (defun bm:change-attribute-tag ( e xTags aValue / l )
-	(if (lm:is-list xTags) (setq xTags (lm:list->string xTags",")))
+	(if (lm:is-list xTags) (setq xTags (lm:x->string xTags)))
 	
 	(if (= (em:type (setq l (entget (setq e (entnext e))))) "ATTRIB")
 		(if (= (strcase (em:name l)) (strcase xTags))

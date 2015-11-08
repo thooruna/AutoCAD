@@ -115,6 +115,24 @@
 	)
 )
 
+(defun sm:string-name ( aString / aPattern iEnd )
+	(setq aPattern "=")
+	
+	(if (setq iEnd (vl-string-search aPattern aString))
+		(substr aString 1 iEnd)
+		aString
+	)
+)
+
+(defun sm:string-value ( aString / aPattern iStart )
+	(setq aPattern "=")
+	
+	(if (setq iStart (vl-string-search aPattern aString))
+		(substr aString (+ iStart 2))
+		aString
+	)
+)
+
 ;;; Find a substring with start and end pattern, including the pattern
 ;;; aString - The string to be searched
 ;;; aStart - A string containing the start pattern

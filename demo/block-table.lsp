@@ -17,16 +17,13 @@
 	(tm:table-show oTable)
 )
 
-(defun table-data ( aFilter xColumns lEntities / e lData )
+(defun table-data ( xBlocks xColumns aFilter lEntities / e lData )
 	(cond
-		((setq lEntities (bm:search-blocks-with-attributes aFilter lEntities))
+		((setq lEntities (bm:search-blocks-with-attributes xBlocks lEntities))
 			(if (null xColumns) (setq xColumns (bm:get-attribute-tags|all lEntities)))
 			
-			; Add header
-			(setq lData (tm:data-row-add xColumns nil))
-			
-			; Add data rows
-			(foreach e lEntities (setq lData (tm:data-row-add (bm:get-attributes|include e xColumns) lData)))
+			; Add rows
+			(foreach e lEntities (setq lData (tm:data-row-add xColumns (bm:get-attributes e) aFilter lData)))
 			
 			(princ (strcat "\nTotal blocks found: " (itoa (length lEntities))))
 			(princ (strcat "\nTotal unique blocks found: " (itoa (length (lm:unique lEntities)))))
@@ -39,7 +36,7 @@
 (defun c:block-table ( / lData )
 	(cm:initialize)
 	
-	(if (setq lData (table-data "*" nil (im:select-blocks)))
+	(if (setq lData (table-data "*" nil nil (im:select-blocks)))
 		(table-insert "BLOCK TABLE" nil lData)
 	)
 	
@@ -49,41 +46,34 @@
 (defun c:btable ( / lData )
 	(cm:initialize)
 	
-	(if (setq lData (table-data "BALLOON" nil (im:select-all-blocks)))
+	(if (setq lData (table-data "BALLOON" nil nil (im:select-all-blocks)))
 		(table-insert "PARTS LIST" nil lData)
 	)
 	
 	(cm:terminate)
 )
 
-(defun c:ptable ( / i j lData )
-	(defun ID ( j lData )
-		(strcat 
-			(tm:data-cell-value "LETTER" j lData) 
-			" " 
-			(tm:data-cell-value "NUMBER" j lData)
-		)
-	)
-	
+(defun c:ptable ( / aFilter lData )
+	(cm:debug T)
 	(cm:initialize)
 	
+	(initget "1 2 3 4 5 6 7 8 9 0 *" 131)
+	(setq aFilter (getkword "\nFilter group [1/2/3/4/5/6/7/8/9/0/*] <*>: "))
+	(if (= aFilter "*") (setq aFilter nil))
+	
 	(cond
-		((setq lData (table-data "SYMBOL*" "NUMBER,LETTER,DESCRIPTION" (im:select-all-blocks)))
-			; Sort by column 'Number' and 'Letter'
-			(setq lData (tm:data-column-sort "NUMBER,LETTER" lData))
-			
-			; Add a column named 'ID'
-			(setq lData (tm:data-column-add "ID" 0 lData))
-			
-			; Update column 'ID'
-			(setq i (lm:nth "ID" (car lData)))
-			
-			(repeat (1- (setq j (length lData)))
-				(setq 
-					j (1- j)
-					lData (tm:data-cell-change (ID j lData) i j lData)
+		(
+			(setq lData 
+				(table-data 
+					"SYMBOL*"
+					"NUMBER,LETTER,ID=LETTER|NUMBER,DESCRIPTION"
+					(if aFilter (strcat "NUMBER=" aFilter "*"))
+					(im:select-all-blocks)
 				)
 			)
+			
+			; Sort by column 'Number' and 'Letter'
+			(setq lData (tm:data-column-sort "NUMBER,LETTER" lData))
 			
 			; Remove column 'Number' and 'Letter'
 			(setq lData (tm:data-column-delete "NUMBER,LETTER" lData))

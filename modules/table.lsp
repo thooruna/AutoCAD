@@ -22,9 +22,9 @@
 	lData
 )
 
-(defun tm:data-column-sort ( xColumns lData / iColumn lTemp )
-	(foreach a (lm:x->list xColumns)
-		(if (setq iColumn (lm:nth a (car lData)))
+(defun tm:data-column-sort ( xColumns lData / aColumn iColumn lTemp )
+	(foreach aColumn (lm:x->list xColumns)
+		(if (setq iColumn (lm:nth aColumn (car lData)))
 			(setq 
 				; Change the data format for sorting
 				lTemp (mapcar '(lambda (x) (list (nth iColumn x) x)) (cdr lData)) ; Remove the header, add sort column first and nest the row data
@@ -47,20 +47,36 @@
 	)
 )
 
-(defun tm:data-row-add ( xValues lData / a d lTemp )
-	(setq xValues (lm:x->list xValues))
-	
-	(if (= (length lData) 0)
-		(setq lTemp xValues) ; First row is the header row,
-		(foreach a (car lData) ; followed by data rows
-			(if (setq d (assoc (strcase a) xValues))
-				(setq lTemp (append lTemp (list (cdr d))))
-				(setq lTemp (append lTemp (list "")))
-			)
-		)
+(defun tm:data-row-add ( xColumns xValues aFilter lData / aAttribute aColumn aSpace aTemp aValue d lTemp )
+	(setq 
+		xColumns (lm:x->list xColumns)
+		xValues (lm:x->list xValues)
 	)
 	
-	(append lData (list lTemp))
+	(if (= (length lData) 0)
+		(setq lData (list (mapcar 'sm:string-name xColumns))) ; First row is the header row,
+	)
+	
+	(foreach aColumn (mapcar 'sm:string-value xColumns) ; followed by data rows
+		(setq aTemp "")
+		(foreach aAttribute (lm:string->list aColumn "|")
+			(if (wcmatch aAttribute "<*>")
+				(setq aSpace (sm:string-substring|exclude aAttribute "<" ">"))
+				(if (setq d (assoc (strcase aAttribute) xValues))
+					(if (> (sm:string-length (setq aValue (if (/= (cdr d) "?") (cdr d) ""))) 0)
+						(setq aTemp (if (= aTemp "") aValue (strcat aTemp (if aSpace aSpace " ") aValue)))
+					)
+				)
+			)
+		)
+		(setq lTemp (append lTemp (list aTemp)))
+	)
+	
+	(if (if aFilter (wcmatch (nth (lm:nth (sm:string-name aFilter) (car lData)) lTemp) (sm:string-value aFilter)) T)
+		(setq lData (append lData (list lTemp)))
+	)
+	
+	lData
 )
 
 (defun tm:data-cell-change ( a x j lData )
@@ -91,7 +107,7 @@
 	tm:table-title-text-height 5
 )
 
-(defun tm:table-init ( a1 a2 / acad doc dicts dictObj myTableStyle)
+(defun tm:table-init ( a1 a2 / acad doc dicts dictObj myTableStyle )
 	(command "._STYLE" a1 a2 0 1 0 "" "")
 	
 	(vl-load-com)
@@ -175,7 +191,7 @@
 	oTable
 )
 
-(defun tm:table-set-title ( oTable a)
+(defun tm:table-set-title ( oTable a )
 	(vla-SetText oTable 0 0 a)
 )
 
