@@ -4,6 +4,15 @@
 
 ;;; Table data functions
 
+(defun tm:get-data-column-widths ( lData / iColumn lTemp lWidths )
+	(if (setq lTemp (mapcar '(lambda (x) (mapcar 'strlen x)) lData))
+		(repeat (setq iColumn (length (car lTemp)))
+			(setq iColumn (1- iColumn))
+			(setq lWidths (cons (apply 'max (mapcar '(lambda (x) (nth iColumn x)) lTemp)) lWidths))
+		)
+	)
+)
+
 (defun tm:data-column-add ( xColumns iColumn lData )
 	(foreach a (reverse (lm:x->list xColumns))
 		(setq lData (cons (lm:insert-nth a iColumn (car lData)) (mapcar '(lambda (x) (lm:insert-nth "" iColumn x)) (cdr lData))))
@@ -38,45 +47,8 @@
 	lData
 )
 
-(defun tm:get-data-column-widths ( lData / iColumn lTemp lWidths )
-	(if (setq lTemp (mapcar '(lambda (x) (mapcar 'strlen x)) lData))
-		(repeat (setq iColumn (length (car lTemp)))
-			(setq iColumn (1- iColumn))
-			(setq lWidths (cons (apply 'max (mapcar '(lambda (x) (nth iColumn x)) lTemp)) lWidths))
-		)
-	)
-)
-
-(defun tm:data-row-add ( xColumns xValues aFilter lData / aAttribute aColumn aSpace aTemp aValue d lTemp )
-	(setq 
-		xColumns (lm:x->list xColumns)
-		xValues (lm:x->list xValues)
-	)
-	
-	(if (= (length lData) 0)
-		(setq lData (list (mapcar 'sm:string-name xColumns))) ; First row is the header row,
-	)
-	
-	(foreach aColumn (mapcar 'sm:string-value xColumns) ; followed by data rows
-		(setq aTemp "")
-		(foreach aAttribute (lm:string->list aColumn "|")
-			(if (wcmatch aAttribute "<*>")
-				(setq aSpace (sm:string-substring|exclude aAttribute "<" ">"))
-				(if (setq d (assoc (strcase aAttribute) xValues))
-					(if (> (sm:string-length (setq aValue (if (/= (cdr d) "?") (cdr d) ""))) 0)
-						(setq aTemp (if (= aTemp "") aValue (strcat aTemp (if aSpace aSpace " ") aValue)))
-					)
-				)
-			)
-		)
-		(setq lTemp (append lTemp (list aTemp)))
-	)
-	
-	(if (if aFilter (wcmatch (nth (lm:nth (sm:string-name aFilter) (car lData)) lTemp) (sm:string-value aFilter)) T)
-		(setq lData (append lData (list lTemp)))
-	)
-	
-	lData
+(defun tm:data-row-add ( lTemp lData )
+	(append lData (list lTemp))
 )
 
 (defun tm:data-cell-change ( a x j lData )
