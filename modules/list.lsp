@@ -167,6 +167,34 @@
 	)
 )
 
+;;; Parse Numbers  -  Lee Mac
+;;; Parses a list of numerical values from a supplied string.
+
+(defun lm:string->list|numbers ( a )
+	((lambda ( l )
+		(read
+			(strcat "("
+				(vl-list->string
+					(mapcar
+						'(lambda ( a b c )
+							(if (or (< 47 b 58)
+									(and (= 45 b) (< 47 c 58) (not (< 47 a 58)))
+									(and (= 46 b) (< 47 a 58) (< 47 c 58))
+								)
+									b 32
+							)
+                            )
+                            (cons nil l) l (append (cdr l) '(()))
+					)
+				)
+				")"
+			)
+		))
+		
+		(vl-string->list a)
+	)
+)
+
 ;;; List to String  -  Lee Mac
 ;;; Concatenates each string in a supplied list, separated by a given delimiter
 ;;; lst - [lst] List of strings to concatenate

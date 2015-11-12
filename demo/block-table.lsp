@@ -19,7 +19,7 @@
 
 (defun table-data ( xBlocks xColumns aFilter lEntities / e aAttribute aColumn aSpace aTemp aValue d lTemp )
 	(cond
-		((setq lEntities (bm:search-blocks-with-attributes xBlocks lEntities))
+		((setq lEntities (bm:search-blocks-with-attributes|all xBlocks lEntities))
 			(setq 
 				xColumns (lm:x->list (if xColumns xColumns (bm:get-attribute-tags|all lEntities)))
 				lData (if (> (length lData) 0) lData (list (mapcar 'sm:string-name xColumns)))

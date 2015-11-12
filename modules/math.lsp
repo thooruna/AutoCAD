@@ -10,6 +10,12 @@
 	(/ (* r 180.0) pi)
 )
 
+(defun mm:is-number ( a / l )
+	(if (= (length (setq l (lm:string->list|numbers a))) 1)
+		(= (car l) (atof a))
+	)
+)
+
 ;;; Written by Lee Ambrosius on: 6/6/04
 ;;; Command toggles the bit of the value (typically used for OSMODE)
 ;;; Value of 'on' determines if bit is to be on (1), off (-1), or toggled (0 or nil)

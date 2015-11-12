@@ -148,10 +148,10 @@
 		(while (<= cell nCols) 
 			(vla-SetText oTable row cell (nth cell lRow))
 			;Set the cell alignment
-			;(if (or (and (and (or (= cell 0) (= cell 2)) (> row 1)) (= iColumns 4)) (IsNumber (nth cell lRow)))
-			;	(vla-SetCellAlignment oTable row cell acMiddleRight) ; Only used by ptable
-			;	(vla-SetCellAlignment oTable row cell acMiddleLeft)
-			;)
+			(if (and (> row 1) (or (= cell 0) (mm:is-number (nth cell lRow))))
+				(vla-SetCellAlignment oTable row cell acMiddleRight)
+				(vla-SetCellAlignment oTable row cell acMiddleLeft)
+			)
 			(setq cell (1+ cell)) 
 		);while 
 		(setq row (1+ row)) 

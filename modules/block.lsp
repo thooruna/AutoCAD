@@ -204,7 +204,7 @@
 	l
 )
 
-(defun bm:search-blocks-with-attributes ( xFilter x / e l )
+(defun bm:search-blocks-with-attributes|all ( xFilter x / e l )
 	(defun SearchNested ( e )
 		(while e
 			(SearchCurrent e)
@@ -225,6 +225,42 @@
 	
 	(foreach e (lm:x->list x)
 		(SearchCurrent e)
+	)
+	
+	l
+)
+
+(defun bm:search-blocks-with-attributes|two-levels ( xFilter x / e l )
+	(defun SearchNested ( e )
+		(while e
+			(if (and (= (em:type e) "INSERT")  (bm:has-attributes e)) (SearchCurrent e))
+			(setq e (entnext e))
+		)
+	)
+	
+	(defun SearchCurrent ( e )
+		(if (wcmatch (strcase (em:name e)) (strcase xFilter)) (setq l (cons e l)))
+	)
+	
+	(setq xFilter (strcase (lm:x->string xFilter)))
+	
+	(foreach e (lm:x->list x)
+		(if (bm:has-attributes e)
+			(SearchCurrent e)
+			(SearchNested (em:entity-name-reference (tblsearch "BLOCK" (em:name e))))
+		)
+	)
+	
+	l
+)
+
+(defun bm:search-blocks-with-attributes ( xFilter x / e l )
+	(setq xFilter (strcase (lm:x->string xFilter)))
+	
+	(foreach e (lm:x->list x)
+		(if (bm:has-attributes e)
+			(if (wcmatch (strcase (em:name e)) (strcase xFilter)) (setq l (cons e l)))
+		)
 	)
 	
 	l
