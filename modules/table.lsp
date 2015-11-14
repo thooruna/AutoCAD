@@ -79,8 +79,13 @@
 	tm:table-title-text-height 5
 )
 
-(defun tm:table-init ( a1 a2 / acad doc dicts dictObj myTableStyle )
-	(command "._STYLE" a1 a2 0 1 0 "" "")
+(defun tm:table-init ( aStyle aFont / acad doc dicts dictObj myTableStyle )
+	(setq 
+		aStyle (if aStyle aStyle "Standard")
+		aFont (if aFont aFont "Courier New")
+	)
+	
+	(command "._STYLE" aStyle aFont 0 1 0 "" "")
 	
 	(vl-load-com)
 	
@@ -88,10 +93,10 @@
 	(setq doc (vla-get-ActiveDocument acad)) ; Get the current document
 	(setq dicts (vla-get-Dictionaries doc)) ; Get the Dictionaries collection
 	(setq dictObj (vla-Item dicts "acad_tablestyle")) ; Get the TableStyle dictionary
-	(setq myTableStyle (vla-AddObject dictObj a1 "AcDbTableStyle")) ; Create a custom table style
+	(setq myTableStyle (vla-AddObject dictObj aStyle "AcDbTableStyle")) ; Create a custom table style
 	
-	(vla-put-Name myTableStyle a1) ; Set the name for the style
-	(vla-put-Description myTableStyle a1) ; Set the description for the style
+	(vla-put-Name myTableStyle aStyle) ; Set the name for the style
+	(vla-put-Description myTableStyle aStyle) ; Set the description for the style
 	(vla-put-BitFlags myTableStyle 1)  ; Sets the bit flag value for the style
 	(vla-put-FlowDirection myTableStyle acTableTopToBottom) ; Sets the direction of the table, top to bottom or bottom to top
 	(vla-put-HeaderSuppressed myTableStyle :vlax-false) ; Sets the supression of the table header
@@ -102,9 +107,9 @@
 	(vla-SetAlignment myTableStyle acDataRow acMiddleLeft) ; Set the alignment for the Data rows
 	(vla-SetTextHeight myTableStyle acTitleRow tm:table-title-text-height) ; Set the text height for the Title rows
 	(vla-SetTextHeight myTableStyle (+ acDataRow acHeaderRow) tm:table-cell-text-height) ; Set the text height for the Header and Data rows
-	(vla-SetTextStyle myTableStyle (+ acDataRow acHeaderRow acTitleRow) a1) ; Set the text style
+	(vla-SetTextStyle myTableStyle (+ acDataRow acHeaderRow acTitleRow) aStyle) ; Set the text style
 	
-	(setvar "CTABLESTYLE" a1) ; Set the current table style
+	(cm:setvar "CTABLESTYLE" aStyle) ; Set the current table style
 )
 
 (defun tm:table-create ( pInsert lTable / pt iRows iColumns oTable nRows nCols row cell lRow )
@@ -167,14 +172,12 @@
 	(vla-SetText oTable 0 0 a)
 )
 
-(defun tm:table-set-width ( oTable iWidthFactor l / iColumn )
-	(if (null iWidthFactor) 
-		(setq iWidthFactor 2.66)
-	)
-	(princ a)
-	(repeat (setq iColumn (length l))
+(defun tm:table-set-width ( oTable iWidthFactor lWidths / iColumn )
+	(setq iWidthFactor (if iWidthFactor iWidthFactor 2.66))
+	
+	(repeat (setq iColumn (length lWidths))
 		(setq iColumn (1- iColumn))
-		(vla-SetColumnWidth oTable iColumn (+ (* (nth iColumn l) iWidthFactor) (* tm:table-cell-horizontal-margin 2)))
+		(vla-SetColumnWidth oTable iColumn (+ (* (nth iColumn lWidths) iWidthFactor) (* tm:table-cell-horizontal-margin 2)))
 	)
 )
 

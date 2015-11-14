@@ -5,13 +5,12 @@
 (defun table-insert ( aTitle lWidths lData / oTable )
 	(cm:setvar "CMDECHO" 0)
 	
-	(if (null lWidths)
-		(setq lWidths (tm:get-data-column-widths lData))
-	)
+	(setq lWidths (if lWidths lWidths (tm:get-data-column-widths lData)))
 	
-	(tm:table-init "Standard" "Courier New")
+	(tm:table-init nil nil)
 	
 	(setq oTable (tm:table-create nil lData)) ; Create the AutoCAD table
+	
 	(tm:table-set-title oTable aTitle)
 	(tm:table-set-width oTable nil lWidths)
 	(tm:table-show oTable)
@@ -101,7 +100,7 @@
 			(setq lData 
 				(table-data 
 					"SYMBOL*"
-					"NUMBER,LETTER,ID=LETTER|NUMBER,DESCRIPTION,X=!X,Y=!Y,Y=!Z"
+					"NUMBER,LETTER,ID=LETTER|NUMBER,DESCRIPTION"
 					(if aFilter (strcat "NUMBER=" aFilter "*"))
 					(im:select-all-blocks)
 				)
