@@ -13,7 +13,8 @@
 	
 	(tm:table-set-title oTable aTitle)
 	(tm:table-set-width oTable nil lWidths)
-	(tm:table-show oTable)
+	
+	oTable
 )
 
 (defun table-data ( xBlocks xColumns aFilter lEntities / e aAttribute aColumn aSpace aTemp aValue d lTemp )
@@ -88,7 +89,7 @@
 	(cm:terminate)
 )
 
-(defun c:ptable ( / aFilter lData )
+(defun c:ptable ( / aFilter lData oTable )
 	(cm:initialize)
 	
 	(initget "1 2 3 4 5 6 7 8 9 0 *" 131)
@@ -112,7 +113,11 @@
 			; Remove column 'Number' and 'Letter'
 			(setq lData (tm:data-column-delete "NUMBER,LETTER" lData))
 			
-			(table-insert "P & I D" nil lData)
+			(setq oTable (table-insert "P & I D" nil lData))
+			
+			(tm:data-row-highlight oTable (lm:duplicates (mapcar 'car lData)) lData)
+			(tm:table-show oTable)
+			
 		)
 	)
 	

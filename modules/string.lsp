@@ -147,12 +147,31 @@
 )
 
 (defun sm:is-character ( a )
+	(or 
+		(sm:is-character|digit a)
+		(sm:is-character|ucase a)
+		(sm:is-character|lcase a)
+	)
+)
+
+(defun sm:is-character|digit ( a )
 	(and 
-		(= (strlen a) 1)
-		(or 
-			(and (>= (ascii a) 65) (<= (ascii a) 90))
-			(and (>= (ascii a) 97) (<= (ascii a) 122))
-		)
+		(= (type a) 'STR)
+		(and (>= (ascii sChar) 48) (<= (ascii sChar)  57))
+	)
+)
+
+(defun sm:is-character|ucase ( a )
+	(and 
+		(= (type a) 'STR)
+		(and (>= (ascii a) 65) (<= (ascii a) 90))
+	)
+)
+
+(defun sm:is-character|lcase ( a )
+	(and
+		(= (type a) 'STR)
+		(and (>= (ascii sChar) 97) (<= (ascii sChar) 122))
 	)
 )
 

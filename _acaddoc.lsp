@@ -30,6 +30,8 @@
 (LoadFile "demo\\block-table.lsp")
 (LoadFile "demo\\block-xml.lsp")
 
+(LoadFile "demo\\lasertext.lsp")
+
 (LoadFile "modify.lsp")
 (LoadFile "settings.lsp")
 

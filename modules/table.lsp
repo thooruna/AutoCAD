@@ -131,8 +131,9 @@
 	
 	(vlax-safearray-fill pt pInsert) 
 	
-	(setq oTable (vla-AddTable (ActiveSpace) pt iRows iColumns 5 250)) 
+	(setq oTable (vla-AddTable (ActiveSpace) pt iRows iColumns 5 500)) 
 	(vla-put-RegenerateTableSuppressed oTable :vlax-true)
+	(vla-ReComputeTableblock oTable :vlax-false)
 	(vla-put-RepeatTopLabels oTable :vlax-true)
 	(vla-put-Layer oTable "0")
 	
@@ -163,8 +164,6 @@
 		(setq cell 0)  
 	);while
 	
-	(vla-ReComputeTableblock oTable :vlax-true)
-	
 	oTable
 )
 
@@ -182,8 +181,46 @@
 )
 
 (defun tm:table-show ( oTable )
+	(vla-ReComputeTableblock oTable :vlax-true)
 	(vla-put-RegenerateTableSuppressed oTable :vlax-false)
+	
+	oTable
+)
+
+(defun tm:cell-highlight-color ( / oColor )
+	(setq oColor (vla-getInterfaceObject (vlax-get-acad-object) (strcat "AutoCAD.AcCmColor." (substr (getvar 'ACADVER) 1 2))))
+	(vla-SetRGB oColor 255 0 0)
+	
+	oColor
+)
+
+(defun tm:data-column-highlight ( oTable xColumns lData / a iColumn iRow oColor )
+	(setq oColor (tm:cell-highlight-color))
+	
+	(foreach a (lm:x->list xColumns)
+		(if (setq iColumn (lm:nth a (car lData)))
+			(repeat (setq iRow (1- (vla-get-rows oTable)))
+				(vla-SetCellBackgroundColor oTable (1+ (setq iRow (1- iRow))) iColumn oColor)
+			)
+		)
+	)
+)
+
+(defun tm:data-row-highlight ( oTable xRows lData / a d iColumn l oColor )
+	(setq oColor (tm:cell-highlight-color))
+	
+	(setq l (cdr (lm:add-numbering (mapcar 'car lData))))
+	(foreach a (lm:x->list xRows)
+		(foreach d (lm:assoc a l)
+			(repeat (setq iColumn (vla-get-columns oTable))
+				(vla-SetCellBackgroundColor oTable (1+ (cdr d)) (setq iColumn (1- iColumn)) oColor)
+			)
+		)
+	)
 )
 
 (princ)
+
+
+
 

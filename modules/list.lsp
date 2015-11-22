@@ -29,6 +29,21 @@
 	(= (type x) 'LIST)
 )
 
+(defun lm:add-numbering ( l / i )
+	(mapcar '(lambda (x) (cons x (setq i (if i (1+ i) 0)))) l)
+)
+
+(defun lm:assoc ( a l1 / d l2 )
+	(while (setq d (assoc a l1))
+		(setq 
+			l1 (cdr (member d l1))
+			l2 (cons d l2)
+		)
+	)
+	
+	(reverse l2)
+)
+
 (defun lm:nth ( x l1 / i l2 )
 	(if (setq l2 (member x (reverse l1)))
 		(1- (length l2))
@@ -116,6 +131,18 @@
 	(if l (cons (car l) (lm:unique (vl-remove (car l) (cdr l)))))
 )
 
+;;; List Duplicates  -  Lee Mac
+;;; Returns a list of items appearing more than once in a supplied list
+
+(defun lm:duplicates ( l ) ; LM:ListDupes renamed to lm:duplicates
+	(if l
+		(if (member (car l) (cdr l))
+			(cons (car l) (lm:duplicates (vl-remove (car l) (cdr l))))
+			(lm:duplicates (vl-remove (car l) (cdr l)))
+		)
+	)
+)
+
 ;;; String to List  -  Lee Mac
 ;;; Separates a string using a given delimiter
 ;;; str - [str] String to process
@@ -148,7 +175,7 @@
 	)
 )
 
-;;; String to List -  Wilfred Stapper
+;;; String to List - Wilfred Stapper
 ;;; Separates a string using the given start and end pattern
 ;;; aString - String to process
 ;;; aStart - Start pattern
@@ -167,7 +194,7 @@
 	)
 )
 
-;;; Parse Numbers  -  Lee Mac
+;;; Parse Numbers - Lee Mac
 ;;; Parses a list of numerical values from a supplied string.
 
 (defun lm:string->list|numbers ( a )
@@ -195,7 +222,11 @@
 	)
 )
 
-;;; List to String  -  Lee Mac
+(defun lm:string->list|characters ( a )
+	(mapcar 'chr (vl-string->list a))
+)
+
+;;; List to String - Lee Mac
 ;;; Concatenates each string in a supplied list, separated by a given delimiter
 ;;; lst - [lst] List of strings to concatenate
 ;;; del - [str] Delimiter string to separate each item

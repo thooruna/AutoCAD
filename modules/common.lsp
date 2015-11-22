@@ -16,13 +16,13 @@
 	)
 )
 
-(defun cm:error ( a )
+(defun cm:error ( aError )
 	(defun ShowVariables ( / x )
 		(princ "\nVariables in memory:")
 		
 		(foreach x (lm:difference (atoms-family 0) *ATOMS*)
 			(cond 
-				((/= x '*ATOMS*)
+				((and (/= x 'aError) (/= x '*ATOMS*))
 					(princ "\n")
 					(princ x)
 					(princ " ")
@@ -36,8 +36,8 @@
 		(terpri)
 	)
 	
-	(if (not (member a '("Function Cancelled" "console break" "quit / exit abort")))
-		(princ (strcat "\n; error: " a "\n"))
+	(if (not (member aError '("Function Cancelled" "console break" "quit / exit abort")))
+		(princ (strcat "\n; error: " aError "\n"))
 	)
 	
 	(if *DEBUG* 
@@ -45,6 +45,10 @@
 	)
 	
 	(cm:terminate)
+)
+
+(defun cm:getvar ( a )
+	(cdr (assoc a *SETVAR*))
 )
 
 (defun cm:setvar ( a x )

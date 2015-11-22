@@ -3,8 +3,6 @@
 ;;; Copyright © 2015
 
 (defun block-insert ( xBlocks rRadius bLeader / a l p )
-	(cm:debug T)
-	(cm:initialize)
 	(cm:setvar "ATTDIA" 0)
 	(cm:setvar "ATTREQ" 0)
 	(cm:setvar "AUTOSNAP" 63)
@@ -18,7 +16,6 @@
 				(setq
 					a (getvar "USERS1")
 					p (car l)
-					l (append (list (polar (car l) (angle (car l) (cadr l)) (* rRadius (getvar "DIMSCALE")))) (cdr l))
 				)
 				
 				(cm:setvar "AUTOSNAP" 0)
@@ -36,12 +33,12 @@
 		(princ "\nUnable to find symbols.")
 	)
 	
-	(cm:terminate)
-	
 	(if a (entlast))
 )
 
 (defun c:bsymbol ( / aBlock aTag e x )
+	(cm:initialize)
+	
 	(defun SetLeaderStyle ( aBlock )
 		(if (null (tblsearch "DIMSTYLE" aBlock))
 			(command "_.DIMSCALE" pause)
@@ -70,24 +67,27 @@
 		)
 	)
 	
-	(princ)
+	(cm:terminate)
 )
 
-(defun c:psymbol ( / aTag e lBlocks x )
+(defun c:psymbol ( / aTag e x xBlocks )
+	(cm:initialize)
+	
 	(setq 
-		lBlocks '("SYMBOL-1" "SYMBOL-2")
+		xBlocks "SYMBOL-1,SYMBOL-2"
 		aTag "NUMBER"
-		x (1+ (bm:get-attribute-max (bm:search-blocks-with-attributes lBlocks (im:select-all-blocks)) aTag))
+		x (1+ (bm:get-attribute-max (bm:search-blocks-with-attributes xBlocks (im:select-all-blocks)) aTag))
 	)
 	
-	(if (setq e (block-insert lBlocks 5 nil))
-		(if (= (getvar "ATTREQ") 1)
+	(if (setq e (block-insert xBlocks 5 nil))
+		(if (= (cm:getvar "ATTREQ") 1)
 			(if (setq x (im:get-number "Number" x))
 				(bm:change-attribute-value e aTag (sm:string-left-fill x "0" 3))
 			)
 		)
 	)
 	
-	(princ)
+	(cm:terminate)
 )
 
+(princ)

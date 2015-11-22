@@ -53,22 +53,22 @@
 	(command "_.-INSERT" a p (getvar "DIMSCALE") 0.0)
 )
 
-(defun bm:insert-symbol-leader ( a p lPoints )
-	(apply 'command (append '("_.LEADER") (reverse lPoints) (list "_A" "" "_B" a p (getvar "DIMSCALE") 0.0)))
+(defun bm:insert-symbol-leader ( a p l )
+	(apply 'command (append '("_.LEADER") (reverse l) (list "_A" "" "_B" a p (getvar "DIMSCALE") 0.0)))
 	(command "_.REDRAW")
 	(entlast)
 )
 
-(defun bm:insert-symbol-extension-line ( a p lPoints / e )
-	(setq e (bm:insert-extension-line lPoints))
+(defun bm:insert-symbol-extension-line ( a p l / e )
+	(setq e (bm:insert-extension-line l))
 	(bm:insert-symbol a p)
-	(if (equal p (car lPoints)) (command "_.TRIM" "" (list e (polar p (angle (car lPoints) (cadr lPoints)) 0.001)) ""))
+	(if (equal p (car l)) (command "_.TRIM" "" (list e (polar p (angle (car l) (cadr l)) 0.001)) ""))
 	(command "_.REDRAW")
 	e
 )
 
-(defun bm:insert-extension-line ( lPoints )
-	(apply 'command (append '("_.PLINE") (reverse lPoints) '("")))
+(defun bm:insert-extension-line ( l )
+	(apply 'command (append '("_.PLINE") (reverse l) '("")))
 	(entlast)
 )
 

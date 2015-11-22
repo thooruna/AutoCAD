@@ -73,7 +73,7 @@
 	l
 )
 
-(defun im:get-point ( a / p)
+(defun im:get-point ( a / p )
 	(if (null (setq p (getpoint a))) (exit))
 	p
 )
