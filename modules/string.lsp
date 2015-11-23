@@ -157,7 +157,7 @@
 (defun sm:is-character|digit ( a )
 	(and 
 		(= (type a) 'STR)
-		(and (>= (ascii sChar) 48) (<= (ascii sChar)  57))
+		(and (>= (ascii a) 48) (<= (ascii a)  57))
 	)
 )
 
@@ -171,7 +171,7 @@
 (defun sm:is-character|lcase ( a )
 	(and
 		(= (type a) 'STR)
-		(and (>= (ascii sChar) 97) (<= (ascii sChar) 122))
+		(and (>= (ascii a) 97) (<= (ascii a) 122))
 	)
 )
 
