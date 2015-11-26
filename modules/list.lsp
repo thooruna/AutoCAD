@@ -222,6 +222,9 @@
 	)
 )
 
+;;; Parse Characters
+;;; Parses a list of characters from a supplied string.
+
 (defun lm:string->list|characters ( a )
 	(mapcar 'chr (vl-string->list a))
 )

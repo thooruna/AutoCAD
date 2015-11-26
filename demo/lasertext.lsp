@@ -1,4 +1,4 @@
-(defun lasertext ( p aString / aBlock aChar aPrefix )
+(defun lasertext ( p aString / aBlock aChar aPrefix i )
 	(cm:setvar "OSMODE" 0)
 	
 	(foreach aChar (lm:string->list|characters aString)
