@@ -171,12 +171,15 @@
 	(vla-SetText oTable 0 0 a)
 )
 
-(defun tm:table-set-width ( oTable iWidthFactor lWidths / iColumn )
-	(setq iWidthFactor (if iWidthFactor iWidthFactor 2.66))
+(defun tm:table-set-width ( oTable iWidthFactor lWidths / iColumn iMargin )
+	(setq 
+		iWidthFactor (if iWidthFactor iWidthFactor 2.66)
+		iMargin (if iWidthFactor 0 (* tm:table-cell-horizontal-margin 2))
+	)
 	
 	(repeat (setq iColumn (length lWidths))
 		(setq iColumn (1- iColumn))
-		(vla-SetColumnWidth oTable iColumn (+ (* (nth iColumn lWidths) iWidthFactor) (* tm:table-cell-horizontal-margin 2)))
+		(vla-SetColumnWidth oTable iColumn (+ (* (nth iColumn lWidths) iWidthFactor) iMargin))
 	)
 )
 

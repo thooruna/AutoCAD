@@ -21,7 +21,7 @@
 	)
 )
 
-(LoadModules '("block" "common" "entity" "file" "input" "list" "math" "string" "table" "xml"))
+(LoadModules '("block" "common" "dynamic" "entity" "file" "input" "list" "math" "string" "table" "xml"))
 
 (LoadFile "demo\\block-attributes.lsp")
 (LoadFile "demo\\block-insert.lsp")
