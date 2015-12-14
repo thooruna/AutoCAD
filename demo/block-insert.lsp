@@ -16,6 +16,7 @@
 				(setq
 					a (getvar "USERS1")
 					p (car l)
+					l (append (list (polar (car l) (angle (car l) (cadr l)) (* rRadius (getvar "DIMSCALE")))) (cdr l))
 				)
 				
 				(cm:setvar "AUTOSNAP" 0)
@@ -60,7 +61,7 @@
 	)
 	
 	(if (setq e (block-insert aBlock 5 T))
-		(if (= (getvar "ATTREQ") 1)
+		(if (= (cm:getvar "ATTREQ") 1)
 			(if (setq x (im:get-number "ID" x))
 				(bm:change-attribute-value e aTag (sm:string-left-fill x "0" 2))
 			)

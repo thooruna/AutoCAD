@@ -11,10 +11,10 @@
 	
 	(if (findfile (setq aFile (strcat (fm:drawing-path) (fm:drawing-base) ".xml")))
 		(if (setq aContent (fm:read-file aFile))
-			(foreach aObject (xm:get-node-list "INSERT" aContent)
-				(if (setq h (cdr (assoc "INSERT" (xm:get-attributes "INSERT" aObject))))
+			(foreach aObject (xml:get-node-list "INSERT" aContent)
+				(if (setq h (cdr (assoc "INSERT" (xml:get-attributes "INSERT" aObject))))
 					(if (setq e (handent h))
-						(foreach d (xm:get-nodes "INSERT" aObject)
+						(foreach d (xml:get-nodes "INSERT" aObject)
 							(bm:change-attribute-value e (car d) (cdr d))
 						)
 					)
@@ -32,9 +32,9 @@
 	(setq 
 		aHeader 
 			(strcat
-				(xm:add-version)
-				(xm:add-stylesheet (strcat (block-xml-report-location) "\\html.xsl"))
-				(xm:add-stylesheet (strcat (block-xml-report-location) "\\excel.xsl"))
+				(xml:add-version)
+				(xml:add-stylesheet (strcat (block-xml-report-location) "\\html.xsl"))
+				(xml:add-stylesheet (strcat (block-xml-report-location) "\\excel.xsl"))
 			)
 		aContent ""
 	)
@@ -43,12 +43,12 @@
 		(cond
 			((setq lBlocks (bm:search-blocks-with-attributes aFilter lBlocks))
 				(foreach e lBlocks
-					(setq aContent (strcat aContent (xm:create-node "INSERT" (xm:create-nodes (bm:get-attributes e)) (bm:get-id e))))
+					(setq aContent (strcat aContent (xml:create-node "INSERT" (xml:create-nodes (bm:get-attributes e)) (bm:get-id e))))
 				)
 				
-				(setq aContent (xm:create-node "DRAWING" aContent (list (cons "xmlns:xsi" "http://www.w3.org/2001/XMLSchema-instance") (cons "reports" (block-xml-report-location)))))
+				(setq aContent (xml:create-node "DRAWING" aContent (list (cons "xmlns:xsi" "http://www.w3.org/2001/XMLSchema-instance") (cons "reports" (block-xml-report-location)))))
 				
-				(xm:write-file (setq aFile (strcat (fm:drawing-path) (fm:drawing-base) ".xml")) aHeader aContent)
+				(xml:write-file (setq aFile (strcat (fm:drawing-path) (fm:drawing-base) ".xml")) aHeader aContent)
 				
 				(princ (strcat "\nTotal blocks found: " (itoa (length lBlocks))))
 				(princ (strcat "\nTotal unique blocks found: " (itoa (length (lm:unique lBlocks)))))

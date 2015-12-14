@@ -2,14 +2,14 @@
 ;;; Author: Wilfred Stapper
 ;;; Copyright © 2015
 
-(defun table-insert ( aTitle lWidths lData / oTable )
+(defun table-insert ( pInsert aTitle lWidths lData / oTable )
 	(cm:setvar "CMDECHO" 0)
 	
 	(setq lWidths (if lWidths lWidths (tm:get-data-column-widths lData)))
 	
 	(tm:table-init nil nil)
 	
-	(setq oTable (tm:table-create nil lData)) ; Create the AutoCAD table
+	(setq oTable (tm:table-create pInsert lData)) ; Create the AutoCAD table
 	
 	(tm:table-set-title oTable aTitle)
 	(tm:table-set-width oTable nil lWidths)
@@ -17,34 +17,37 @@
 	oTable
 )
 
-(defun table-data ( xBlocks xColumns aFilter lEntities / e aAttribute aColumn aSpace aTemp aValue d lTemp )
+(defun table-data ( xBlocks xDefinition aFilter lEntities / e aAttribute aCell aColumn aSpace aValue d lRow lTemp )
 	(cond
 		((setq lEntities (bm:search-blocks-with-attributes|all xBlocks lEntities))
 			(setq 
-				xColumns (lm:x->list (if xColumns xColumns (bm:get-attribute-tags|all lEntities)))
-				lData (if (> (length lData) 0) lData (list (mapcar 'sm:string-name xColumns)))
+				xDefinition (lm:x->list (if xDefinition xDefinition (bm:get-attribute-tags|all lEntities))) 
+				lData (if (> (length lData) 0) lData (list (mapcar 'sm:string-name xDefinition))) ; Header row
+				lTemp (lm:wcmatch (mapcar 'sm:string-name xDefinition) "!*") ; Temporary columns
 			)
-
+			
 			(foreach e lEntities 
 				(setq 
-					lTemp nil
+					lRow nil
 					xValues (lm:x->list (bm:get-attributes e))
 				)
 				
-				(foreach aColumn (mapcar 'sm:string-value xColumns) ; followed by data rows
-					(setq aTemp nil)
+				(foreach aColumn (mapcar 'sm:string-value xDefinition) ; followed by data rows
+					(if (= (substr aColumn 1 1) "!") (setq aColumn (substr aColumn 2)))
+					
+					(setq aCell nil)
 					
 					(foreach aAttribute (lm:string->list aColumn "|")
 						(cond
-							((= aAttribute "!N") (setq aTemp (em:name e)))
-							((= aAttribute "!X") (setq aTemp (rtos (em:primary-point|X e) 2 0)))
-							((= aAttribute "!Y") (setq aTemp (rtos (em:primary-point|Y e) 2 0)))
-							((= aAttribute "!Z") (setq aTemp (rtos (em:primary-point|Z e) 2 0)))
+							((= aAttribute ":N") (setq aCell (em:name e)))
+							((= aAttribute ":X") (setq aCell (rtos (em:primary-point|X e) 2 0)))
+							((= aAttribute ":Y") (setq aCell (rtos (em:primary-point|Y e) 2 0)))
+							((= aAttribute ":Z") (setq aCell (rtos (em:primary-point|Z e) 2 0)))
 							((wcmatch aAttribute "<*>") (setq aSpace (sm:string-substring|exclude aAttribute "<" ">")))
 							(T (if (setq d (assoc (strcase aAttribute) xValues))
 									(if (> (sm:string-length (setq aValue (if (/= (cdr d) "?") (cdr d) ""))) 0)
 										(setq 
-											aTemp (if aTemp (strcat aTemp (if aSpace aSpace " ") aValue) aValue)
+											aCell (if aCell (strcat aCell (if aSpace aSpace " ") aValue) aValue)
 											aSpace nil
 										)
 									)
@@ -53,13 +56,19 @@
 						)
 					)
 					
-					(setq lTemp (append lTemp (list (if aTemp aTemp ""))))
+					(setq lRow (append lRow (list (if aCell aCell ""))))
 				)
 				
-				(if (if aFilter (wcmatch (nth (lm:nth (sm:string-name aFilter) (car lData)) lTemp) (sm:string-value aFilter)) T)
-					(setq lData (append lData (list lTemp)))
+				(if (if aFilter (wcmatch (nth (lm:nth (sm:string-name aFilter) (car lData)) lRow) (sm:string-value aFilter)) T)
+					(setq lData (append lData (list lRow)))
 				)
 			)
+			
+			; Sort by the temporary columns or first column only
+			(setq lData (tm:data-column-sort (if lTemp lTemp (car (car lData))) lData))
+			
+			; Remove temporary columns
+			(setq lData (tm:data-column-delete lTemp lData))
 			
 			(princ (strcat "\nTotal blocks found: " (itoa (length lEntities))))
 			(princ (strcat "\nTotal unique blocks found: " (itoa (length (lm:unique lEntities)))))
@@ -69,55 +78,96 @@
 	lData
 )
 
-(defun c:block-table ( / lData )
-	(cm:initialize)
-	
-	(if (setq lData (table-data "*" nil nil (im:select-blocks)))
-		(table-insert "BLOCK TABLE" nil lData)
-	)
-	
-	(cm:terminate)
-)
-
-(defun c:btable ( / lData )
-	(cm:initialize)
-	
-	(if (setq lData (table-data "BALLOON" nil nil (im:select-all-blocks)))
-		(table-insert "PARTS LIST" nil lData)
-	)
-	
-	(cm:terminate)
-)
-
-(defun c:ptable ( / aFilter lData oTable )
-	(cm:initialize)
-	
-	(initget "1 2 3 4 5 6 7 8 9 0 *" 131)
-	(setq aFilter (getkword "\nFilter group [*/0/1/2/3/4/5/6/7/8/9] <*>: "))
-	(if (= aFilter "*") (setq aFilter nil))
-	
+(defun block-table ( pInsert aTitle aSymbol aDefinition aFilter lFunction / lData oTable )
 	(cond
-		(
-			(setq lData 
-				(table-data 
-					"SYMBOL*"
-					"NUMBER,LETTER,ID=LETTER|NUMBER,DESCRIPTION"
-					(if aFilter (strcat "NUMBER=" aFilter "*"))
-					(im:select-all-blocks)
-				)
-			)
-			
-			; Sort by column 'Number' and 'Letter'
-			(setq lData (tm:data-column-sort "NUMBER,LETTER" lData))
-			
-			; Remove column 'Number' and 'Letter'
-			(setq lData (tm:data-column-delete "NUMBER,LETTER" lData))
-			
-			(setq oTable (table-insert "P & I D" nil lData))
-			
+		((setq lData (table-data aSymbol aDefinition aFilter (eval lFunction)))
+			(setq oTable (table-insert pInsert aTitle nil lData))
 			(tm:data-row-highlight oTable (lm:duplicates (mapcar 'car lData)) lData)
 			(tm:table-show oTable)
-			
+			(xm:add-data oTable (list "THOORUNA" "v1.0" "BLOCK-TABLE" aTitle aSymbol aDefinition aFilter (vl-symbol-name (car lFunction))))
+		)
+	)
+)
+
+(defun c:ptable ( / aDefinition aFilter aSymbol aTitle )
+	(cm:debug T)
+	(cm:initialize)
+	
+	(initget "1 2 3 4 5 6 7 8 9 0 *" 129)
+	(setq aFilter (getkword "\nFilter group [*/0/1/2/3/4/5/6/7/8/9] <*>: "))
+	(if (wcmatch aFilter ",`*") (setq aFilter nil))
+	
+	(setq
+		aTitle (strcat "P & I D" (if aFilter (strcat " - Group " aFilter) ""))
+		aSymbol "SYMBOL*"
+		aDefinition "!NUMBER,!LETTER,ID=LETTER|NUMBER,DESCRIPTION"
+		aFilter (if aFilter (strcat "!NUMBER=" aFilter "*"))
+	)
+	
+	(block-table nil aTitle aSymbol aDefinition aFilter '(im:select-all-blocks))
+	
+	(cm:terminate)
+)
+
+(defun c:btable ( / aDefinition aFilter aSymbol aTitle )
+	(cm:debug T)
+	(cm:initialize)
+	
+	(setq
+		aTitle "PARTS LIST"
+		aSymbol "BALLOON"
+		aDefinition nil
+		aFilter nil
+	)
+	
+	(block-table nil aTitle aSymbol aDefinition aFilter '(im:select-all-blocks))
+	
+	(cm:terminate)
+)
+
+(defun c:block-table ( / aDefinition aFilter aSymbol aTitle )
+	(cm:debug T)
+	(cm:initialize)
+	
+	(setq
+		aTitle "BLOCK TABLE"
+		aSymbol "*"
+		aDefinition nil
+		aFilter nil
+	)
+	
+	(block-table nil aTitle aSymbol aDefinition aFilter '(im:select-blocks))
+	
+	(cm:terminate)
+)
+
+(defun c:block-table-update ( / aDefinition aFunction aFilter aSymbol aTitle aVersion e l lFunction )
+	(cm:debug T)
+	(cm:initialize)
+	
+	(foreach e (im:select-all-tables)
+		(cond 
+			((setq l (xm:get-data e "THOORUNA"))
+				(setq 
+					aVersion (cdr (nth 0 l))
+					aFunction (cdr (nth 1 l))
+					aTitle  (cdr (nth 2 l))
+					aSymbol (cdr (nth 3 l))
+					aDefinition (cdr (nth 4 l))
+					aFilter (cdr (nth 5 l))
+					lFunction (cons (cdr (nth 6 l)) nil)
+				)
+				
+				(if (= aFilter "") (setq aFilter nil))
+				(if (= aDefinition "") (setq aDefinition nil))
+				
+				(cond 
+					((= aFunction "BLOCK-TABLE")
+						(block-table (em:primary-point e) aTitle aSymbol aDefinition nil lFunction)
+						(entdel e)
+					)
+				)
+			)
 		)
 	)
 	

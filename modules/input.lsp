@@ -46,6 +46,34 @@
 	e
 )
 
+(defun im:select-all-tables ( / s )
+	(cond
+		((setq s (ssget "_X" '((0 . "ACAD_TABLE")))))
+		((princ "\nDrawing does not contain any tables.") nil)
+	)
+	
+	(lm:x->list s)
+)
+
+(defun im:select-tables( / s )
+	(if (null (setq s (ssget '((0 . "ACAD_TABLE")))))
+		(princ "\nNo tables were selected.")
+	)
+	
+	(lm:x->list s)
+)
+
+(defun im:select-table ( / s )
+	(while 
+		(and 
+			(/= (em:type (setq e (car (entsel "\nSelect table: ")))) "ACAD_TABLE") 
+			(not (null e))
+		)
+	)
+	
+	e
+)
+
 (defun im:get-points ( x / l p )
 	(setq x (lm:x->list x))
 	

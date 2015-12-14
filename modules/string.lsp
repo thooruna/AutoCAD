@@ -115,6 +115,25 @@
 	)
 )
 
+;;; Find a substring with start and end pattern, including the pattern
+;;; aString - The string to be searched
+;;; aStart - A string containing the start pattern
+;;; aEnd - A string containing the end pattern
+
+(defun sm:string-substring|include ( aString aStart aEnd / iStart iEnd ) 
+	(if (setq iStart (vl-string-search aStart aString))
+		(if (setq iEnd (vl-string-search aEnd aString (+ iStart (strlen aStart))))
+			(substr aString (1+ iStart) (- (+ iEnd (strlen aEnd)) iStart))
+		)
+	)
+)
+
+(defun sm:string-remove|characters ( aString aCharacters )
+	(mapcar 'vl-list->string
+		(list (vl-remove-if '(lambda ( x ) (member x (vl-string->list aCharacters))) (vl-string->list aString)))
+	)
+)
+
 (defun sm:string-name ( aString / aPattern iEnd )
 	(setq aPattern "=")
 	
@@ -130,19 +149,6 @@
 	(if (setq iStart (vl-string-search aPattern aString))
 		(substr aString (+ iStart 2))
 		aString
-	)
-)
-
-;;; Find a substring with start and end pattern, including the pattern
-;;; aString - The string to be searched
-;;; aStart - A string containing the start pattern
-;;; aEnd - A string containing the end pattern
-
-(defun sm:string-substring|include ( aString aStart aEnd / iStart iEnd ) 
-	(if (setq iStart (vl-string-search aStart aString))
-		(if (setq iEnd (vl-string-search aEnd aString (+ iStart (strlen aStart))))
-			(substr aString (1+ iStart) (- (+ iEnd (strlen aEnd)) iStart))
-		)
 	)
 )
 

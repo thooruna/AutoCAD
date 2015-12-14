@@ -143,6 +143,20 @@
 	)
 )
 
+;;; List with wcmatch - Wilfred Stapper
+;;; Returns a list of matching items from a supplied list
+
+(defun lm:wcmatch ( l a )
+	(vl-remove-if '(lambda (x) (not (wcmatch x a))) l)
+)
+
+;;; List with wcmatch - Wilfred Stapper
+;;; Returns a list without the matching items from supplied list
+
+(defun lm:wcmatch|remove ( l a )
+	(vl-remove-if '(lambda (x) (wcmatch x a)) l)
+)
+
 ;;; String to List  -  Lee Mac
 ;;; Separates a string using a given delimiter
 ;;; str - [str] String to process

@@ -2,7 +2,7 @@
 ;;; Author: Wilfred Stapper
 ;;; Copyright © 2015
 
-(defun xm:string-escape ( a / d )
+(defun xml:string-escape ( a / d )
 	(setq a (sm:to-string a))
 	
 	(foreach d '(("'" . "&apos;") ("\"" . "&quot;") ("&" . "&amp;") ("<" . "&lt;") (">" . "&gt;"))
@@ -12,7 +12,7 @@
 	a
 )
 
-(defun xm:string-clean ( a / d )
+(defun xml:string-clean ( a / d )
 	(setq a (sm:to-string a))
 	
 	(foreach d '(("#" . "_") ("?" . "_") ("\n" . "") ("\t" . ""))
@@ -23,50 +23,50 @@
 	;(strcase a T)
 )
 
-(defun xm:add-version ()
+(defun xml:add-version ()
 	"<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
 )
 
-(defun xm:add-stylesheet ( a )
+(defun xml:add-stylesheet ( a )
 	(strcat "\n<?xml-stylesheet type=\"text/xsl\" href=\"" a "\"?>")
 )
 
-(defun xm:create-nodes ( x / a d )
+(defun xml:create-nodes ( x / a d )
 	(setq a "")
 	
 	(if (= (type x) 'LIST)
 		(if (listp (cdr x)) 
-			(foreach d x (setq a (strcat a (xm:create-nodes d))))
-			(setq a (strcat "\n\t<" (xm:string-clean (car x)) ">" (xm:string-escape (cdr x)) "</" (xm:string-clean (car x)) ">"))
+			(foreach d x (setq a (strcat a (xml:create-nodes d))))
+			(setq a (strcat "\n\t<" (xml:string-clean (car x)) ">" (xml:string-escape (cdr x)) "</" (xml:string-clean (car x)) ">"))
 		)
 	)
 	
 	a
 )
 
-(defun xm:create-node ( x a l / d )
+(defun xml:create-node ( x a l / d )
 	(cond 
 		((= (type x) 'STR)
 			;(setq x (strcase x T))
-			(strcat "\n<" x (xm:create-attributes l) ">" a "\n</" x ">")
+			(strcat "\n<" x (xml:create-attributes l) ">" a "\n</" x ">")
 		)
 	)
 )
 
-(defun xm:create-attributes ( x / a d )
+(defun xml:create-attributes ( x / a d )
 	(setq a "")
 	
 	(if (= (type x) 'LIST)
 		(if (listp (cdr x)) 
-			(foreach d x (setq a (strcat a (xm:create-attributes d))))
-			(setq a (strcat " " (xm:string-clean (car x)) "=\"" (xm:string-escape (cdr x)) "\""))
+			(foreach d x (setq a (strcat a (xml:create-attributes d))))
+			(setq a (strcat " " (xml:string-clean (car x)) "=\"" (xml:string-escape (cdr x)) "\""))
 		)
 	)
 	
 	a
 )
 
-(defun xm:write-file ( aFile aHeader aContent / f )
+(defun xml:write-file ( aFile aHeader aContent / f )
 	(setq f (open aFile "w")) 
 	
 	(cond
@@ -80,8 +80,8 @@
 
 ;;; Note: returns all nodes (works only on nodes without attributes)
 
-(defun xm:get-nodes ( aName aContent / aTag aValue l )
-	(if (setq aContent (xm:get-node-string aName aContent))
+(defun xml:get-nodes ( aName aContent / aTag aValue l )
+	(if (setq aContent (xml:get-node-string aName aContent))
 		(foreach aTag (lm:unique (lm:string->list|exclude (sm:string-substitute "<" "</" aContent) "<" ">"))
 			(if (setq aValue (sm:string-substring|exclude aContent (strcat "<" aTag ">") (strcat "</" aTag ">")))
 				(setq l (cons (cons aTag aValue) l))
@@ -92,18 +92,18 @@
 	l
 )
 
-(defun xm:get-node-string ( aName aContent )
+(defun xml:get-node-string ( aName aContent )
 	(if (setq aContent (sm:string-substring|include aContent (strcat "<" aName) (strcat "</" aName ">")))
 		(setq aContent (sm:string-substring|exclude aContent ">" (strcat "</" aName ">")))
 	)
 )
 
-(defun xm:get-node-list ( aName aContent )
+(defun xml:get-node-list ( aName aContent )
 	(lm:string->list|include aContent (strcat "<" aName) (strcat "</" aName ">"))
 )
 
-(defun xm:get-attributes ( aName aContent / aTag aValue l )
-	(if (setq aContent (xm:get-attribute-string aName aContent))
+(defun xml:get-attributes ( aName aContent / aTag aValue l )
+	(if (setq aContent (xml:get-attribute-string aName aContent))
 		(foreach aTag (lm:string->list|exclude aContent " " "=")
 			(if (setq aValue (sm:string-substring|exclude aContent (strcat aTag "=\"") "\""))
 				(setq l (cons (cons aTag aValue) l))
@@ -114,7 +114,7 @@
 	l
 )
 
-(defun xm:get-attribute-string ( aName aContent )
+(defun xml:get-attribute-string ( aName aContent )
 	(setq aContent (sm:string-substring|exclude aContent (strcat "<" aName) ">"))
 )
 

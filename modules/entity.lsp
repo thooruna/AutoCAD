@@ -7,22 +7,29 @@
 ;;; Return entity definition data
 
 (defun em:edd ( x )
-	(if (= (type x) 'ENAME) 
-		(entget x) ; Get the entity's definition data.
-		x ; This already is the entity's definition data.
+	(cond
+		((= (type x) 'ENAME) (entget x)) ; Get the entity's definition data.
+		((= (type x) 'VLA-OBJECT) (entget (vlax-vla-object->ename x)))
+		(T x) ; This already is the entity's definition data.
 	)
+)
+
+;;; APP: extended data (XDATA) sentinel (fixed)
+
+(defun em:entity-extended-data ( e )
+	(cdr (assoc -3 e))
 )
 
 ;;; APP: entity name reference (fixed)
 
-(defun em:entity-name-reference ( e ) 
+(defun em:entity-name-reference ( e )
 	(cdr (assoc -2 e))
 )
 
 ;;; APP: entity name. The name changes each time a drawing is opened. It is never saved (fixed)
 
-(defun em:entity-name ( e ) 
-	(cdr (assoc -1 e)) 
+(defun em:entity-name ( e )
+	(cdr (assoc -1 e))
 )
 
 ;;; Text string indicating the entity type (fixed)

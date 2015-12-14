@@ -122,9 +122,9 @@
 	)
 
 	(setq 
-		pt (vlax-make-safearray vlax-vbDouble '(0 . 2)) ; Insertion point for the table
 		iRows (+ (length lTable) 1)
 		iColumns (length (nth 0 lTable))
+		pt (vlax-make-safearray vlax-vbDouble '(0 . 2)) ; Insertion point for the table
 	) 
 	
 	(if (null pInsert) (setq pInsert (im:get-insertion-point)))
@@ -173,8 +173,8 @@
 
 (defun tm:table-set-width ( oTable iWidthFactor lWidths / iColumn iMargin )
 	(setq 
-		iWidthFactor (if iWidthFactor iWidthFactor 2.66)
 		iMargin (if iWidthFactor 0 (* tm:table-cell-horizontal-margin 2))
+		iWidthFactor (if iWidthFactor iWidthFactor 2.66)
 	)
 	
 	(repeat (setq iColumn (length lWidths))
