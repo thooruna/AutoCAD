@@ -78,18 +78,24 @@
 	lData
 )
 
-(defun block-table ( pInsert aTitle aSymbol aDefinition aFilter lFunction / lData oTable )
+(defun block-table ( pInsert aTitle aSymbol aDefinition aFilter aDuplicates / lData oTable a )
 	(cond
-		((setq lData (table-data aSymbol aDefinition aFilter (eval lFunction)))
+		((setq lData (table-data aSymbol aDefinition aFilter (im:select-all-blocks)))
 			(setq oTable (table-insert pInsert aTitle nil lData))
-			(tm:data-row-highlight oTable (lm:duplicates (mapcar 'car lData)) lData)
+			
+			(if aDuplicates 
+				(if (setq a (lm:nth aDuplicates (car lData)))
+					(tm:data-row-highlight oTable (lm:duplicates (mapcar '(lambda (x) (nth a x)) lData)) lData)
+				)
+			)
+			
 			(tm:table-show oTable)
-			(xm:add-data oTable (list "THOORUNA" "v1.0" "BLOCK-TABLE" aTitle aSymbol aDefinition aFilter (vl-symbol-name (car lFunction))))
+			(xm:set-data oTable (list "THOORUNA" "v1.0" "BLOCK-TABLE" aTitle aSymbol aDefinition aFilter aDuplicates))
 		)
 	)
 )
 
-(defun c:ptable ( / aDefinition aFilter aSymbol aTitle )
+(defun c:ptable ( / aDefinition aDuplicates aFilter aSymbol aTitle )
 	(cm:debug T)
 	(cm:initialize)
 	
@@ -102,14 +108,15 @@
 		aSymbol "SYMBOL*"
 		aDefinition "!NUMBER,!LETTER,ID=LETTER|NUMBER,DESCRIPTION"
 		aFilter (if aFilter (strcat "!NUMBER=" aFilter "*"))
+		aDuplicates "ID"
 	)
 	
-	(block-table nil aTitle aSymbol aDefinition aFilter '(im:select-all-blocks))
+	(block-table nil aTitle aSymbol aDefinition aFilter aDuplicates)
 	
 	(cm:terminate)
 )
 
-(defun c:btable ( / aDefinition aFilter aSymbol aTitle )
+(defun c:btable ( / aDefinition aDuplicates aFilter aSymbol aTitle )
 	(cm:debug T)
 	(cm:initialize)
 	
@@ -118,14 +125,15 @@
 		aSymbol "BALLOON"
 		aDefinition nil
 		aFilter nil
+		aDuplicates "ID"
 	)
 	
-	(block-table nil aTitle aSymbol aDefinition aFilter '(im:select-all-blocks))
+	(block-table nil aTitle aSymbol aDefinition aFilter aDuplicates)
 	
 	(cm:terminate)
 )
 
-(defun c:block-table ( / aDefinition aFilter aSymbol aTitle )
+(defun c:block-table ( / aDefinition aDuplicates aFilter aSymbol aTitle )
 	(cm:debug T)
 	(cm:initialize)
 	
@@ -134,14 +142,15 @@
 		aSymbol "*"
 		aDefinition nil
 		aFilter nil
+		aDuplicates nil
 	)
 	
-	(block-table nil aTitle aSymbol aDefinition aFilter '(im:select-blocks))
+	(block-table nil aTitle aSymbol aDefinition aFilter aDuplicates)
 	
 	(cm:terminate)
 )
 
-(defun c:block-table-update ( / aDefinition aFunction aFilter aSymbol aTitle aVersion e l lFunction )
+(defun c:block-table-update ( / aDefinition aDuplicates aFunction aFilter aSymbol aTitle aVersion e l)
 	(cm:debug T)
 	(cm:initialize)
 	
@@ -151,19 +160,22 @@
 				(setq 
 					aVersion (cdr (nth 0 l))
 					aFunction (cdr (nth 1 l))
-					aTitle  (cdr (nth 2 l))
-					aSymbol (cdr (nth 3 l))
-					aDefinition (cdr (nth 4 l))
-					aFilter (cdr (nth 5 l))
-					lFunction (cons (cdr (nth 6 l)) nil)
 				)
-				
-				(if (= aFilter "") (setq aFilter nil))
-				(if (= aDefinition "") (setq aDefinition nil))
-				
 				(cond 
 					((= aFunction "BLOCK-TABLE")
-						(block-table (em:primary-point e) aTitle aSymbol aDefinition nil lFunction)
+						(setq
+							aTitle  (cdr (nth 2 l))
+							aSymbol (cdr (nth 3 l))
+							aDefinition (cdr (nth 4 l))
+							aFilter (cdr (nth 5 l))
+							aDuplicates (cdr (nth 6 l))
+						)
+						
+						(if (= aFilter "") (setq aFilter nil))
+						(if (= aDefinition "") (setq aDefinition nil))
+						(if (= aDuplicates "") (setq aDuplicates nil))
+						
+						(block-table (em:primary-point e) aTitle aSymbol aDefinition aFilter aDuplicates)
 						(entdel e)
 					)
 				)

@@ -2,7 +2,7 @@
 ;;; Author: Wilfred Stapper
 ;;; Copyright © 2015
 
-(defun xm:add-data ( x lData / lXData )
+(defun xm:set-data ( x lData / lXData )
 	(setq x (if x (em:edd x) (em:edd (entlast))))
 	
 	(regapp (car lData))
