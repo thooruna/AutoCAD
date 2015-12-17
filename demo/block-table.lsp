@@ -78,10 +78,10 @@
 	lData
 )
 
-(defun block-table ( pInsert aTitle aSymbol aDefinition aFilter aDuplicates / lData oTable a )
+(defun block-table ( pInsert aTitle aWidths aSymbol aDefinition aFilter aDuplicates / lData oTable a )
 	(cond
 		((setq lData (table-data aSymbol aDefinition aFilter (im:select-all-blocks)))
-			(setq oTable (table-insert pInsert aTitle nil lData))
+			(setq oTable (table-insert pInsert aTitle (lm:string->list|numbers aWidths) lData))
 			
 			(if aDuplicates 
 				(if (setq a (lm:nth aDuplicates (car lData)))
@@ -90,7 +90,7 @@
 			)
 			
 			(tm:table-show oTable)
-			(xm:set-data oTable (list "THOORUNA" "v1.0" "BLOCK-TABLE" aTitle aSymbol aDefinition aFilter aDuplicates))
+			(xm:set-data oTable (list "THOORUNA" "v1.0" "BLOCK-TABLE" aTitle aWidths aSymbol aDefinition aFilter aDuplicates))
 		)
 	)
 )
@@ -105,13 +105,14 @@
 	
 	(setq
 		aTitle (strcat "P & I D" (if aFilter (strcat " - Group " aFilter) ""))
+		aWidths nil
 		aSymbol "SYMBOL*"
 		aDefinition "!NUMBER,!LETTER,ID=LETTER|NUMBER,DESCRIPTION"
 		aFilter (if aFilter (strcat "!NUMBER=" aFilter "*"))
 		aDuplicates "ID"
 	)
 	
-	(block-table nil aTitle aSymbol aDefinition aFilter aDuplicates)
+	(block-table nil aTitle aWidths aSymbol aDefinition aFilter aDuplicates)
 	
 	(cm:terminate)
 )
@@ -122,13 +123,14 @@
 	
 	(setq
 		aTitle "PARTS LIST"
+		aWidths nil
 		aSymbol "BALLOON"
 		aDefinition nil
 		aFilter nil
 		aDuplicates "ID"
 	)
 	
-	(block-table nil aTitle aSymbol aDefinition aFilter aDuplicates)
+	(block-table nil aTitle aWidths aSymbol aDefinition aFilter aDuplicates)
 	
 	(cm:terminate)
 )
@@ -139,13 +141,14 @@
 	
 	(setq
 		aTitle "BLOCK TABLE"
+		aWidths nil
 		aSymbol "*"
 		aDefinition nil
 		aFilter nil
 		aDuplicates nil
 	)
 	
-	(block-table nil aTitle aSymbol aDefinition aFilter aDuplicates)
+	(block-table nil aTitle aWidths aSymbol aDefinition aFilter aDuplicates)
 	
 	(cm:terminate)
 )
@@ -165,17 +168,19 @@
 					((= aFunction "BLOCK-TABLE")
 						(setq
 							aTitle  (cdr (nth 2 l))
-							aSymbol (cdr (nth 3 l))
-							aDefinition (cdr (nth 4 l))
-							aFilter (cdr (nth 5 l))
-							aDuplicates (cdr (nth 6 l))
+							aWidths  (cdr (nth 3 l))
+							aSymbol (cdr (nth 4 l))
+							aDefinition (cdr (nth 5 l))
+							aFilter (cdr (nth 6 l))
+							aDuplicates (cdr (nth 7 l))
 						)
 						
 						(if (= aFilter "") (setq aFilter nil))
 						(if (= aDefinition "") (setq aDefinition nil))
 						(if (= aDuplicates "") (setq aDuplicates nil))
+						(if (= aWidths "") (setq aWidths nil))
 						
-						(block-table (em:primary-point e) aTitle aSymbol aDefinition aFilter aDuplicates)
+						(block-table (em:primary-point e) aTitle aWidths aSymbol aDefinition aFilter aDuplicates)
 						(entdel e)
 					)
 				)

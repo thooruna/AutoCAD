@@ -232,7 +232,7 @@
 			)
 		))
 		
-		(vl-string->list a)
+		(if a (vl-string->list a))
 	)
 )
 
