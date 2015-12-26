@@ -318,7 +318,7 @@
 	)
 )
 
-(defun bm:shift-left-atrribute-values ( e l / i lTags lValues )
+(defun bm:shift-atrribute-values|left ( e l / i lTags lValues )
 	(setq 
 		lTags (mapcar 'car (reverse l))
 		lValues (cons  ""  (reverse (cdr (mapcar  'cdr  l))))

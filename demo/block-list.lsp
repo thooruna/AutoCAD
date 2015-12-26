@@ -4,16 +4,16 @@
 
 (defun screen-list ( lBlocks aFilter / d e i lAttributes lHeader )
 	(defun PrintDivider ()
-		(princ (sm:string-right-fill "\n" "=" (+ i 3 (length lHeader) (apply '+ (mapcar 'cdr lHeader)))))
+		(princ (sm:string-fill|right "\n" "=" (+ i 3 (length lHeader) (apply '+ (mapcar 'cdr lHeader)))))
 	)
 
 	(defun PrintHeader ()
 		(princ "\n|")
-		(princ (sm:string-right-fill "HANDLE" " " i))
+		(princ (sm:string-fill|right "HANDLE" " " i))
 		(princ "|")
 		
 		(foreach d lHeader
-			(princ (sm:string-right-fill (car d) " " (cdr d)))
+			(princ (sm:string-fill|right (car d) " " (cdr d)))
 			(princ "|")
 		)
 	)
@@ -23,11 +23,11 @@
 			(setq lAttributes (bm:get-attributes e))
 		
 			(princ "\n|")
-			(princ (sm:string-right-fill (em:handle e) " " i))
+			(princ (sm:string-fill|right (em:handle e) " " i))
 			(princ "|")
 			
 			(foreach d lHeader
-				(princ (sm:string-right-fill (cdr (assoc (car d) lAttributes)) " " (cdr (assoc (car d) lHeader))))
+				(princ (sm:string-fill|right (cdr (assoc (car d) lAttributes)) " " (cdr (assoc (car d) lHeader))))
 				(princ "|")
 			)
 		)

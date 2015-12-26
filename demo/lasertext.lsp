@@ -49,7 +49,6 @@
 )
 
 (defun c:lasertext ( / a p )
-	(cm:debug nil)
 	(cm:initialize)
 	
 	(if (bm:load "LASERFONT")

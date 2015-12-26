@@ -23,7 +23,7 @@
 				(progn
 					(foreach aTag '("REVNO" "REVDESC" "REVBY" "REVDATE")
 						(if (setq lAttributes (bm:get-attributes|include e (mapcar '(lambda (x) (strcat aTag x)) lNumbers)))
-							(bm:shift-left-atrribute-values e lAttributes)
+							(bm:shift-atrribute-values|left e lAttributes)
 						)
 					)
 					(update-titleblocks e)

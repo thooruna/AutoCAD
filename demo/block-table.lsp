@@ -2,28 +2,24 @@
 ;;; Author: Wilfred Stapper
 ;;; Copyright © 2015
 
-(defun table-insert ( pInsert aTitle lWidths lData / oTable )
-	(cm:setvar "CMDECHO" 0)
-	
-	(setq lWidths (if lWidths lWidths (tm:get-data-column-widths lData)))
-	
-	(tm:table-init nil nil)
-	
-	(setq oTable (tm:table-create pInsert lData)) ; Create the AutoCAD table
-	
-	(tm:table-set-title oTable aTitle)
-	(tm:table-set-width oTable nil lWidths)
-	
-	oTable
+(defun block-table|regapp ( r )
+	(cond
+		((= r 0) "THOORUNA_BLOCK-TABLE_0")
+	)
 )
 
-(defun table-data ( xBlocks xDefinition aFilter lEntities / e aAttribute aCell aColumn aSpace aValue d lRow lTemp )
+(defun block-table|xdata ( r )
+	(cond
+		((= r 0) "rScaleFactor,aTitle,aWidth,aSymbol,aDefinition,aFilter,aSort,aDuplicate")
+	)
+)
+
+(defun block-table|data ( xBlocks xDefinition aFilter lEntities / e aAttribute aCell aColumn aSpace aValue d lRow )
 	(cond
 		((setq lEntities (bm:search-blocks-with-attributes|all xBlocks lEntities))
 			(setq 
 				xDefinition (lm:x->list (if xDefinition xDefinition (bm:get-attribute-tags|all lEntities))) 
 				lData (if (> (length lData) 0) lData (list (mapcar 'sm:string-name xDefinition))) ; Header row
-				lTemp (lm:wcmatch (mapcar 'sm:string-name xDefinition) "!*") ; Temporary columns
 			)
 			
 			(foreach e lEntities 
@@ -64,39 +60,48 @@
 				)
 			)
 			
-			; Sort by the temporary columns or first column only
-			(setq lData (tm:data-column-sort (if lTemp lTemp (car (car lData))) lData))
+			; Sort by specified columns or first column only
+			(setq lData (tm:data-column-sort (if aSort aSort (car (car lData))) lData))
 			
 			; Remove temporary columns
-			(setq lData (tm:data-column-delete lTemp lData))
+			(setq lData (tm:data-column-delete (lm:wcmatch (mapcar 'sm:string-name xDefinition) "!*") lData))
 			
 			(princ (strcat "\nTotal blocks found: " (itoa (length lEntities))))
-			(princ (strcat "\nTotal unique blocks found: " (itoa (length (lm:unique lEntities)))))
+			(princ (strcat "\nUnique blocks: " (itoa (length (lm:unique lEntities)))))
+			(princ (strcat "\nFiltered blocks: " (itoa (length lData))))
 		)
 	)
 	
 	lData
 )
 
-(defun block-table ( pInsert aTitle aWidths aSymbol aDefinition aFilter aDuplicates / lData oTable a )
+(defun block-table ( pInsert rScaleFactor aTitle aWidth aSymbol aDefinition aFilter aSort aDuplicate / lData oTable a )
+	(cm:setvar "CMDECHO" 0)
+	
 	(cond
-		((setq lData (table-data aSymbol aDefinition aFilter (im:select-all-blocks)))
-			(setq oTable (table-insert pInsert aTitle (lm:string->list|numbers aWidths) lData))
+		((setq lData (block-table|data aSymbol aDefinition aFilter (im:select-all-blocks)))
+			(tm:table-init nil nil)
 			
-			(if aDuplicates 
-				(if (setq a (lm:nth aDuplicates (car lData)))
+			(setq oTable (tm:table-create pInsert lData)) ; Create the AutoCAD table
+			
+			(tm:table-set-title oTable aTitle)
+			(tm:table-set-width oTable nil (if aWidth (lm:string->list|numbers aWidth) (tm:get-data-column-widths lData)))
+			
+			(if aDuplicate 
+				(if (setq a (lm:nth aDuplicate (car lData)))
 					(tm:data-row-highlight oTable (lm:duplicates (mapcar '(lambda (x) (nth a x)) lData)) lData)
 				)
 			)
 			
+			(command "_.SCALE" (vlax-vla-object->ename oTable) "" pInsert rScaleFactor)
+			
 			(tm:table-show oTable)
-			(xm:set-data oTable (list "THOORUNA" "v1.0" "BLOCK-TABLE" aTitle aWidths aSymbol aDefinition aFilter aDuplicates))
+			(xm:set-data oTable (block-table|regapp 0) (block-table|xdata 0))
 		)
 	)
 )
 
-(defun c:ptable ( / aDefinition aDuplicates aFilter aSymbol aTitle )
-	(cm:debug T)
+(defun c:ptable ( / aDefinition aDuplicate aFilter aSort aSymbol aTitle aWidth )
 	(cm:initialize)
 	
 	(initget "1 2 3 4 5 6 7 8 9 0 *" 129)
@@ -105,86 +110,66 @@
 	
 	(setq
 		aTitle (strcat "P & I D" (if aFilter (strcat " - Group " aFilter) ""))
-		aWidths nil
+		aWidth nil
 		aSymbol "SYMBOL*"
 		aDefinition "!NUMBER,!LETTER,ID=LETTER|NUMBER,DESCRIPTION"
 		aFilter (if aFilter (strcat "!NUMBER=" aFilter "*"))
-		aDuplicates "ID"
+		aSort "!NUMBER,!LETTER"
+		aDuplicate "ID"
 	)
 	
-	(block-table nil aTitle aWidths aSymbol aDefinition aFilter aDuplicates)
+	(block-table nil 1 aTitle aWidth aSymbol aDefinition aFilter aSort aDuplicate)
 	
 	(cm:terminate)
 )
 
-(defun c:btable ( / aDefinition aDuplicates aFilter aSymbol aTitle )
-	(cm:debug T)
+(defun c:btable ( / aDefinition aDuplicate aFilter aSort aSymbol aTitle aWidth )
 	(cm:initialize)
 	
 	(setq
 		aTitle "PARTS LIST"
-		aWidths nil
+		aWidth nil
 		aSymbol "BALLOON"
 		aDefinition nil
 		aFilter nil
-		aDuplicates "ID"
+		aSort "ID"
+		aDuplicate "ID"
 	)
 	
-	(block-table nil aTitle aWidths aSymbol aDefinition aFilter aDuplicates)
+	(block-table nil 1 aTitle aWidth aSymbol aDefinition aFilter aSort aDuplicate)
 	
 	(cm:terminate)
 )
 
-(defun c:block-table ( / aDefinition aDuplicates aFilter aSymbol aTitle )
-	(cm:debug T)
+(defun c:block-table ( / aDefinition aDuplicate aFilter aSort aSymbol aTitle aWidth )
 	(cm:initialize)
 	
 	(setq
 		aTitle "BLOCK TABLE"
-		aWidths nil
+		aWidth nil
 		aSymbol "*"
 		aDefinition nil
 		aFilter nil
-		aDuplicates nil
+		aSort nil
+		aDuplicate nil
 	)
 	
-	(block-table nil aTitle aWidths aSymbol aDefinition aFilter aDuplicates)
+	(block-table nil 1 aTitle aWidth aSymbol aDefinition aFilter aSort aDuplicate)
 	
 	(cm:terminate)
 )
 
-(defun c:block-table-update ( / aDefinition aDuplicates aFunction aFilter aSymbol aTitle aVersion e l)
-	(cm:debug T)
+(defun c:block-table-update ( / aDefinition aDuplicate aFilter aSort aSymbol aTitle aWidth e l rScaleFactor )
 	(cm:initialize)
 	
 	(foreach e (im:select-all-tables)
 		(cond 
-			((setq l (xm:get-data e "THOORUNA"))
-				(setq 
-					aVersion (cdr (nth 0 l))
-					aFunction (cdr (nth 1 l))
-				)
-				(cond 
-					((= aFunction "BLOCK-TABLE")
-						(setq
-							aTitle  (cdr (nth 2 l))
-							aWidths  (cdr (nth 3 l))
-							aSymbol (cdr (nth 4 l))
-							aDefinition (cdr (nth 5 l))
-							aFilter (cdr (nth 6 l))
-							aDuplicates (cdr (nth 7 l))
-						)
-						
-						(if (= aFilter "") (setq aFilter nil))
-						(if (= aDefinition "") (setq aDefinition nil))
-						(if (= aDuplicates "") (setq aDuplicates nil))
-						(if (= aWidths "") (setq aWidths nil))
-						
-						(block-table (em:primary-point e) aTitle aWidths aSymbol aDefinition aFilter aDuplicates)
-						(entdel e)
-					)
-				)
+			((setq l (xm:get-data e (block-table|regapp 0) (block-table|xdata 0)))
+				(princ (if aTitle (strcat "\nUpdating table: " aTitle) "\nUpdating table..."))
+				(block-table (em:primary-point e) rScaleFactor aTitle aWidth aSymbol aDefinition aFilter aSort aDuplicate)
+				(entdel e)
 			)
+			(T (princ "\nTable does not contain extended entity data."))
 		)
 	)
 	

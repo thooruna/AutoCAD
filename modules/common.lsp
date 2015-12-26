@@ -69,8 +69,8 @@
 		((= a "OSNAP")
 			(setq *SETVAR* (cons (cons "OSMODE" (getvar "OSMODE")) *SETVAR*))
 			(if (wcmatch (sm:to-string x) "ON,1")
-				(setvar "OSMODE" (BitCode (getvar "OSMODE") 16384 -1))
-				(setvar "OSMODE" (BitCode (getvar "OSMODE") 16384 1))
+				(setvar "OSMODE" (mm:bitcode (getvar "OSMODE") 16384 -1))
+				(setvar "OSMODE" (mm:bitcode (getvar "OSMODE") 16384 1))
 			)
 		)
 		(T 

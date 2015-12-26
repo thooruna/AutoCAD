@@ -32,7 +32,7 @@
 )
 
 (defun tm:data-column-sort ( xColumns lData / aColumn iColumn lTemp )
-	(foreach aColumn (lm:x->list xColumns)
+	(foreach aColumn (reverse (lm:x->list xColumns))
 		(if (setq iColumn (lm:nth aColumn (car lData)))
 			(setq 
 				; Change the data format for sorting

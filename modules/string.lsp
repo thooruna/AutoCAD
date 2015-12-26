@@ -11,6 +11,10 @@
 	)
 )
 
+(defun sm:to-string|empty->null ( x )
+	(if (/= (setq x (sm:to-string x)) "") x)
+)
+
 ;; Escape wildcard characters in a string except for the comma
 
 (defun sm:string-escape ( a )
@@ -53,7 +57,7 @@
 	(strlen (sm:to-string x))
 )
 
-(defun sm:string-left-fill ( aString aFill i )
+(defun sm:string-fill|left ( aString aFill i )
 	(if (null aString) 
 		(setq aString "")
 	)
@@ -69,7 +73,7 @@
 	aString
 )
 
-(defun sm:string-right-fill ( aString aFill i )
+(defun sm:string-fill|right ( aString aFill i )
 	(if (null aString) 
 		(setq aString "")
 	)
