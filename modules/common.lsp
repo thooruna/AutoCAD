@@ -144,5 +144,18 @@
 	(setvar "CMDECHO" i)
 )
 
+;;; Layer functions
 
+(defun cm:layer-create ( a )
+	(if (null (tblsearch "LAYER" a)) (command "-LAYER" "_M" a ""))
+)
+
+(defun cm:layer-activate ( a )
+	(if (tblsearch "LAYER" a)
+		(command ".-LAYER" "_T" a "_ON" a "")
+		(cm:layer-create a)
+	)
+	
+	(cm:setvar "CLAYER" a)
+)
 

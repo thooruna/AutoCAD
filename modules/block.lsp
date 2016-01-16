@@ -2,6 +2,11 @@
 ;;; Author: Wilfred Stapper
 ;;; Copyright © 2015
 
+(setq
+	bm:layer-symbol "0"
+	bm:layer-extension-line "0"
+)
+
 (defun bm:list ( / a l )
 	(setq a (tblnext "BLOCK" T))
 	
@@ -50,26 +55,30 @@
 )
 
 (defun bm:insert-symbol ( a p )
+	(cm:layer-activate bm:layer-symbol)
 	(command "_.-INSERT" a p (getvar "DIMSCALE") 0.0)
 )
 
 (defun bm:insert-symbol-leader ( a p l )
+	(cm:layer-activate bm:layer-symbol)
 	(apply 'command (append '("_.LEADER") (reverse l) (list "_A" "" "_B" a p (getvar "DIMSCALE") 0.0)))
 	(command "_.REDRAW")
 	(entlast)
 )
 
 (defun bm:insert-symbol-extension-line ( a p l / e )
-	(setq e (bm:insert-extension-line l))
+	
+	(defun DrawExtensionLine ( l )
+		(cm:layer-activate bm:layer-extension-line)
+		(apply 'command (append '("_.PLINE") (reverse l) '("")))
+		(entlast)
+	)
+	
+	(setq e (DrawExtensionLine l))
 	(bm:insert-symbol a p)
 	(if (equal p (car l)) (command "_.TRIM" "" (list e (polar p (angle (car l) (cadr l)) 0.001)) ""))
 	(command "_.REDRAW")
 	e
-)
-
-(defun bm:insert-extension-line ( l )
-	(apply 'command (append '("_.PLINE") (reverse l) '("")))
-	(entlast)
 )
 
 (defun bm:handle-lengths ( lEntities )

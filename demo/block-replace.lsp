@@ -26,5 +26,5 @@
 )
 
 (defun c:preplace ( )
-	(block-replace '("SYMBOL-1" "SYMBOL-2"))
+	(block-replace "SYMBOL-1,SYMBOL-2")
 )
