@@ -85,7 +85,7 @@
 		aFont (if aFont aFont "Courier New")
 	)
 	
-	(command "._STYLE" aStyle aFont 0 1 0 "" "")
+	(command "_.-STYLE" aStyle aFont 0 1 0 "" "")
 	
 	(vl-load-com)
 	
@@ -216,7 +216,9 @@
 	(foreach a (lm:x->list xRows)
 		(foreach d (lm:assoc a l)
 			(repeat (setq iColumn (vla-get-columns oTable))
-				(vla-SetCellBackgroundColor oTable (1+ (cdr d)) (setq iColumn (1- iColumn)) oColor)
+				; Backgroundcolor hides color in most visual styles in AutoCAD 2016
+				;(vla-SetCellBackgroundColor oTable (1+ (cdr d)) (setq iColumn (1- iColumn)) oColor) 
+				(vla-SetCellContentColor oTable (1+ (cdr d)) (setq iColumn (1- iColumn)) oColor)
 			)
 		)
 	)

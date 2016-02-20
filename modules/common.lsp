@@ -123,7 +123,7 @@
 	)
 	
 	(setq i (cm:echo-off))
-	(command-s "_.REDRAW")
+	(command-s "_.REGEN")
 	(if (cm:version) (command-s "_.UNDO" "E"))
 	(cm:echo-set i)
 	
@@ -147,12 +147,12 @@
 ;;; Layer functions
 
 (defun cm:layer-create ( a )
-	(if (null (tblsearch "LAYER" a)) (command "-LAYER" "_M" a ""))
+	(if (null (tblsearch "LAYER" a)) (command "_.-LAYER" "_M" a ""))
 )
 
 (defun cm:layer-activate ( a )
 	(if (tblsearch "LAYER" a)
-		(command ".-LAYER" "_T" a "_ON" a "")
+		(command "_.-LAYER" "_T" a "_ON" a "")
 		(cm:layer-create a)
 	)
 	

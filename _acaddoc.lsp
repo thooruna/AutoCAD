@@ -35,4 +35,12 @@
 (LoadFile "modify.lsp")
 (LoadFile "settings.lsp")
 
+;;; Change the drawing visual style. The '2D Wireframe' visual style causes issues on 2D drawings with block tables. Mainly in the first drawing.
+;;;
+;;; See the following link for similar problems:
+;;; https://forums.autodesk.com/t5/autocad-2013-2014-2015-2016/hide-command-ram-error-autocad-2016-any-fix-coming/td-p/5782607
+
+(command "_.VSCURRENT"  "W")
+(command "_.VIEWRES" "_Y" 2000)
+
 (princ)

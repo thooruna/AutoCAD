@@ -85,7 +85,7 @@
 			(setq oTable (tm:table-create pInsert lData)) ; Create the AutoCAD table
 			
 			(tm:table-set-title oTable aTitle)
-			(tm:table-set-width oTable nil (if aWidth (lm:string->list|numbers aWidth) (tm:get-data-column-widths lData)))
+			(tm:table-set-width oTable (if aWidth 1 nil) (if aWidth (lm:string->list|numbers aWidth) (tm:get-data-column-widths lData)))
 			
 			(if aDuplicate 
 				(if (setq a (lm:nth aDuplicate (car lData)))
@@ -93,9 +93,9 @@
 				)
 			)
 			
-			(command "_.SCALE" (vlax-vla-object->ename oTable) "" pInsert rScaleFactor)
-			
 			(tm:table-show oTable)
+			
+			(command "_.SCALE" (vlax-vla-object->ename oTable) "" pInsert rScaleFactor)
 			(xm:set-data oTable (block-table|regapp 0) (block-table|xdata 0))
 		)
 	)
