@@ -107,6 +107,18 @@
 	(cdr (assoc 40 (em:edd x)))
 )
 
+(defun em:scale|X ( x )
+	(cdr (assoc 41 (em:edd x)))
+)
+
+(defun em:scale|Y ( x )
+	(cdr (assoc 42 (em:edd x)))
+)
+
+(defun em:scale|Z ( x )
+	(cdr (assoc 43 (em:edd x)))
+)
+
 ;;; "Entities follow" flag (fixed)
 
 (defun em:entities-follow ( x )
