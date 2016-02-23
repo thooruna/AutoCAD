@@ -146,14 +146,25 @@
 
 ;;; Layer functions
 
-(defun cm:layer-create ( a )
+(defun cm:layer-new ( a i )
+	(if (null (tblsearch "LAYER" a)) (command "_.-LAYER" "_N" a ""))
+	(cm:layer-color a i)
+	
+	a
+)
+
+(defun cm:layer-color ( a i )
+	(command ".-LAYER" "_C" i a "")
+)
+
+(defun cm:layer-make ( a )
 	(if (null (tblsearch "LAYER" a)) (command "_.-LAYER" "_M" a ""))
 )
 
 (defun cm:layer-activate ( a )
 	(if (tblsearch "LAYER" a)
 		(command "_.-LAYER" "_T" a "_ON" a "")
-		(cm:layer-create a)
+		(cm:layer-make a)
 	)
 	
 	(cm:setvar "CLAYER" a)
