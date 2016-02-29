@@ -2,6 +2,42 @@
 ;;; Author: Wilfred Stapper
 ;;; Copyright © 2015
 
+(defun block-table|definition ( r a )
+	(cond
+		((= r 0) 
+			(cond
+				((= a "PTABLE") 
+					(setq 
+						aSymbol "SYMBOL*"
+						aDefinition "!NUMBER,!LETTER,ID=LETTER|NUMBER,DESCRIPTION"
+						aFilter (if aFilter (strcat "!NUMBER=" aFilter "*"))
+						aSort "!NUMBER,!LETTER"
+						aDuplicate "ID"
+					)
+				)
+				((= a "BTABLE")
+					(setq
+						aSymbol "BALLOON"
+						aDefinition nil
+						aFilter nil
+						aSort "ID"
+						aDuplicate "ID"
+					)
+				)
+				((= a "BLOCK-TABLE")
+					(setq
+						aSymbol (if aSymbol aSymbol "*")
+						aDefinition nil
+						aFilter nil
+						aSort nil
+						aDuplicate nil
+					)
+				)
+			)
+		)
+	)
+)
+
 (defun block-table|regapp ( r )
 	(cond
 		((= r 0) "THOORUNA_BLOCK-TABLE_0")
@@ -10,7 +46,7 @@
 
 (defun block-table|xdata ( r )
 	(cond
-		((= r 0) "rScaleFactor,aTitle,aWidth,aSymbol,aDefinition,aFilter,aSort,aDuplicate")
+		((= r 0) "rScaleFactor,aTitle,aWidth,aFunction,aSymbol,aDefinition,aFilter,aSort,aDuplicate")
 	)
 )
 
@@ -75,7 +111,7 @@
 	lData
 )
 
-(defun block-table ( pInsert rScaleFactor aTitle aWidth aSymbol aDefinition aFilter aSort aDuplicate / lData oTable a )
+(defun block-table ( pInsert rScaleFactor aTitle aWidth aFunction aSymbol aDefinition aFilter aSort aDuplicate / lData oTable a )
 	(cm:setvar "CMDECHO" 0)
 	
 	(cond
@@ -101,7 +137,7 @@
 	)
 )
 
-(defun c:ptable ( / aDefinition aDuplicate aFilter aSort aSymbol aTitle aWidth )
+(defun c:ptable ( / aDefinition aDuplicate aFunction aFilter aSort aSymbol aTitle aWidth )
 	(cm:initialize)
 	
 	(initget "1 2 3 4 5 6 7 8 9 0 *" 129)
@@ -111,62 +147,55 @@
 	(setq
 		aTitle (strcat "P & I D" (if aFilter (strcat " - Group " aFilter) ""))
 		aWidth nil
-		aSymbol "SYMBOL*"
-		aDefinition "!NUMBER,!LETTER,ID=LETTER|NUMBER,DESCRIPTION"
-		aFilter (if aFilter (strcat "!NUMBER=" aFilter "*"))
-		aSort "!NUMBER,!LETTER"
-		aDuplicate "ID"
+		aFunction "PTABLE"
 	)
 	
-	(block-table nil 1 aTitle aWidth aSymbol aDefinition aFilter aSort aDuplicate)
+	(block-table|definition 0 aFunction)
+	(block-table nil 1 aTitle aWidth aFunction aSymbol aDefinition aFilter aSort aDuplicate)
 	
 	(cm:terminate)
 )
 
-(defun c:btable ( / aDefinition aDuplicate aFilter aSort aSymbol aTitle aWidth )
+(defun c:btable ( / aDefinition aDuplicate aFunction aFilter aSort aSymbol aTitle aWidth )
 	(cm:initialize)
 	
 	(setq
 		aTitle "PARTS LIST"
 		aWidth nil
-		aSymbol "BALLOON"
-		aDefinition nil
-		aFilter nil
-		aSort "ID"
-		aDuplicate "ID"
+		aFunction "BTABLE"
 	)
 	
-	(block-table nil 1 aTitle aWidth aSymbol aDefinition aFilter aSort aDuplicate)
+	(block-table|definition 0 aFunction)
+	(block-table nil 1 aTitle aWidth aFunction aSymbol aDefinition aFilter aSort aDuplicate)
 	
 	(cm:terminate)
 )
 
-(defun c:block-table ( / aDefinition aDuplicate aFilter aSort aSymbol aTitle aWidth )
+(defun c:block-table ( / aDefinition aDuplicate aFunction aFilter aSort aSymbol aTitle aWidth )
 	(cm:initialize)
 	
 	(setq
 		aTitle "BLOCK TABLE"
 		aWidth nil
-		aSymbol "*"
-		aDefinition nil
-		aFilter nil
-		aSort nil
-		aDuplicate nil
+		aFunction "BLOCK-TABLE"
 	)
 	
-	(block-table nil 1 aTitle aWidth aSymbol aDefinition aFilter aSort aDuplicate)
+	(block-table|definition 0 aFunction)
+	(block-table nil 1 aTitle aWidth aFunction aSymbol aDefinition aFilter aSort aDuplicate)
 	
 	(cm:terminate)
 )
 
-(defun c:block-table-update ( / aDefinition aDuplicate aFilter aSort aSymbol aTitle aWidth e l rScaleFactor )
+(defun c:block-table-update ( / aDefinition aDuplicate aFunction aFilter aSort aSymbol aTitle aWidth e l rScaleFactor )
 	(cm:initialize)
 	
 	(foreach e (im:select-all-tables)
 		(cond 
 			((setq l (xm:get-data e (block-table|regapp 0) (block-table|xdata 0)))
 				(princ (if aTitle (strcat "\nUpdating table: " aTitle) "\nUpdating table..."))
-				(block-table (em:primary-point e) rScaleFactor aTitle aWidth aSymbol aDefinition aFilter aSort aDuplicate)
+				
+				(block-table|definition 0 aFunction)
+				(block-table (em:primary-point e) rScaleFactor aTitle aWidth aFunction aSymbol aDefinition aFilter aSort aDuplicate)
 				(entdel e)
 			)
 			(T (princ "\nTable does not contain extended entity data."))
