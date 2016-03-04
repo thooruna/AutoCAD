@@ -8,9 +8,9 @@
 	(if (bm:load xBlocks)
 		(if (setq lEntities (im:select-blocks))
 			(if (setq a (im:get-keyword "\nSelect block" xBlocks))
-				(if (member a xBlocks)
+				(if (member a (lm:x->list xBlocks))
 					(foreach e lEntities
-						(if (member (em:name e) xBlocks)
+						(if (member (em:name e) (lm:x->list xBlocks))
 							(bm:replace-block e a)
 							(princ (strcat "\nUnable to replace blocks named: " (strcase (em:name e))))
 						)

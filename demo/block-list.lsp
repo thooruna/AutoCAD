@@ -2,7 +2,7 @@
 ;;; Author: Wilfred Stapper
 ;;; Copyright © 2015
 
-(defun screen-list ( lBlocks aFilter / d e i lAttributes lHeader )
+(defun screen-list ( lBlocks xFilter / d e i lAttributes lHeader )
 	(defun PrintDivider ()
 		(princ (sm:string-fill|right "\n" "=" (+ i 3 (length lHeader) (apply '+ (mapcar 'cdr lHeader)))))
 	)
@@ -35,14 +35,14 @@
 	
 	(if lBlocks
 		(cond
-			((setq lBlocks (bm:search-blocks-with-attributes aFilter lBlocks))
+			((setq lBlocks (bm:search-blocks-with-attributes xFilter lBlocks))
 				(setq lHeader (bm:get-attribute-lengths lBlocks))
 				
 				(setq i (max (bm:handle-lengths lBlocks) (strlen "Handle"))) ; Max length for handle string
 				
 				(PrintDivider)
 				
-				(princ (strcat "\nBlock name(s): " aFilter))
+				(princ (strcat "\nBlock name(s): " (lm:x->string xFilter)))
 				
 				(PrintDivider)
 				(PrintHeader)
@@ -74,9 +74,7 @@
 )
 
 (defun c:block-list ( / aFilter )
-	(foreach aFilter (bm:list)
-		(screen-list (im:select-all-blocks) aFilter)
-	)
+	(block-list (im:select-all-blocks) (bm:list))
 )
 
 (defun c:blist ( )
