@@ -12,7 +12,7 @@
 	
 	(if (bm:load xBlocks)
 		(cond
-			((setq l (im:get-points xBlocks))
+			((setq l (im:get-points-with-keywords "replace" xBlocks))
 				(setq
 					a (getvar "USERS1")
 					p (car l)
@@ -30,6 +30,7 @@
 					(bm:insert-symbol a p)
 				)
 			)
+			(T (block-replace xBlocks))
 		)
 		(princ "\nUnable to find symbols.")
 	)

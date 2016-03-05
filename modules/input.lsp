@@ -74,31 +74,37 @@
 	e
 )
 
-(defun im:get-points ( x / l p )
-	(setq x (lm:x->list x))
+(defun im:get-points-with-keywords ( aDefault xOptions / l p )
+	(setq xOptions (lm:x->list xOptions))
 	
-	(setq p (getpoint "\nSpecify first point: "))
+	(initget 129)
+	(setq p (getpoint (strcat "\nSpecify first point" (if aDefault (strcat " or <" aDefault ">:") ":"))))
 	
-	(while (= (type p) 'LIST)
-		(setq l (cons p l))
+	(cond 
+		((and aDefault (null p)) -1)
+		(T
+			(while (= (type p) 'LIST)
+				(setq l (cons p l))
 		
-		(if (> (length l) 1)
-			(grvecs (list 7 (cadr l) (car l)))
+				(if (> (length l) 1)
+					(grvecs (list 7 (cadr l) (car l)))
+				)
+				
+				(initget 128 (lm:list->string xOptions " "))
+				(setq p (getpoint (car l) (strcat "\nSpecify next point or [" (lm:list->string xOptions "/") "] <" (car xOptions) ">: ")))
+			)
+			
+			(if (null p)
+				(setvar "USERS1" (car xOptions))
+					(if (= (type p) 'STR) 
+						(setvar "USERS1" p)
+						(setvar "USERS1" "")
+				)
+			)
+			
+			l
 		)
-		
-		(initget 128 (lm:list->string x " "))
-		(setq p (getpoint (car l) (strcat "\nSpecify next point or [" (lm:list->string x "/") "] <" (car x) ">: ")))
 	)
-	
-	(if (null p)
-		(setvar "USERS1" (car x))
-		(if (= (type p) 'STR) 
-			(setvar "USERS1" p)
-			(setvar "USERS1" "")
-		)
-	)
-	
-	l
 )
 
 (defun im:get-point ( a / p )
