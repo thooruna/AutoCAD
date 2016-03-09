@@ -96,10 +96,7 @@
 			
 			(if (null p)
 				(setvar "USERS1" (car xOptions))
-					(if (= (type p) 'STR) 
-						(setvar "USERS1" p)
-						(setvar "USERS1" "")
-				)
+				(setvar "USERS1" (if (= (type p) 'STR) p ""))
 			)
 			
 			l
