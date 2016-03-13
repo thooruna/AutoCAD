@@ -123,6 +123,7 @@
 	)
 	
 	(setq i (cm:echo-off))
+	(command-s "_.REDRAW")
 	(command-s "_.REGEN")
 	(if (cm:version) (command-s "_.UNDO" "E"))
 	(cm:echo-set i)
@@ -146,8 +147,12 @@
 
 ;;; Layer functions
 
+(defun cm:layer-exists ( a )
+	(tblsearch "LAYER" a)
+)
+
 (defun cm:layer-new ( a i )
-	(if (null (tblsearch "LAYER" a)) (command "_.-LAYER" "_N" a ""))
+	(if (null (cm:layer-exists a)) (command "_.-LAYER" "_N" a ""))
 	(cm:layer-color a i)
 	
 	a
@@ -158,11 +163,11 @@
 )
 
 (defun cm:layer-make ( a )
-	(if (null (tblsearch "LAYER" a)) (command "_.-LAYER" "_M" a ""))
+	(if (null (cm:layer-exists a)) (command "_.-LAYER" "_M" a ""))
 )
 
 (defun cm:layer-activate ( a )
-	(if (tblsearch "LAYER" a)
+	(if (cm:layer-exists a)
 		(command "_.-LAYER" "_T" a "_ON" a "")
 		(cm:layer-make a)
 	)
@@ -170,3 +175,14 @@
 	(cm:setvar "CLAYER" a)
 )
 
+(defun cm:layer-active ( )
+	(tblsearch "LAYER" (getvar "CLAYER"))
+)
+
+(defun cm:layer-active-linetype ( )
+	(em:linetype (cm:layer-active))
+)
+
+(defun cm:layer-active-color ( )
+	(em:color (cm:layer-active))
+)

@@ -67,6 +67,12 @@
 	(cdr (assoc 5 (em:edd x)))
 )
 
+;;; Linetype name (fixed)
+
+(defun em:linetype ( x )
+	(cdr (assoc 6 (em:edd x)))
+)
+
 ;;; Layer name (fixed)
 
 (defun em:layer ( x )
@@ -117,6 +123,12 @@
 
 (defun em:scale|Z ( x )
 	(cdr (assoc 43 (em:edd x)))
+)
+
+;;; Color number (fixed)
+
+(defun em:color ( x )
+	(cdr (assoc 62 (em:edd x)))
 )
 
 ;;; "Entities follow" flag (fixed)

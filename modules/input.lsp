@@ -87,7 +87,7 @@
 				(setq l (cons p l))
 		
 				(if (> (length l) 1)
-					(grvecs (list 7 (cadr l) (car l)))
+					(grvecs (list (cm:layer-active-color) (cadr l) (car l)))
 				)
 				
 				(initget 128 (lm:list->string xOptions " "))
@@ -104,13 +104,29 @@
 	)
 )
 
+(defun im:get-points ( / l p )
+	(setq p (im:get-point "Specify first point:"))
+	
+	(while (= (type p) 'LIST)
+		(setq l (cons p l))
+		(if (> (length l) 1)
+			(grvecs (list (cm:layer-active-color) (cadr l) (car l)))
+		)
+		
+		(setq p (getpoint (car l) "\nSpecify next point: "))
+	)
+	
+	l
+)
+
 (defun im:get-point ( a / p )
-	(if (null (setq p (getpoint a))) (exit))
+	(setq p (getpoint (strcat "\n" (if a a "Specify point:"))))
+	
 	p
 )
 
 (defun im:get-insertion-point ( / p )
-	(setq p (getpoint "\nSpecify insertion point: "))
+	(setq p (im:get-point "Specify insertion point:"))
 	
 	(if (null p) 
 		(setq p '(0 0 0))
