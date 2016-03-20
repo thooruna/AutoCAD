@@ -4,4 +4,5 @@
 acaddoc.lsp
 sample.xml
 custom/*
+custom*/*
 custom/symbols/*

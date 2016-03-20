@@ -16,13 +16,13 @@
 	)
 )
 
-(defun cm:error ( aError )
+(defun cm:error ( a )
 	(defun ShowVariables ( / x )
 		(princ "\nVariables in memory:")
 		
 		(foreach x (lm:difference (atoms-family 0) *ATOMS*)
 			(cond 
-				((and (/= x 'aError) (/= x '*ATOMS*))
+				((and (/= x 'a) (/= x '*ATOMS*))
 					(princ "\n")
 					(princ x)
 					(princ " ")
@@ -36,8 +36,8 @@
 		(terpri)
 	)
 	
-	(if (not (member aError '("Function Cancelled" "console break" "quit / exit abort")))
-		(princ (strcat "\n; error: " aError "\n"))
+	(if (not (member a '("Function Cancelled" "console break" "quit / exit abort")))
+		(princ (strcat "\n; error: " a "\n"))
 	)
 	
 	(if *DEBUG* 
@@ -151,24 +151,33 @@
 	(tblsearch "LAYER" a)
 )
 
-(defun cm:layer-new ( a i )
-	(if (null (cm:layer-exists a)) (command "_.-LAYER" "_N" a ""))
+(defun cm:layer-new ( a i aLinetype )
+	(if (null (cm:layer-exists a)) (command-s "_.-LAYER" "_N" a ""))
 	(cm:layer-color a i)
+	(if aLinetype (cm:layer-linetype a aLinetype))
 	
 	a
 )
 
 (defun cm:layer-color ( a i )
-	(command ".-LAYER" "_C" i a "")
+	(command-s "_.-LAYER" "_C" i a "")
+)
+
+(defun cm:layer-linetype ( a aLinetype )
+	(if (not (tblsearch "LTYPE" aLinetype))
+		(command "_.-LINETYPE" "_L" aLinetype (findfile "acadiso.lin") "")
+	)
+	
+	(command-s "_.-LAYER" "_L" aLinetype a "")
 )
 
 (defun cm:layer-make ( a )
-	(if (null (cm:layer-exists a)) (command "_.-LAYER" "_M" a ""))
+	(if (null (cm:layer-exists a)) (command-s "_.-LAYER" "_M" a ""))
 )
 
 (defun cm:layer-activate ( a )
 	(if (cm:layer-exists a)
-		(command "_.-LAYER" "_T" a "_ON" a "")
+		(command-s "_.-LAYER" "_T" a "_ON" a "")
 		(cm:layer-make a)
 	)
 	

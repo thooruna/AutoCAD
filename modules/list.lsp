@@ -33,6 +33,8 @@
 	(mapcar '(lambda (x) (cons x (setq i (if i (1+ i) 0)))) l)
 )
 
+;;; Multiple Asssoc
+
 (defun lm:assoc ( a l1 / d l2 )
 	(while (setq d (assoc a l1))
 		(setq 

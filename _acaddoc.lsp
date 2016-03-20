@@ -41,7 +41,7 @@
 ;;; See the following link for similar problems:
 ;;; https://forums.autodesk.com/t5/autocad-2013-2014-2015-2016/hide-command-ram-error-autocad-2016-any-fix-coming/td-p/5782607
 
-(command-s "_.VSCURRENT"  "W")
+;(command-s "_.VSCURRENT"  "W")
 (command-s "_.VIEWRES" "_Y" 2000)
 
 (princ)

@@ -65,7 +65,7 @@
 )
 
 (defun block-list ( s a )
-	(setq x (im:get-keyword "\nOutput to " '("Screen" "Xml")))
+	(setq x (im:get-keyword "\nOutput to " nil '("Screen" "Xml")))
 	
 	(cond 
 		((= x "Screen") (screen-list s a))

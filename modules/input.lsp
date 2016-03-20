@@ -74,6 +74,8 @@
 	e
 )
 
+
+
 (defun im:get-points-with-keywords ( aDefault xOptions / l p )
 	(setq xOptions (lm:x->list xOptions))
 	
@@ -152,11 +154,13 @@
 	a2
 )
 
-(defun im:get-keyword ( a x )
+(defun im:get-keyword ( a aDefault x )
 	(setq x (lm:x->list x))
 	
+	(setq aDefault (if aDefault aDefault (car x)))
+	
 	(initget 128 (lm:list->string x " "))
-	(cond ((getkword (strcat a " [" (lm:list->string x "/") "] <" (car x) ">: ")))((car x)))
+	(cond ((getkword (strcat a " [" (lm:list->string x "/") "] <" aDefault ">: ")))(aDefault))
 )
 
 (princ)
