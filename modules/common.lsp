@@ -165,7 +165,7 @@
 
 (defun cm:layer-linetype ( a aLinetype )
 	(if (not (tblsearch "LTYPE" aLinetype))
-		(command "_.-LINETYPE" "_L" aLinetype (findfile "acadiso.lin") "")
+		(command-s "_.-LINETYPE" "_L" aLinetype (findfile "acadiso.lin") "")
 	)
 	
 	(command-s "_.-LAYER" "_L" aLinetype a "")
