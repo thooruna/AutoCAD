@@ -55,6 +55,16 @@
 	(lm:x->list s)
 )
 
+(defun im:select-all-tables|current-tab ( / s )
+	(cond
+		((setq s (ssget "_X" (list (cons 0 "ACAD_TABLE") (cons 410 (getvar "CTAB"))))))
+		((princ "\nCurrent tab does not contain any tables.") nil)
+	)
+	
+	(lm:x->list s)
+)
+
+
 (defun im:select-tables( / s )
 	(if (null (setq s (ssget '((0 . "ACAD_TABLE")))))
 		(princ "\nNo tables were selected.")

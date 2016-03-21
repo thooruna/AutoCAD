@@ -10,7 +10,7 @@
 					(setq 
 						aSymbol "SYMBOL*"
 						aDefinition "!NUMBER,!LETTER,ID=LETTER|NUMBER,DESCRIPTION"
-						aFilter (if aFilter (strcat "!NUMBER=" aFilter "*"))
+						aFilter (if aFilter aFilter nil)
 						aSort "!NUMBER,!LETTER"
 						aDuplicate "ID"
 					)
@@ -151,7 +151,7 @@
 	)
 	
 	(block-table|definition 0 aFunction)
-	(block-table nil 1 aTitle aWidth aFunction aSymbol aDefinition aFilter aSort aDuplicate)
+	(block-table nil 1 aTitle aWidth aFunction aSymbol aDefinition (if aFilter (strcat "!NUMBER=" aFilter "*")) aSort aDuplicate)
 	
 	(cm:terminate)
 )
@@ -189,7 +189,7 @@
 (defun c:block-table-update ( / aDefinition aDuplicate aFunction aFilter aSort aSymbol aTitle aWidth e l rScaleFactor )
 	(cm:initialize)
 	
-	(foreach e (im:select-all-tables)
+	(foreach e (im:select-all-tables|current-tab)
 		(cond 
 			((setq l (xm:get-data e (block-table|regapp 0) (block-table|xdata 0)))
 				(princ (if aTitle (strcat "\nUpdating table: " aTitle) "\nUpdating table..."))
