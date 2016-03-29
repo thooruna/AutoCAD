@@ -35,8 +35,8 @@
 
 ;;; Multiple Asssoc
 
-(defun lm:assoc ( a l1 / d l2 )
-	(while (setq d (assoc a l1))
+(defun lm:assoc ( x l1 / d l2 )
+	(while (setq d (assoc x l1))
 		(setq 
 			l1 (cdr (member d l1))
 			l2 (cons d l2)
@@ -44,6 +44,10 @@
 	)
 	
 	(reverse l2)
+)
+
+(defun lm:assoc|values ( x l )
+	(mapcar 'cdr (lm:assoc x l))
 )
 
 (defun lm:nth ( x l1 / i l2 )

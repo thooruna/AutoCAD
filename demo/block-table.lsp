@@ -2,12 +2,23 @@
 ;;; Author: Wilfred Stapper
 ;;; Copyright © 2015
 
-(defun block-table|definition ( r a )
+(defun block-table-origin-definition ( / l )
+	(setq l (im:select-blocks|filter "MARKER-ORIGIN"))
+	
+	(cond
+		((= (length l) 1) (em:primary-point (car l)))
+		((> (length l) 1) (princ "\nMultiple origin blocks found.") (exit))
+		(T (princ "\nNo origin block found, using UCS origin.") (list 0 0 0))
+	)
+)
+
+(defun block-table-definition ( r a )
 	(cond
 		((= r 0) 
 			(cond
 				((= a "PTABLE") 
-					(setq 
+					(setq
+						aWidth nil
 						aSymbol "SYMBOL*"
 						aDefinition "!NUMBER,!LETTER,ID=LETTER|NUMBER,DESCRIPTION"
 						aFilter (if aFilter aFilter nil)
@@ -17,6 +28,7 @@
 				)
 				((= a "BTABLE")
 					(setq
+						aWidth nil
 						aSymbol "BALLOON"
 						aDefinition nil
 						aFilter nil
@@ -26,6 +38,7 @@
 				)
 				((= a "BLOCK-TABLE")
 					(setq
+						aWidth nil
 						aSymbol (if aSymbol aSymbol "*")
 						aDefinition nil
 						aFilter nil
@@ -38,22 +51,23 @@
 	)
 )
 
-(defun block-table|regapp ( r )
+(defun block-table-regapp ( r )
 	(cond
 		((= r 0) "THOORUNA_BLOCK-TABLE_0")
 	)
 )
 
-(defun block-table|xdata ( r )
+(defun block-table-xdata ( r )
 	(cond
 		((= r 0) "rScaleFactor,aTitle,aWidth,aFunction,aSymbol,aDefinition,aFilter,aSort,aDuplicate")
 	)
 )
 
-(defun block-table|data ( xBlocks xDefinition aFilter lEntities / e aAttribute aCell aColumn aSpace aValue d lRow )
+(defun block-table-data ( xBlocks xDefinition aFilter lEntities / e aAttribute aCell aColumn aSpace aValue d lRow pOrigin )
 	(cond
 		((setq lEntities (bm:search-blocks-with-attributes|all xBlocks lEntities))
-			(setq 
+			(setq
+				pOrigin (if (wcmatch xDefinition "*:X*,*:Y*,*:Z*") (block-table-origin-definition))
 				xDefinition (lm:x->list (if xDefinition xDefinition (bm:get-attribute-tags|all lEntities))) 
 				lData (if (> (length lData) 0) lData (list (mapcar 'sm:string-name xDefinition))) ; Header row
 			)
@@ -72,9 +86,9 @@
 					(foreach aAttribute (lm:string->list aColumn "|")
 						(cond
 							((= aAttribute ":N") (setq aCell (em:name e)))
-							((= aAttribute ":X") (setq aCell (rtos (em:primary-point|X e) 2 0)))
-							((= aAttribute ":Y") (setq aCell (rtos (em:primary-point|Y e) 2 0)))
-							((= aAttribute ":Z") (setq aCell (rtos (em:primary-point|Z e) 2 0)))
+							((= aAttribute ":X") (setq aCell (rtos (- (em:primary-point|X e) (car pOrigin)) 2 0)))
+							((= aAttribute ":Y") (setq aCell (rtos (- (em:primary-point|Y e) (cadr pOrigin)) 2 0)))
+							((= aAttribute ":Z") (setq aCell (rtos (- (em:primary-point|Z e) (caddr pOrigin)) 2 0)))
 							((wcmatch aAttribute "<*>") (setq aSpace (sm:string-substring|exclude aAttribute "<" ">")))
 							(T (if (setq d (assoc (strcase aAttribute) xValues))
 									(if (> (sm:string-length (setq aValue (if (/= (cdr d) "?") (cdr d) ""))) 0)
@@ -115,7 +129,7 @@
 	(cm:setvar "CMDECHO" 0)
 	
 	(cond
-		((setq lData (block-table|data aSymbol aDefinition aFilter (im:select-all-blocks)))
+		((setq lData (block-table-data aSymbol aDefinition aFilter (im:select-all-blocks)))
 			(tm:table-init nil nil)
 			
 			(setq oTable (tm:table-create pInsert lData)) ; Create the AutoCAD table
@@ -132,7 +146,7 @@
 			(tm:table-show oTable)
 			
 			(command "_.SCALE" (vlax-vla-object->ename oTable) "" pInsert rScaleFactor)
-			(xm:set-data oTable (block-table|regapp 0) (block-table|xdata 0))
+			(xm:set-data oTable (block-table-regapp 0) (block-table-xdata 0))
 		)
 	)
 )
@@ -146,11 +160,10 @@
 	
 	(setq
 		aTitle (strcat "P & I D" (if aFilter (strcat " - Group " aFilter) ""))
-		aWidth nil
 		aFunction "PTABLE"
 	)
 	
-	(block-table|definition 0 aFunction)
+	(block-table-definition 0 aFunction)
 	(block-table nil 1 aTitle aWidth aFunction aSymbol aDefinition (if aFilter (strcat "!NUMBER=" aFilter "*")) aSort aDuplicate)
 	
 	(cm:terminate)
@@ -161,11 +174,10 @@
 	
 	(setq
 		aTitle "PARTS LIST"
-		aWidth nil
 		aFunction "BTABLE"
 	)
 	
-	(block-table|definition 0 aFunction)
+	(block-table-definition 0 aFunction)
 	(block-table nil 1 aTitle aWidth aFunction aSymbol aDefinition aFilter aSort aDuplicate)
 	
 	(cm:terminate)
@@ -176,14 +188,21 @@
 	
 	(setq
 		aTitle "BLOCK TABLE"
-		aWidth nil
 		aFunction "BLOCK-TABLE"
 	)
 	
-	(block-table|definition 0 aFunction)
+	(block-table-definition 0 aFunction)
 	(block-table nil 1 aTitle aWidth aFunction aSymbol aDefinition aFilter aSort aDuplicate)
 	
 	(cm:terminate)
+)
+
+(defun block-table-update ( e )
+	(block-table-definition 1 aFunction)
+	(block-table (em:primary-point e) rScaleFactor aTitle aWidth aFunction aSymbol aDefinition aFilter aSort aDuplicate)
+	(entdel e)
+	
+	(princ "\nUpdating complete.")
 )
 
 (defun c:block-table-update ( / aDefinition aDuplicate aFunction aFilter aSort aSymbol aTitle aWidth e l rScaleFactor )
@@ -191,12 +210,9 @@
 	
 	(foreach e (im:select-all-tables|current-tab)
 		(cond 
-			((setq l (xm:get-data e (block-table|regapp 0) (block-table|xdata 0)))
-				(princ (if aTitle (strcat "\nUpdating table: " aTitle) "\nUpdating table..."))
-				
-				(block-table|definition 0 aFunction)
-				(block-table (em:primary-point e) rScaleFactor aTitle aWidth aFunction aSymbol aDefinition aFilter aSort aDuplicate)
-				(entdel e)
+			((setq l (xm:get-data e (block-table-regapp 0) (block-table-xdata 0)))
+				(princ (strcat "\nUpdating block table: " aTitle "."))
+				(block-table-update e)
 			)
 			(T (princ "\nTable does not contain extended entity data."))
 		)
