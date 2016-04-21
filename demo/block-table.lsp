@@ -205,7 +205,7 @@
 	(princ "\nUpdating complete.")
 )
 
-(defun c:block-table-update ( / aDefinition aDuplicate aFunction aFilter aSort aSymbol aTitle aWidth e l rScaleFactor )
+(defun c:block-table-update|current-tab ( / aDefinition aDuplicate aFunction aFilter aSort aSymbol aTitle aWidth e l rScaleFactor )
 	(cm:initialize)
 	
 	(foreach e (im:select-all-tables|current-tab)
@@ -216,6 +216,18 @@
 			)
 			(T (princ "\nTable does not contain extended entity data."))
 		)
+	)
+	
+	(cm:terminate)
+)
+
+(defun c:block-table-update ( / a )
+	(cm:initialize)
+	
+	(foreach a (cons "Model" (layoutlist))
+		(cm:setvar "CTAB" a)
+		(if (/= a "Model") (command-s "_.PSPACE"))
+		(c:block-table-update|current-tab)
 	)
 	
 	(cm:terminate)
