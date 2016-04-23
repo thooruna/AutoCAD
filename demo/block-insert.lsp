@@ -38,7 +38,7 @@
 	(if a (entlast))
 )
 
-(defun c:block-insert-update ( / l )
+(defun c:block-insert-update ( / e l )
 	(cm:initialize)
 	
 	(foreach e (im:select-all-blocks|nested&filter "BALLOON,SYMBOL*")
