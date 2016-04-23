@@ -50,7 +50,7 @@
 	(cond
 		((and (= (em:type x) "INSERT") (member (strcase "vlax-ename->vla-object") (atoms-family 1)))
 			(setq o (vlax-ename->vla-object x))
-			(if (vlax-property-available-p o 'effectivename) ; Get the effective block name if available
+			(if (vlax-property-available-p o 'effectivename) ; Get the effective block name if available.
 				(setq a (vlax-get-property o "effectivename"))
 			)
 			(vlax-release-object o)
@@ -137,7 +137,7 @@
 	(cdr (assoc 66 (em:edd x)))
 )
 
-;;; Line angle between the primairy point and the other point 
+;;; Line angle between the primairy point and the other point.
 
 (defun em:line-angle ( x )
 	(if (= (em:type x) "LINE")

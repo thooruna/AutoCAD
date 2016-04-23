@@ -64,7 +64,6 @@
 	(lm:x->list s)
 )
 
-
 (defun im:select-tables( / s )
 	(if (null (setq s (ssget '((0 . "ACAD_TABLE")))))
 		(princ "\nNo tables were selected.")
@@ -83,8 +82,6 @@
 	
 	e
 )
-
-
 
 (defun im:get-points-with-keywords ( aDefault xOptions / l p )
 	(setq xOptions (lm:x->list xOptions))

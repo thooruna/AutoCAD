@@ -208,6 +208,8 @@
 (defun c:block-table-update|current-tab ( / aDefinition aDuplicate aFunction aFilter aSort aSymbol aTitle aWidth e l rScaleFactor )
 	(cm:initialize)
 	
+	(princ (strcat "\nUpdating tables on layout: " (getvar "CTAB") "."))
+	
 	(foreach e (im:select-all-tables|current-tab)
 		(cond 
 			((setq l (xm:get-data e (block-table-regapp 0) (block-table-xdata 0)))
@@ -226,7 +228,11 @@
 	
 	(foreach a (cons "Model" (layoutlist))
 		(cm:setvar "CTAB" a)
-		(if (/= a "Model") (command-s "_.PSPACE"))
+		
+		(if (and (member a (layoutlist)) (> (getvar "CVPORT") 1))
+			(command-s "_.PSPACE")
+		)
+		
 		(c:block-table-update|current-tab)
 	)
 	

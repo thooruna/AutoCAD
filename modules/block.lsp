@@ -344,7 +344,7 @@
 (defun bm:shift-atrribute-values|left ( e l / i lTags lValues )
 	(setq 
 		lTags (mapcar 'car (reverse l))
-		lValues (cons  ""  (reverse (cdr (mapcar  'cdr  l))))
+		lValues (cons "" (reverse (cdr (mapcar 'cdr  l))))
 	)
 	
 	(repeat (setq i (length l))
@@ -353,9 +353,9 @@
 	)
 )
 
-(defun bm:replace-block ( e aTag / l )
+(defun bm:replace-block ( e a / l )
 	(if (= (em:type (setq l (entget e))) "INSERT")
-		(if (entmod (subst (cons 2 aTag) (assoc 2 l) l))
+		(if (entmod (subst (cons 2 a) (assoc 2 l) l))
 			(entupd e)
 		)
 	)

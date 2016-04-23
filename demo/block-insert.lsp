@@ -38,6 +38,32 @@
 	(if a (entlast))
 )
 
+(defun c:block-insert-update ( / l )
+	(cm:initialize)
+	
+	(foreach e (im:select-all-blocks|nested&filter "BALLOON,SYMBOL*")
+		(setq l (entget e))
+		
+		;;; Update symbol negative scale factors to uniform positive scale factors.
+		(cond 
+			((or (< (em:scale|X l) 0) (not (= (em:scale|X l) (em:scale|Y l) (em:scale|Z l))))
+				(setq
+					l (subst (cons '41 (abs (em:scale|X l))) (assoc 41 l) l)
+					l (subst (cons '42 (em:scale|X l)) (assoc 42 l) l)
+					l (subst (cons '43 (em:scale|X l)) (assoc 43 l) l)
+				)
+				(entmod l)
+				(entupd e)
+			)
+		)
+		
+		;;; Update symbol layer.
+		(cm:layer-change e bm:layer-symbol)
+	)
+	
+	(cm:terminate)
+)
+
 (defun c:bsymbol ( / aBlock aTag e x )
 	(cm:initialize)
 	

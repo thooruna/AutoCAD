@@ -195,3 +195,11 @@
 (defun cm:layer-active-color ( )
 	(em:color (cm:layer-active))
 )
+
+(defun cm:layer-change ( e a / l )
+	(if (/= (em:layer (setq l (entget e))) a)
+		(if (entmod (subst (cons '8 a) (assoc 8 l) l))
+			(entupd e)
+		)
+	)
+)
