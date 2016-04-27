@@ -67,7 +67,7 @@
 	(cond
 		((setq lEntities (bm:search-blocks-with-attributes|all xBlocks lEntities))
 			(setq
-				pOrigin (if (wcmatch xDefinition "*:X*,*:Y*,*:Z*") (block-table-origin-definition))
+				pOrigin (block-table-origin-definition)
 				xDefinition (lm:x->list (if xDefinition xDefinition (bm:get-attribute-tags|all lEntities))) 
 				lData (if (> (length lData) 0) lData (list (mapcar 'sm:string-name xDefinition))) ; Header row
 			)
