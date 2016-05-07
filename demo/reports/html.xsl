@@ -10,7 +10,6 @@
 				
 				<!-- Optional theme -->
 				<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous" />
-				<link rel="stylesheet" href="{/@reports}/html.css" type="text/css"/>
 				
 				<!-- Latest compiled and minified JavaScript -->
 				<!--
@@ -20,27 +19,45 @@
 				<title>BLOCK LIST</title>
 			</head>
 			<body>
-				<div class="container">
+				<div class="container-fluid">
 					<div class="jumbotron page-header">
 						<h1>BLOCK LIST</h1>
 					</div>
-					<div class="container">
+					
+					<nav class="navbar navbar-default">
+						<div class="container-fluid">
+							<ul class="nav navbar-nav">
+								<xsl:for-each select="//INSERT[generate-id(.)=generate-id(key('blockname', @NAME))]/@NAME">
+									<xsl:sort />
+									<li><a href="#{generate-id(.)}"><xsl:value-of select="." disable-output-escaping="yes" /></a></li>
+								</xsl:for-each>
+							</ul>
+						</div>
+					</nav>
+					
+					<div class="container-fluid">
 						<xsl:for-each select="//INSERT[generate-id(.)=generate-id(key('blockname', @NAME))]/@NAME">
 							<xsl:sort />
-							<h2><xsl:value-of select="." disable-output-escaping="yes" /></h2>
+							<h2><a name="{generate-id(.)}"><xsl:value-of select="." disable-output-escaping="yes" /></a></h2>
 							<table class="table table-condensed table-hover table-striped"><xsl:for-each select="key('blockname', .)[1]">
-								<tr><xsl:for-each select="*">
-									<th><xsl:value-of select="name(.)" disable-output-escaping="yes" /></th>
-								</xsl:for-each></tr>
-							</xsl:for-each>
-							<xsl:for-each select="key('blockname', .)">
-								<xsl:sort />
-								<tr><xsl:for-each select="*">
-									<td><xsl:value-of select="." disable-output-escaping="yes" /></td>
-								</xsl:for-each></tr>
-							</xsl:for-each></table>
+								<tr>
+									<xsl:for-each select="*">
+										<th><xsl:value-of select="name(.)" disable-output-escaping="yes" /></th>
+									</xsl:for-each>
+								</tr>
+								</xsl:for-each>
+								<xsl:for-each select="key('blockname', .)">
+									<xsl:sort />
+									<tr>
+										<xsl:for-each select="*">
+											<td><xsl:value-of select="." disable-output-escaping="yes" /></td>
+										</xsl:for-each>
+									</tr>
+								</xsl:for-each>
+							</table>
 						</xsl:for-each>
 					</div>
+					
 				</div>
 			</body>
 		</html>
