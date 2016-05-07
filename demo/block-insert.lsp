@@ -2,6 +2,12 @@
 ;;; Author: Wilfred Stapper
 ;;; Copyright © 2015
 
+;(defun block-insert|dialog
+	;(if (setq a (getfiled "Select a block: " (findfile "custom") "dwg" 8)))
+		
+	;)
+;)
+
 (defun block-insert ( xBlocks rRadius bLeader / a l p )
 	(cm:setvar "ATTDIA" 0)
 	(cm:setvar "ATTREQ" 0)
