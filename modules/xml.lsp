@@ -5,7 +5,7 @@
 (defun xml:string-escape ( a / d )
 	(setq a (sm:to-string a))
 	
-	(foreach d '(("'" . "&apos;") ("\"" . "&quot;") ("&" . "&amp;") ("<" . "&lt;") (">" . "&gt;"))
+	(foreach d '(("'" . "&apos;") ("\"" . "&quot;") ("&" . "&amp;") ("<" . "&lt;") (">" . "&gt;") ("²" . "&#178;") ("³" . "&#179;"))
 		(setq a (sm:string-substitute (cdr d) (car d) a))
 	)
 	
@@ -15,7 +15,7 @@
 (defun xml:string-clean ( a / d )
 	(setq a (sm:to-string a))
 	
-	(foreach d '(("#" . "_") ("?" . "_") ("\n" . "") ("\t" . ""))
+	(foreach d '(("#" . "Z") ("?" . "Z") ("\n" . "") ("\t" . ""))
 		(setq a (sm:string-substitute (cdr d) (car d) a))
 	)
 	

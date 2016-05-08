@@ -20,6 +20,7 @@
 			</head>
 			<body>
 				<div class="container-fluid">
+					
 					<div class="jumbotron page-header">
 						<h1>BLOCK LIST</h1>
 					</div>
