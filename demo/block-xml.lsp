@@ -9,7 +9,8 @@
 (defun c:block-xml-update ( / aContent aFile aObject d e h )
 	(cm:initialize)
 	
-	(if (findfile (setq aFile (strcat (fm:drawing-path) (fm:drawing-base) ".xml")))
+	;(if (findfile (setq aFile (strcat (fm:drawing-path) (fm:drawing-base) ".xml")))
+	(if (setq aFile (getfiled "Select XML File: " (fm:drawing-path) "xml" 128))
 		(if (setq aContent (fm:read-file aFile))
 			(foreach aObject (xml:get-node-list "INSERT" aContent)
 				(if (setq h (cdr (assoc "HANDLE" (xml:get-attributes "INSERT" aObject))))
@@ -63,7 +64,7 @@
 )
 
 (defun c:block-xml-write ( )
-	(block-xml-write (im:select-all-blocks) "*" (strcat (block-xml-report-location) "\\drawing.xsd"))
+	(block-xml-write (im:select-all-blocks) "SYMBOL*" (strcat (block-xml-report-location) "\\symbol.xsd"))
 )
 
 (princ)
