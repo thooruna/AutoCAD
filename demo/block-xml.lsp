@@ -12,7 +12,7 @@
 	(if (findfile (setq aFile (strcat (fm:drawing-path) (fm:drawing-base) ".xml")))
 		(if (setq aContent (fm:read-file aFile))
 			(foreach aObject (xml:get-node-list "INSERT" aContent)
-				(if (setq h (cdr (assoc "INSERT" (xml:get-attributes "INSERT" aObject))))
+				(if (setq h (cdr (assoc "HANDLE" (xml:get-attributes "INSERT" aObject))))
 					(if (setq e (handent h))
 						(foreach d (xml:get-nodes "INSERT" aObject)
 							(bm:change-attribute-value e (car d) (cdr d))
@@ -21,12 +21,13 @@
 				)
 			)
 		)
+		(princ (strcat "\nError: XML file not found: " aFile))
 	)
 	
 	(cm:terminate)
 )
 
-(defun block-xml-write ( lBlocks aFilter / aContent aFile aHeader e )
+(defun block-xml-write ( lBlocks aFilter aXSD / aContent aFile aHeader e )
 	(cm:initialize)
 	
 	(setq 
@@ -46,7 +47,7 @@
 					(setq aContent (strcat aContent (xml:create-node "INSERT" (xml:create-nodes (bm:get-attributes e)) (bm:get-id e))))
 				)
 				
-				(setq aContent (xml:create-node "DRAWING" aContent (list (cons "xmlns:xsi" "http://www.w3.org/2001/XMLSchema-instance") (cons "reports" (block-xml-report-location)))))
+				(setq aContent (xml:create-node "DRAWING" aContent (list (cons "xmlns:xsi" "http://www.w3.org/2001/XMLSchema-instance") (cons "xsi:noNamespaceSchemaLocation" aXSD) (cons "reports" (block-xml-report-location)))))
 				
 				(xml:write-file (setq aFile (strcat (fm:drawing-path) (fm:drawing-base) ".xml")) aHeader aContent)
 				
@@ -62,7 +63,7 @@
 )
 
 (defun c:block-xml-write ( )
-	(block-xml-write (im:select-all-blocks) "*")
+	(block-xml-write (im:select-all-blocks) "*" (strcat (block-xml-report-location) "\\drawing.xsd"))
 )
 
 (princ)

@@ -1,6 +1,7 @@
+*.dat
+*.bak
 *.dwl2
 *.dwl
-*.bak
 acaddoc.lsp
 sample.xml
 custom/*

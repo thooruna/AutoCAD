@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-	<xsl:output method="html"/>
+	<xsl:output method="html" doctype-system="about:legacy-compat" />
 	<xsl:key name="blockname" match="INSERT" use="@NAME" />
 	<xsl:template match="/">
 		<html>
 			<head>
+				<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE10" />
+				
 				<!-- Latest compiled and minified CSS -->
 				<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous" />
 				
@@ -12,17 +14,16 @@
 				<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous" />
 				
 				<!-- Latest compiled and minified JavaScript -->
-				<!--
-					<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
-					<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
-				-->
+				<script src="https://code.jquery.com/jquery-2.2.3.min.js" integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo=" crossorigin="anonymous"></script>
+				<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+				
 				<title>BLOCK LIST</title>
 			</head>
 			<body>
 				<div class="container-fluid">
 					
 					<div class="jumbotron page-header">
-						<h1>BLOCK LIST</h1>
+						<a name="top"><h1>BLOCK LIST</h1></a>
 					</div>
 					
 					<nav class="navbar navbar-default">
@@ -56,9 +57,12 @@
 									</tr>
 								</xsl:for-each>
 							</table>
+							
+							<a href="#top"><button type="button" class="btn">Back</button></a>
+							
+							<hr />
 						</xsl:for-each>
 					</div>
-					
 				</div>
 			</body>
 		</html>
