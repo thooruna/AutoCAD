@@ -170,4 +170,16 @@
 	(cond ((getkword (strcat a " [" (lm:list->string x "/") "] <" aDefault ">: ")))(aDefault))
 )
 
+(defun im:get-keyword|yes-or-no ( a / aDefault aKeywords aResult )
+	(setq 
+		aDefault "N"
+		aKeywords "Yes,No"
+	)
+	
+		(princ "\nYes or No, please.")
+	)
+	
+	(= aResult "Yes")
+)
+
 (princ)
