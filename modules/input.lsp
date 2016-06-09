@@ -176,6 +176,7 @@
 		aKeywords "Yes,No"
 	)
 	
+	(while (not (member (setq aResult (im:get-keyword a aDefault aKeywords)) (lm:x->list aKeywords)))
 		(princ "\nYes or No, please.")
 	)
 	
