@@ -170,17 +170,28 @@
 	(cond ((getkword (strcat a " [" (lm:list->string x "/") "] <" aDefault ">: ")))(aDefault))
 )
 
-(defun im:get-keyword|yes-or-no ( a / aDefault aKeywords aResult )
-	(setq 
-		aDefault "N"
-		aKeywords "Yes,No"
-	)
+(defun im:get-keyword|yes-no ( a / aKeywords aResult )
+	(setq aKeywords "Yes,No")
 	
-	(while (not (member (setq aResult (im:get-keyword a aDefault aKeywords)) (lm:x->list aKeywords)))
+	(while (not (wcmatch (setq aResult (im:get-keyword a nil aKeywords)) aKeywords))
 		(princ "\nYes or No, please.")
 	)
 	
-	(= aResult "Yes")
+	aResult
 )
+
+(defun im:get-keyword|yes-no-all ( a / aDefault aKeywords aResult )
+	(setq 
+		aKeywords "Yes,No,All"
+		aDefault "All"
+	)
+	
+	(while (not (wcmatch (setq aResult (im:get-keyword a aDefault aKeywords)) aKeywords))
+		(princ "\nYes, No or All, please.")
+	)
+	
+	aResult
+)
+
 
 (princ)
