@@ -2,11 +2,23 @@
 ;;; Author: Wilfred Stapper
 ;;; Copyright © 2015
 
-;(defun block-insert|dialog
-	;(if (setq a (getfiled "Select a block: " (findfile "custom") "dwg" 8)))
-		
-	;)
-;)
+(defun block-insert-symbol|dialog ( aFolder / a p )
+	(if (setq a (getfiled "Select a block: " (strcat (findfile aFolder) "\\") "dwg" 8))
+		(if (bm:load a)
+			(if (setq p (im:get-point nil))
+				(bm:insert-symbol (fm:base a) p)
+			)
+		)
+	)
+)
+
+(defun block-insert-symbol|single ( a p )
+	(if (bm:load a)
+		(if (setq p (im:get-point nil))
+			(bm:insert-symbol (fm:base a) p)
+		)
+	)
+)
 
 (defun block-insert ( xBlocks rRadius bLeader / a l p )
 	(cm:setvar "ATTDIA" 0)

@@ -5,6 +5,20 @@
 (setq
 	bm:layer-symbol "0"
 	bm:layer-extension-line "0"
+	bm:custom-folders "custom\\blocks,custom\\symbols,demo\\blocks,demo\\symbols"
+)
+
+(defun bm:preload ( a )
+	(command "_.-INSERT" a)
+	(command) ;- Break out of insert command
+	(fm:base a)
+)
+
+(defun bm:redefine ( a / aBase)
+	(command "_.INSERT" (strcat (setq aBase (fm:base a)) "=" a)) 
+	(command) ;;; Break out of insert command
+	(command-s "_.ATTSYNC" "N" aBase)
+	aBase
 )
 
 (defun bm:list ( / a l )
@@ -20,73 +34,90 @@
 	l
 )
 
-(defun bm:find-path ( aBase / aPath )
+(defun bm:exists|drawing ( a / aBase )
+	(if (tblsearch "BLOCK" (setq aBase (fm:base a)))
+		aBase
+	)
+)
+
+(defun bm:exists|file ( a / aPath l )
+	(if (/= (fm:extension a) ".dwg") 
+		(setq a (strcat a ".dwg"))
+	)
+	
 	(cond
-		((findfile (strcat aBase ".dwg")))
-		((if (setq aPath (findfile "custom\\symbols")) (findfile (strcat aPath "\\" aBase ".dwg"))))
-		((if (setq aPath (findfile "demo\\symbols")) (findfile (strcat aPath "\\" aBase ".dwg"))))
+		((findfile a))
+		((car
+			(vl-remove
+				nil
+				(mapcar 
+					'findfile 
+					(mapcar 
+						'(lambda (x) 
+							(strcat x "\\" a)
+						)
+						(vl-remove
+							nil 
+							(mapcar 
+								'findfile 
+								(lm:x->list bm:custom-folders)
+							)
+						)
+					)
+				)
+			)
+		))
 		(T 
-			(princ (strcat "\nUnable to find: " aBase ".dwg"))
+			(princ (strcat "\nUnable to find: " a))
+			(princ "\n")
 			nil
 		)
 	)
 )
 
-(defun bm:find ( aBase / aPath )
-	(cond
-		((tblsearch "BLOCK" aBase) aBase)
-		(T (bm:find-path aBase))
-	)
-)
+;;; Use bm:load before any insert functions.
 
-(defun bm:load ( xBase / a l )
-	(setq l (mapcar 'bm:find (lm:x->list xBase)))
-	
-	(foreach a l
-		(cond
-			((tblsearch "BLOCK" a))
-			(a
-				(princ "\n")
-				(command "_.-INSERT" a)
-				(command) ;- Break out of insert command
+(defun bm:load ( x / a l )
+	(foreach a (setq l (lm:x->list x))
+		(if (not (bm:exists|drawing a))
+			(if (setq a (bm:exists|file a))
+				(bm:preload a)
 			)
 		)
 	)
 	
-	(apply 'and l)
+	(apply 'and (mapcar 'bm:exists|drawing l))
 )
 
-(defun bm:is-uniformly-scaled ( a / l)
-	(if (tblsearch "BLOCK" a)
-		(if (setq l (vla-get-Blocks (vla-get-ActiveDocument (vlax-get-acad-object))))
-			(= (vlax-get (vla-item l a) 'BlockScaling) 1)
-		)
+(defun bm:is-uniformly-scaled ( aBase / l )
+	(if (setq l (vla-get-Blocks (vla-get-ActiveDocument (vlax-get-acad-object))))
+		(= (vlax-get (vla-item l aBase) 'BlockScaling) 1)
 	)
 )
 
-(defun bm:insert ( a p )
-	(if (bm:is-uniformly-scaled a)
-		(command-s "_.-INSERT" a p 1 0.0)
-		(command-s "_.-INSERT" a p 1 1 0.0)
+(defun bm:insert ( aBase p )
+	(if (bm:is-uniformly-scaled aBase)
+		(command-s "_.-INSERT" aBase p 1 0.0)
+		(command-s "_.-INSERT" aBase p 1 1 0.0)
 	)
 )
 
-(defun bm:insert-symbol ( a p )
+(defun bm:insert-symbol ( aBase p )
 	(cm:layer-activate bm:layer-symbol)
-	(if (bm:is-uniformly-scaled a)
-		(command-s "_.-INSERT" a p (getvar "DIMSCALE") 0.0)
-		(command-s "_.-INSERT" a p (getvar "DIMSCALE") (getvar "DIMSCALE") 0.0)
+	(if (bm:is-uniformly-scaled aBase)
+		(command-s "_.-INSERT" aBase p (getvar "DIMSCALE") 0.0)
+		(command-s "_.-INSERT" aBase p (getvar "DIMSCALE") (getvar "DIMSCALE") 0.0)
 	)
 )
 
-(defun bm:insert-symbol-leader ( a p l )
+(defun bm:insert-symbol-leader ( aBase p l )
 	(cm:layer-activate bm:layer-symbol)
-	(apply 'command (append '("_.LEADER") (reverse l) (list "_A" "" "_B" a p (getvar "DIMSCALE") 0.0)))
+	(apply 'command (append '("_.LEADER") (reverse l) (list "_A" "" "_B" aBase p (getvar "DIMSCALE") 0.0)))
 	(command "_.REDRAW")
 	(entlast)
 )
 
-(defun bm:insert-symbol-extension-line ( a p l / e )
+(defun bm:insert-symbol-extension-line ( aBase p l / e )
 	
 	(defun DrawExtensionLine ( l )
 		(cm:layer-activate bm:layer-extension-line)
@@ -95,7 +126,7 @@
 	)
 	
 	(setq e (DrawExtensionLine l))
-	(bm:insert-symbol a p)
+	(bm:insert-symbol aBase p)
 	(if (equal p (car l)) (command "_.TRIM" "" (list e (polar p (angle (car l) (cadr l)) 0.001)) ""))
 	(command "_.REDRAW")
 	e
