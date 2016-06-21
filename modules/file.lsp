@@ -11,7 +11,10 @@
 )
 
 (defun fm:extension ( a )
-	(if (setq a (strcase (vl-filename-extension a) T)) a "")
+	(if (setq a (vl-filename-extension a))
+		(strcase a T)
+		""
+	)
 )
 
 (defun fm:path ( a )
