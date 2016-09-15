@@ -5,7 +5,7 @@
 (defun xml:string-escape ( a / d )
 	(setq a (sm:to-string a))
 	
-	(foreach d '(("'" . "&apos;") ("\"" . "&quot;") ("&" . "&amp;") ("<" . "&lt;") (">" . "&gt;") ("²" . "&#178;") ("³" . "&#179;"))
+	(foreach d '(("'" . "&apos;") ("\"" . "&quot;") ("&" . "&amp;") ("<" . "&lt;") (">" . "&gt;") (Chr(178) . "&#178;") (Chr(179) . "&#179;"))
 		(setq a (sm:string-substitute (cdr d) (car d) a))
 	)
 	
