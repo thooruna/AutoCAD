@@ -2,6 +2,10 @@
 ;;; Author: Wilfred Stapper
 ;;; Copyright © 2015
 
+(defun block-xml-file ()
+	(strcat (fm:drawing-path) (fm:drawing-base) ".xml")
+)
+
 (defun block-xml-report-location ()
 	(strcat (findfile "demo") "\\reports")
 )
@@ -50,7 +54,7 @@
 				
 				(setq aContent (xml:create-node "DRAWING" aContent (list (cons "xmlns:xsi" "http://www.w3.org/2001/XMLSchema-instance") (cons "xsi:noNamespaceSchemaLocation" aXSD) (cons "reports" (block-xml-report-location)))))
 				
-				(xml:write-file (setq aFile (strcat (fm:drawing-path) (fm:drawing-base) ".xml")) aHeader aContent)
+				(xml:write-file (setq aFile (block-xml-file)) aHeader aContent)
 				
 				(princ (strcat "\nTotal blocks found: " (itoa (length lBlocks))))
 				(princ (strcat "\nTotal unique blocks found: " (itoa (length (lm:unique lBlocks)))))
@@ -65,6 +69,11 @@
 
 (defun c:block-xml-write ( )
 	(block-xml-write (im:select-all-blocks) "SYMBOL*" (strcat (block-xml-report-location) "\\symbol.xsd"))
+)
+
+(defun c:block-xml-report ( )
+	(c:block-xml-write)
+	(startapp (findfile "C:\\Program Files\\Internet Explorer\\iexplore.exe") (block-xml-file))
 )
 
 (princ)
