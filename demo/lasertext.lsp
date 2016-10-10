@@ -10,7 +10,7 @@
 		)
 		
 		(if aPrefix
-			(if (setq aBlock (bm:find (strcat aPrefix aChar)))
+			(if (setq aBlock (bm:exists|drawing (strcat aPrefix aChar)))
 				(progn
 					(bm:insert aBlock p)
 					(command "_.EXPLODE" (entlast))
@@ -26,6 +26,7 @@
 			((wcmatch aChar "B,E,P,S") (setq r 7.5))
 			((wcmatch aChar "C,G,R,V,X,Y") (setq r 9))
 			((wcmatch aChar "D,H,N,T,U,Z") (setq r 8))
+			((wcmatch aChar "F") (setq r 6.5))
 			((wcmatch aChar "I") (setq r 1.5))
 			((wcmatch aChar "J") (setq r 5.5))
 			((wcmatch aChar "K") (setq r 8.5))
