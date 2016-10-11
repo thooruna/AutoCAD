@@ -82,7 +82,7 @@
 	(cm:terminate)
 )
 
-(defun c:bsymbol ( / aBlock aTag e x )
+(defun c:bsymbol ( / aBlock aTag e i )
 	(cm:initialize)
 	
 	(defun SetLeaderStyle ( aBlock )
@@ -102,13 +102,13 @@
 	(setq 
 		aBlock "BALLOON"
 		aTag "ID"
-		x (1+ (bm:get-attribute-max (bm:search-blocks-with-attributes aBlock (im:select-all-blocks)) aTag))
+		i (1+ (bm:get-attribute-max (bm:search-blocks-with-attributes aBlock (im:select-all-blocks)) aTag))
 	)
 	
 	(if (setq e (block-insert aBlock 5 T))
 		(if (= (cm:getvar "ATTREQ") 1)
-			(if (setq x (im:get-number "ID" x))
-				(bm:change-attribute-value e aTag (sm:string-fill|left x "0" 2))
+			(if (setq i (im:get-number "ID" i))
+				(bm:change-attribute-value e aTag (sm:string-fill|left (itoa i) "0" 2))
 			)
 		)
 	)
@@ -116,19 +116,19 @@
 	(cm:terminate)
 )
 
-(defun c:psymbol ( / aTag e x xBlocks )
+(defun c:psymbol ( / aTag e i xBlocks )
 	(cm:initialize)
 	
 	(setq 
 		xBlocks "SYMBOL-1,SYMBOL-2"
 		aTag "NUMBER"
-		x (1+ (bm:get-attribute-max (bm:search-blocks-with-attributes xBlocks (im:select-all-blocks)) aTag))
+		i (1+ (bm:get-attribute-max (bm:search-blocks-with-attributes xBlocks (im:select-all-blocks)) aTag))
 	)
 	
 	(if (setq e (block-insert xBlocks 5 nil))
 		(if (= (cm:getvar "ATTREQ") 1)
-			(if (setq x (im:get-number "Number" x))
-				(bm:change-attribute-value e aTag (sm:string-fill|left x "0" 3))
+			(if (setq i (im:get-number "Number" i))
+				(bm:change-attribute-value e aTag (sm:string-fill|left (itoa i) "0" 3))
 			)
 		)
 	)

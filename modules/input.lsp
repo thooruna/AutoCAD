@@ -143,22 +143,11 @@
 	)
 )
 
-(defun im:get-number ( a1 x / a2)
-	(setq x (sm:to-string x))
+(defun im:get-number ( a1 i / a2)
+	(initget 6)
+	(setq a2 (getint (strcat "\n"  a1 ": <" (sm:to-string i) ">: ")))
 	
-	(initget 1)
-	(setq a2 (getstring (strcat "\n"  a1 ": <" x ">: ")))
-		
-	(if (= a2 "") 
-		(setq a2 x)
-	)
-	
-	(cond 
-		((> (atoi a2) 0) (setq x (itoa (1+ (atoi a2)))))
-		;((sm:is-character (chr (1+ (ascii a2)))) (setq x (chr (1+ (ascii a2)))))
-	)
-	
-	a2
+	(if (null a2) i a2)
 )
 
 (defun im:get-keyword ( a aDefault x )
