@@ -5,7 +5,7 @@
 (defun xml:string-escape ( a / d )
 	(setq a (sm:to-string a))
 	
-	(foreach d '(("'" . "&apos;") ("\"" . "&quot;") ("&" . "&amp;") ("<" . "&lt;") (">" . "&gt;") (Chr(178) . "&#178;") (Chr(179) . "&#179;"))
+	(foreach d '(("'" . "&apos;") ("\"" . "&quot;") ("&" . "&amp;") ("<" . "&lt;") (">" . "&gt;") (Chr(176) . "&#176;") (Chr(177) . "&#177;") (Chr(178) . "&#178;") (Chr(179) . "&#179;"))
 		(setq a (sm:string-substitute (cdr d) (car d) a))
 	)
 	
@@ -24,7 +24,8 @@
 )
 
 (defun xml:add-version ()
-	"<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+	;"<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+	"<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>"
 )
 
 (defun xml:add-stylesheet ( a )
