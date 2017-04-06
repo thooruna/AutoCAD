@@ -11,9 +11,9 @@
 						</xs:sequence>
 						<xs:attribute type="xs:string" name="HANDLE" use="optional"/>
 						<xs:attribute type="xs:string" name="NAME" use="optional"/>
-						<xs:attribute type="xs:byte" name="X" use="optional"/>
-						<xs:attribute type="xs:short" name="Y" use="optional"/>
-						<xs:attribute type="xs:byte" name="Z" use="optional"/>
+						<xs:attribute type="xs:decimal" name="X" use="optional"/>
+						<xs:attribute type="xs:decimal" name="Y" use="optional"/>
+						<xs:attribute type="xs:decimal" name="Z" use="optional"/>
 					</xs:complexType>
 				</xs:element>
 			</xs:sequence>

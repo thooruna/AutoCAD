@@ -7,7 +7,7 @@
 	
 	(cond
 		((setq e (car (setq s (entsel))))
-			(cm:setvar "OSMODE" (BitCode (getvar "OSMODE") 32 1))
+			(cm:setvar "OSMODE" (mm:bitcode (getvar "OSMODE") 32 1))
 			(cm:setvar "OSNAP" 1)
 			
 			(setq aType (em:type e)) ; Store type 

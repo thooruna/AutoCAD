@@ -56,3 +56,4 @@
 	(cm:terminate)
 )
 
+(princ)

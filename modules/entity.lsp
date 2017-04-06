@@ -144,4 +144,6 @@
 		(angle (em:primary-point x) (em:other-point x))
 		0
 	)
-) 
+)
+
+(princ)

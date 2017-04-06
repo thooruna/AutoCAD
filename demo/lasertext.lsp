@@ -63,3 +63,4 @@
 	(cm:terminate)
 )
 
+(princ)

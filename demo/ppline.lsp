@@ -34,3 +34,5 @@
 	
 	(command-s "_.PLINE")
 )
+
+(princ)
