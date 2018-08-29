@@ -230,8 +230,8 @@
 								)
 									b 32
 							)
-                            )
-                            (cons nil l) l (append (cdr l) '(()))
+						)
+						(cons nil l) l (append (cdr l) '(()))
 					)
 				)
 				")"
